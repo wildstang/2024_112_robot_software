@@ -1,4 +1,4 @@
-package org.wildstang.sample.auto.Programs;
+package org.wildstang.year2024.auto.Programs;
 
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
@@ -6,9 +6,9 @@ import org.wildstang.framework.auto.steps.PathHeadingStep;
 import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
-import org.wildstang.sample.auto.Steps.StartOdometryStep;
-import org.wildstang.sample.robot.WsSubsystems;
-import org.wildstang.sample.subsystems.swerve.SwerveDrive;
+import org.wildstang.year2024.auto.Steps.StartOdometryStep;
+import org.wildstang.year2024.robot.WsSubsystems;
+import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 import com.choreo.lib.Choreo;
 

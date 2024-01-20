@@ -1,4 +1,4 @@
-package org.wildstang.sample.subsystems;
+package org.wildstang.year2024.subsystems;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.DigitalInput;
@@ -6,7 +6,7 @@ import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.inputs.WsJoystickAxis;
-import org.wildstang.sample.robot.WsInputs;
+import org.wildstang.year2024.robot.WsInputs;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

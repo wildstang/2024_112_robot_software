@@ -1,8 +1,8 @@
-package org.wildstang.sample.robot;
+package org.wildstang.year2024.robot;
 
 import org.wildstang.framework.core.Subsystems;
-import org.wildstang.sample.subsystems.swerve.SwerveDrive;
-import org.wildstang.sample.subsystems.targeting.WsVision;
+import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
+import org.wildstang.year2024.subsystems.targeting.WsVision;
 
 /**
  * All subsystems are enumerated here.

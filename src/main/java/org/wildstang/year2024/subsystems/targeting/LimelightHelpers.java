@@ -1,6 +1,6 @@
 //LimelightHelpers v1.2.1 (March 1, 2023)
 
-package org.wildstang.sample.subsystems.targeting;
+package org.wildstang.year2024.subsystems.targeting;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;

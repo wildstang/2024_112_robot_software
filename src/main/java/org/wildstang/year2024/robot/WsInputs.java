@@ -1,4 +1,4 @@
-package org.wildstang.sample.robot;
+package org.wildstang.year2024.robot;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.core.Inputs;

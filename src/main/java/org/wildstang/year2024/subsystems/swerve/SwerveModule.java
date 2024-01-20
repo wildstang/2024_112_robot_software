@@ -1,4 +1,4 @@
-package org.wildstang.sample.subsystems.swerve;
+package org.wildstang.year2024.subsystems.swerve;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;

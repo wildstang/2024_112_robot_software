@@ -1,4 +1,4 @@
-package org.wildstang.sample.robot;
+package org.wildstang.year2024.robot;
 
 /**
  * CAN Constants are stored here.

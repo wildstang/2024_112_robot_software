@@ -1,4 +1,4 @@
-package org.wildstang.sample.subsystems.swerve;
+package org.wildstang.year2024.subsystems.swerve;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
@@ -7,13 +7,13 @@ import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
-import org.wildstang.sample.robot.CANConstants;
-import org.wildstang.sample.robot.WsInputs;
-import org.wildstang.sample.robot.WsOutputs;
-import org.wildstang.sample.robot.WsSubsystems;
-import org.wildstang.sample.subsystems.targeting.WsVision;
-import org.wildstang.sample.subsystems.targeting.LimeConsts;
 import org.wildstang.hardware.roborio.outputs.WsSpark;
+import org.wildstang.year2024.robot.CANConstants;
+import org.wildstang.year2024.robot.WsInputs;
+import org.wildstang.year2024.robot.WsOutputs;
+import org.wildstang.year2024.robot.WsSubsystems;
+import org.wildstang.year2024.subsystems.targeting.LimeConsts;
+import org.wildstang.year2024.subsystems.targeting.WsVision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

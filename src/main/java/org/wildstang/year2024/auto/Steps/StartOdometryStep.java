@@ -1,9 +1,9 @@
-package org.wildstang.sample.auto.Steps;
+package org.wildstang.year2024.auto.Steps;
 
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.core.Core;
-import org.wildstang.sample.robot.WsSubsystems;
-import org.wildstang.sample.subsystems.swerve.SwerveDrive;
+import org.wildstang.year2024.robot.WsSubsystems;
+import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

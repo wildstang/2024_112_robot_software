@@ -1,4 +1,4 @@
-package org.wildstang.sample.auto.Programs;
+package org.wildstang.year2024.auto.Programs;
 
 import org.wildstang.framework.auto.AutoProgram;
 
