@@ -43,6 +43,7 @@ public class shooter implements Subsystem {
         shooterMotor2 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER2);
         leftTrigger = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_TRIGGER);
         leftTrigger.addInputListener(this);
+        //remember to add .addInputListener(this) for all inputs (including dpadUp and dpadDown)
         dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
         dpadDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_DOWN);
         
@@ -52,8 +53,6 @@ public class shooter implements Subsystem {
 
     @Override
     public void selfTest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'selfTest'");
     }
 
     @Override
@@ -62,6 +61,7 @@ public class shooter implements Subsystem {
             shooterMotor1.setSpeed(shooterMotor1Speed);
             shooterMotor2.setSpeed(shooterMotor2Speed);
         }
+        //you can use else instead of this
         if (leftTriggerPressed == false){
             shooterMotor1.setSpeed(0);
             shooterMotor2.setSpeed(0);
@@ -71,14 +71,12 @@ public class shooter implements Subsystem {
 
     @Override
     public void resetState() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'resetState'");
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        //make sure to include a name in this file
+        return "insert name";
     }
     
 }
