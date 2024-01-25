@@ -16,6 +16,8 @@ public class notepath implements Subsystem{
 
     @Override
     public void inputUpdate(Input source) {
+        //it wasn't listed originally, but it might be good to add another button that would run
+        //the feed and intake backwards, in case it's needed for testing
         if (aButton.getValue()){
             feedMotorSpeed = 1;
             intakeMotorSpeed = 1;
@@ -38,8 +40,6 @@ public class notepath implements Subsystem{
 
     @Override
     public void selfTest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'selfTest'");
     }
 
     @Override
@@ -50,14 +50,12 @@ public class notepath implements Subsystem{
 
     @Override
     public void resetState() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'resetState'");
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        //make sure to put a string name for the system here
+        return "subsystem name";
     }
 
 
