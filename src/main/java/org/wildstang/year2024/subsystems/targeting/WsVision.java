@@ -8,6 +8,8 @@ import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.io.inputs.Input;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,6 +40,28 @@ public class WsVision implements Subsystem {
         } else {
             return (getRightVertical()+offset*LC.OFFSET_VERTICAL) * LC.VERT_AUTOAIM_P;
         }
+    }
+    public double getAngle(){
+        double xPosition;
+        double yPosition;
+        double angleToSpeaker;
+
+        // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
+            if(DriverStation.getAlliance() == Alliance.Blue){
+                xPosition = LC.BLUE_SPEAKER_X - left.blue3D[0];
+                yPosition = -left.blue3D[1];
+
+                angleToSpeaker = Math.atan(xPosition/yPosition);
+                
+                
+            }else if(DriverStation.getAlliance() == Alliance.Red){
+                xPosition = LC.RED_SPEAKER_X - left.red3D[0];
+                yPosition = -left.red3D[1];
+                
+                angleToSpeaker = Math.atan(xPosition/yPosition);
+            }
+
+            return angleToSpeaker;
     }
     //get ySpeed value for station auto drive
     public double getStationY(double offset){

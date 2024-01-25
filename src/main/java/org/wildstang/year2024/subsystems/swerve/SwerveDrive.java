@@ -275,6 +275,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel, pathAccel), pathHeading, rotSpeed,getGyroAngle(),pathXOffset+xSpeed, pathYOffset+ySpeed);
             drive();        
         } 
+        //Turn Robot Toward Speaker
+        if(driveState == driveType.LL){
+            rotTarget = limelight.getAngle();
+            rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+            this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
+            SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
+            drive();
+            
+
+        }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
