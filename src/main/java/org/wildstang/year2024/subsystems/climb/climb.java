@@ -9,6 +9,7 @@ import org.wildstang.hardware.roborio.outputs.config.WsSparkConfig;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 
+//watch your capitalization of file names
 public class Climb implements Subsystem{
     private WsSpark climbMotor;
     private AnalogInput joyStick;
@@ -39,8 +40,6 @@ public class Climb implements Subsystem{
 
     @Override
     public void selfTest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'selfTest'");
     }
 
     @Override
@@ -50,13 +49,10 @@ public class Climb implements Subsystem{
 
     @Override
     public void resetState() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'resetState'");
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return "Climb";
     }
 
