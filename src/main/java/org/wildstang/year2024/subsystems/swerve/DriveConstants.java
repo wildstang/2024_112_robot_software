@@ -62,4 +62,8 @@ public final class DriveConstants {
     /**Swerve Module Names */
     public static final String[] POD_NAMES = new String[]{"FL", "FR", "BL", "BR"};
 
+    public double AMP_Y = 61.5; //Inches
+    public double FIELD_WIDTH = 323.25; //INCHES
+
+
 }

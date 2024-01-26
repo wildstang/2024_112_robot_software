@@ -80,7 +80,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WsVision limelight;
     private LimeConsts LC;
 
-    public enum driveType {TELEOP, AUTO, CROSS};
+    public enum driveType {TELEOP, AUTO, CROSS, SPEAKER, AMP};
     public driveType driveState;
 
     @Override
@@ -276,14 +276,33 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();        
         } 
         //Turn Robot Toward Speaker
-        if(driveState == driveType.LL){
-            rotTarget = limelight.getAngle();
+        if(driveState == driveType.SPEAKER){
+            rotTarget = limelight.getAngleToSpeaker();
             rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
             this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
             SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
             drive();
             
 
+        }
+
+        if(driveState == driveType.AMP && limelight.isInAmpRadius()){
+            double xSpeed,ySpeed;
+
+            ySpeed = (DriveConstants.AMP_Y - limelight.getPosY()) * DriveConstants.DRIVE_P;
+            
+            if(DriverStation.getAlliance() == Alliance.Blue){
+                xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                rotSpeed = swerveHelper.getRotControl(-90, getGyroAngle());
+            }else if(DriverStation.getAlliance() == Alliance.Red){
+                xSpeed = ((0 - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                rotSpeed = swerveHelper.getRotControl(90, getGyroAngle());
+            }
+
+            
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
+            SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
+            drive();
         }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);

@@ -44,6 +44,10 @@ public class WsLL {
         result = LimelightHelpers.getLatestResults(CameraID).targetingResults;
     }
 
+    public int getAprilID(){
+        return tid;
+    }
+
     /*
      * updates all values to the latest value
      */
