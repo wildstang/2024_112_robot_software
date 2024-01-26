@@ -74,7 +74,12 @@ public class WsVision implements Subsystem {
 
         // Red Alliance April Tag
         if(ID == 5||ID == 6){
-            robotDistance = Math.sqrt((Math.pow((LC.AMP_X + left.red3D[0]),2)) + (Math.pow((0,left.red3D[1]),2)));
+            if(DriverStation.getAlliance() == Alliance.Red){
+                robotDistance = Math.sqrt((Math.pow((0 + left.red3D[0]),2)) + (Math.pow((LC.AMP_Y,left.red3D[1]),2)));
+            }else if(DriverStation.getAlliance() == Alliance.Blue){
+                robotDistance = Math.sqrt((Math.pow((LC.FIELD_WIDTH + left.red3D[0]),2)) + (Math.pow((LC.AMP_Y,left.red3D[1]),2)));
+            }
+            
             if(robotDistance <= LC.RADIUS_OF_AMP_TARGETING_ZONE){
                 return true;
             }else{
