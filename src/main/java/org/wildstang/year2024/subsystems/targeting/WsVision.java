@@ -28,7 +28,7 @@ public class WsVision implements Subsystem {
 
     public double getDistanceToSpeaker(){
         double heightDifference = LC.aprilTagSpeakerHeight - LC.cameraHeight;
-        double TanOfAngles = Math.Tan(LC.angle1 + LC.angle2);
+        double TanOfAngles = Math.tan(LC.angle1 + LC.angle2);
         double distance = heightDifference / TanOfAngles;
         return distance;
     }
