@@ -11,6 +11,7 @@ import org.wildstang.framework.io.inputs.Input;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.lang.Math;
 
 public class WsVision implements Subsystem {
 
@@ -24,6 +25,13 @@ public class WsVision implements Subsystem {
     public LimeConsts LC;
 
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
+
+    public double getDistanceToSpeaker(){
+        double heightDifference = LC.aprilTagSpeakerHeight - LC.cameraHeight;
+        double TanOfAngles = Math.tan(LC.angle1 + LC.angle2);
+        double distance = heightDifference / TanOfAngles;
+        return distance;
+    }
 
     public boolean TargetInView(){
         return left.TargetInView() || right.TargetInView();

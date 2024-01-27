@@ -2,6 +2,8 @@ package org.wildstang.year2024.subsystems.targeting;
 
 public class LimeConsts {
 
+
+
     public double VERTICAL_APRILTAG_DISTANCE = 73.0; 
 
     public double HORIZONTAL_APRILTAG_DISTANCE_LEFT = 33.0; 
@@ -30,4 +32,10 @@ public class LimeConsts {
     
     public final boolean CONE = true;
     public final boolean CUBE = false;
+
+    public double angle1;
+    public double angle2;
+    public double aprilTagSpeakerHeight = 53.875; //inches
+    public double cameraHeight = 0.0;
+
 }
