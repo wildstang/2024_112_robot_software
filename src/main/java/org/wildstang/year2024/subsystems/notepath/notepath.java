@@ -13,6 +13,7 @@ public class notepath implements Subsystem{
     private double intakeMotorSpeed = 0;
     private double feedMotorSpeed = 0;
     private DigitalInput aButton;
+    private DigitalInput bButton;
 
     @Override
     public void inputUpdate(Input source) {
@@ -22,11 +23,15 @@ public class notepath implements Subsystem{
             feedMotorSpeed = 1;
             intakeMotorSpeed = 1;
         }
+        else if (bButton.getValue()){
+            feedMotorSpeed = -1;
+            intakeMotorSpeed = -1;
+        }
         else{
             feedMotorSpeed = 0;
             intakeMotorSpeed = 0;
         }
-
+        
     }
 
     @Override
@@ -35,6 +40,8 @@ public class notepath implements Subsystem{
         feedMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.FEED);
         aButton = (DigitalInput) WsInputs.OPERATOR_FACE_DOWN.get();
         aButton.addInputListener(this);
+        bButton = (DigitalInput) WsInputs.OPERATOR_FACE_RIGHT.get();
+        bButton.addInputListener(this);
 
     }
 
@@ -55,7 +62,7 @@ public class notepath implements Subsystem{
     @Override
     public String getName() {
         //make sure to put a string name for the system here
-        return "subsystem name";
+        return "notepath";
     }
 
 
