@@ -48,6 +48,13 @@ public class WsLL {
         return tid;
     }
 
+    public double getTagX(){
+        return tx;
+    }
+
+    public double getTagY(){
+        return ty;
+    }
     /*
      * updates all values to the latest value
      */

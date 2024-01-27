@@ -80,7 +80,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WsVision limelight;
     private LimeConsts LC;
 
-    public enum driveType {TELEOP, AUTO, CROSS, SPEAKER, AMP};
+    public enum driveType {TELEOP, AUTO, CROSS, SPEAKER, AMP, STAGE};
     public driveType driveState;
 
     @Override
@@ -303,6 +303,44 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
             drive();
+        }
+
+        if(driveState == driveType.STAGE){
+            double xSpeed, ySpeed;
+            double robotDistanceToChain = limelight.getDistanceToCenterOfChainPlusOffset();
+            if(DriverStation.getAlliance() == Alliance.Blue){
+                
+                if(left.getAprilID == 16){
+                   // ySpeed = ( - limelight.getPosY()) * DriveConstants.DRIVE_P;
+                   //xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                   //rotSpeed = swerveHelper.getRotControl();
+                }else if(left.getAprilID == 15){
+                    // ySpeed = ( - limelight.getPosY()) * DriveConstants.DRIVE_P;
+                    //xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                    //rotSpeed = swerveHelper.getRotControl();
+                 }
+                }else if(left.getAprilID == 14){
+                    // ySpeed = ( - limelight.getPosY()) * DriveConstants.DRIVE_P;
+                    //xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                    //rotSpeed = swerveHelper.getRotControl();
+                 }
+            }else if(DriverStation.getAlliance() == Alliance.Red){
+                
+                if(left.getAprilID == 13){
+                   // ySpeed = ( - limelight.getPosY()) * DriveConstants.DRIVE_P;
+                   //xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                   //rotSpeed = swerveHelper.getRotControl();
+                }else if(left.getAprilID == 12){
+                    // ySpeed = ( - limelight.getPosY()) * DriveConstants.DRIVE_P;
+                    //xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                    //rotSpeed = swerveHelper.getRotControl();
+                 }
+                }else if(left.getAprilID == 11){
+                    // ySpeed = ( - limelight.getPosY()) * DriveConstants.DRIVE_P;
+                    //xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                    //rotSpeed = swerveHelper.getRotControl();
+                 }
+            }
         }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);

@@ -88,8 +88,31 @@ public class WsVision implements Subsystem {
 
     }
 
+    public double getDistanceToCenterOfChainPlusOffset(){
+        double robotDriveDistance;
+        if(DriverStation.getAlliance() == Alliance.Blue){
+            double xPos = left.blue3D[0];
+            double yPos = left.blue3D[1];
+            double aprilTagX = left.getTagX();
+            double aprilTagY = left.getTagY();
+            double robotDistance = Math.sqrt((Math.pow((xPos + aprilTagX,2)) + (Math.pow((yPos,aprilTagY),2)));
+            double angleAtAprilTag = 0;
+            robotDriveDistance = 
+                Math.sqrt((
+                    (Math.pow(
+                        (LC.CORE_OF_STAGE_TO_CHAIN + LC.CLIMBER_OFFSET),2)
+                    ) + 
+                    (Math.pow(robotDistance,2)) - (2*((LC.CORE_OF_STAGE_TO_CHAIN + LC.CLIMBER_OFFSET)))) * Math.cos(Math.toRadians(angleAtAprilTage)))
+        }
 
+        return robotDriveDistance;
+        
 
+    }
+
+    
+
+    
     public double getPosX(){
         if (DriverStation.getAlliance() == Alliance.Red){
             return left.red3D[0];
