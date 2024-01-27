@@ -10,7 +10,7 @@ import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 
 //watch your capitalization of file names
-public class Climb implements Subsystem{
+public class climb implements Subsystem{
     private WsSpark climbMotor;
     private AnalogInput joyStick;
     private double climbMotorSpeed;
@@ -53,7 +53,7 @@ public class Climb implements Subsystem{
 
     @Override
     public String getName() {
-        return "Climb";
+        return "climb";
     }
 
     
