@@ -75,9 +75,9 @@ public class WsVision implements Subsystem {
         // Red Alliance April Tag
         if(ID == 5||ID == 6){
             if(DriverStation.getAlliance() == Alliance.Red){
-                robotDistance = Math.sqrt((Math.pow((0 + left.red3D[0]),2)) + (Math.pow((LC.AMP_Y,left.red3D[1]),2)));
+                robotDistance = Math.sqrt((Math.pow((0 - left.red3D[0]),2)) + (Math.pow((LC.AMP_Y - left.red3D[1]),2)));
             }else if(DriverStation.getAlliance() == Alliance.Blue){
-                robotDistance = Math.sqrt((Math.pow((LC.FIELD_WIDTH + left.red3D[0]),2)) + (Math.pow((LC.AMP_Y,left.red3D[1]),2)));
+                robotDistance = Math.sqrt((Math.pow((LC.FIELD_WIDTH - left.red3D[0]),2)) + (Math.pow((LC.AMP_Y - left.red3D[1]),2)));
             }
             
             if(robotDistance <= LC.RADIUS_OF_AMP_TARGETING_ZONE){
@@ -95,7 +95,7 @@ public class WsVision implements Subsystem {
             double yPos = left.blue3D[1];
             double aprilTagX = left.getTagX();
             double aprilTagY = left.getTagY();
-            double robotDistance = Math.sqrt((Math.pow((xPos + aprilTagX,2)) + (Math.pow((yPos,aprilTagY),2)));
+            double robotDistance = Math.sqrt((Math.pow((xPos - aprilTagX,2)) + (Math.pow((yPos -aprilTagY),2)));
             double angleAtAprilTag = 0;
             robotDriveDistance = 
                 Math.sqrt((
@@ -110,7 +110,26 @@ public class WsVision implements Subsystem {
 
     }
 
+    public double[] FindThirdVertex(double sideA, double sideB, double sideC, double[] vertex1, double[] vertex2){
+        double angleA = Math.toDegrees(Math.acos(((sideB*sideB)+(sideC*sideC) - (sideA*sideA)) / (2*sideB*sideC))); //Degrees
+        double angleB = Math.toDegrees(Math.acos(((sideA*sideA)+(sideC*sideC) - (sideB*sideB)) / (2*sideA*sideC))); // Degrees
+        double angleC = Math.toDegrees(Math.acos(((sideB*sideB)+(sideA*sideA) - (sideC*sideC)) / (2*sideA*sideB))); // Degrees
+        
+        double directionX = Math.cos(Math.toRadians(angleA));
+        double directionY = Math.sin(Math.toRadians(angleA));
+
+        double thirdVertexX = vertex2[0] + sideA * directionX;
+        double thirdVertexY = vertex2[1] + sideA * directionY;
+
+        double[] thirdVertex = {thirdVertexX, thirdVertexY};
+
+        return thirdVertex;
     
+    }
+
+    public double[] getPointOfCenterChain(){
+        
+    }
 
     
     public double getPosX(){
@@ -127,6 +146,10 @@ public class WsVision implements Subsystem {
         }else if(DriverStation.getAlliance() == Alliance.Blue){
             return left.blue3D[1];
         }
+    }
+
+    public double getDistanceFromAprilTag(){
+        return Math.sqrt(Math.pow(left.getTagX() - getPosX(),2) + Math.pow((left.getTagY() - getPosY()),2));
     }
     
     
