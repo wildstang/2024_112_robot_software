@@ -69,6 +69,12 @@ public class shooter implements Subsystem {
         }
 
     }
+    
+    public void setShooterSpeed(double speed){
+        shooterMotor1Speed = speed;
+        shooterMotor2Speed = speed;
+        leftTriggerPressed = true;
+    }
 
     @Override
     public void resetState() {
