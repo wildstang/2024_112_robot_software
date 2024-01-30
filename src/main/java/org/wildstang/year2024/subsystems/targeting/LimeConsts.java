@@ -1,4 +1,6 @@
 package org.wildstang.year2024.subsystems.targeting; 
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class LimeConsts {
 
@@ -14,4 +16,12 @@ public class LimeConsts {
     public double CLIMBER_OFFSET = 0; 
 
     public double CORE_OF_STAGE_TO_CHAIN = 16.625; //Inches
+
+    public double[] Chain14Midpoint = {WsLL.getTagX, WsLL.getTagY + CORE_OF_STAGE_TO_CHAIN};
+    public double[] Chain15Midpoint = {WsLL.getTagX+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), WsLL.getTagY + (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain16Midpoint = {WsLL.getTagX-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), WsLL.getTagY - (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain13Midpoint = {WsLL.getTagX, WsLL.getTagY + CORE_OF_STAGE_TO_CHAIN};
+    public double[] Chain11Midpoint = {WsLL.getTagX+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), WsLL.getTagY + (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain12Midpoint = {WsLL.getTagX-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), WsLL.getTagY - (CORE_OF_STAGE_TO_CHAIN/2)};
+    
 }
