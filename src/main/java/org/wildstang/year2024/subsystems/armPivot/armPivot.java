@@ -1,15 +1,14 @@
-package org.wildstang.year2024.subsystems;
+package org.wildstang.year2024.subsystems.armPivot;
 
-import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.outputs.WsSpark;
-import org.wildstang.year2024.robot.CANConstants;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
-import org.wildstang.year2024.robot.WsSubsystems;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 public class armPivot implements Subsystem{
     /* 1. rename this ^ to be whatever your file is called
@@ -24,41 +23,64 @@ public class armPivot implements Subsystem{
     //  private DigitalInput button;
     //  private WsSpark motor;
     
-    private WsSparkMax motor;
+    private WsSpark armPivotMotor1;
+    private WsSpark armPivotMotor2;
     private AbsoluteEncoder absEncoder;
+    private DigitalInput xButton;
+    private DigitalInput yButton;
+    private AnalogInput joyStickY;
+    private double armPosition;
 
-    public Wrist(WsSparkMax outputMotor){
-        motor = outputMotor;
-        motor.setBrake();
-        absEncoder = motor.getController().getAbsoluteEncoder(Type.kDutyCycle);
-        absEncoder.setPositionConversionFactor(360.0);
-        absEncoder.setVelocityConversionFactor(360.0/60.0);
-        absEncoder.setInverted(SuperConts.TRUE_ENCODER_DIRECTION);
-        absEncoder.setZeroOffset(253.11);//310
-        motor.initClosedLoop(SuperConts.WRIST_P, SuperConts.WRIST_I, SuperConts.WRIST_D, 0, absEncoder, false);
-        motor.setCurrentLimit(15, 15, 0);
-    }
     public double getPosition(){
         return (absEncoder.getPosition())%360;
     }
     public void setPosition(double position){
-        motor.setPosition((position)%360);
+        armPivotMotor1.setPosition((position)%360);
+        armPivotMotor2.setPosition((position)%360);
     }    
+
     @Override
     public void inputUpdate(Input source) {
+        if (xButton.getValue()){
+            armPosition = 0;
+        }
+        else if (yButton.getValue()){
+            armPosition = 180;
+        }
+        else if (joyStickY.getValue() > 0.05){
+            armPosition += 1;
+        }
+        else if (joyStickY.getValue() < -0.05){
+            armPosition -= 1;
+        }
     }
+
 
     @Override
     public void init() {
-        //example
-        // button = (DigitalInput) WsInputs.DRIVER_DPAD_DOWN.get();
-        // button.addInputListener(this);
-        // motor = (WsSpark) WsOutputs.ANGLE1.get();
+        armPivotMotor1 = (WsSpark) WsOutputs.ARMPIVOT1.get();
+        armPivotMotor2 = (WsSpark) WsOutputs.ARMPIVOT2.get();
+        
+        armPivotMotor1.setBrake();
+        absEncoder = armPivotMotor1.getController().getAbsoluteEncoder(Type.kDutyCycle);
+        absEncoder.setPositionConversionFactor(360.0);
+        absEncoder.setVelocityConversionFactor(360.0/60.0);
+        absEncoder.setInverted(true);
+        absEncoder.setZeroOffset(253.11);//310
+        armPivotMotor1.initClosedLoop(1, 0, 0, 0, absEncoder, false);
+        armPivotMotor1.setCurrentLimit(15, 15, 0);
+        xButton = (DigitalInput) WsInputs.OPERATOR_FACE_LEFT.get();
+        xButton.addInputListener(this);
+        yButton = (DigitalInput) WsInputs.OPERATOR_FACE_UP.get();
+        yButton.addInputListener(this);
+        joyStickY = (AnalogInput) WsInputs.DRIVER_RIGHT_JOYSTICK_Y.get();
+        joyStickY.addInputListener(this);
+
     }
 
     @Override
     public void update() {
-        
+        setPosition(armPosition);
     }
 
     @Override

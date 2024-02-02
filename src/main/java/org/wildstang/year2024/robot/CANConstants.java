@@ -28,4 +28,6 @@ public final class CANConstants {
     public static final int ANGLE4 = 18;
     public static final int SHOOTER1 = 20;
     public static final int SHOOTER2 = 21;
+    public static final int ARMPIVOT1 = 22;
+    public static final int ARMPIVOT2 = 23;
 }
