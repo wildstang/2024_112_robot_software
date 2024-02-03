@@ -1,4 +1,4 @@
-package org.wildstang.year2024.subsystems;
+package org.wildstang.year2024.subsystems.armPivot;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
@@ -11,7 +11,7 @@ import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 import org.wildstang.year2024.robot.WsSubsystems;
 
-public class armPivot implements Subsystem{
+public class armPivot implements Subsystem {
     /* 1. rename this ^ to be whatever your file is called
      * 2. go to getName() and change the string "template" to a string that describes this subsystem
      
@@ -20,13 +20,12 @@ public class armPivot implements Subsystem{
      * 5. add your code where it should be in inputUpdate() and update()
      */
 
-     //example
-    //  private DigitalInput button;
-    //  private WsSpark motor;
-    
+     
+    private AnalogInput joystick;
     private WsSparkMax motor;
     private AbsoluteEncoder absEncoder;
-
+    int direction = 0;
+    double speed;
     public Wrist(WsSparkMax outputMotor){
         motor = outputMotor;
         motor.setBrake();
@@ -34,7 +33,7 @@ public class armPivot implements Subsystem{
         absEncoder.setPositionConversionFactor(360.0);
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         absEncoder.setInverted(SuperConts.TRUE_ENCODER_DIRECTION);
-        absEncoder.setZeroOffset(253.11);//310
+        absEncoder.setZeroOffset(253.11);
         motor.initClosedLoop(SuperConts.WRIST_P, SuperConts.WRIST_I, SuperConts.WRIST_D, 0, absEncoder, false);
         motor.setCurrentLimit(15, 15, 0);
     }
@@ -46,28 +45,34 @@ public class armPivot implements Subsystem{
     }    
     @Override
     public void inputUpdate(Input source) {
-    }
-
-    @Override
-    public void init() {
-        //example
-        // button = (DigitalInput) WsInputs.DRIVER_DPAD_DOWN.get();
-        // button.addInputListener(this);
-        // motor = (WsSpark) WsOutputs.ANGLE1.get();
-    }
-
-    @Override
-    public void update() {
+        if(joystick.getValue() > 0 ){
+            speed = -1.0;
+        } else if(joystick.getValue() < 0){
+            speed = 1.0;
+        } 
         
     }
 
     @Override
+    public void init() {
+        joystick = (AnalogInput) WsInputs.DRIVER_RIGHT_JOYSTICK_Y_DOWN.get();
+        joystick.addInputListener(this);
+        motor = (WsSpark) WsOutputs.ANGLE1.get();
+    }
+
+    @Override
+    public void update() {
+        motor.setSpeed(speed);
+       
+    }
+
+    @Override
     public String getName() {
-        //
         return "Arm Pivot";
     }
     @Override
     public void resetState() {
+        speed = 0;
     }
     @Override
     public void selfTest() {
