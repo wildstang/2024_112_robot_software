@@ -3,6 +3,9 @@ package org.wildstang.year2024.subsystems.targeting;
 // ton of imports
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.year2024.robot.WsInputs;
+
+import java.util.Optional;
+
 import org.wildstang.framework.core.Core;
 
 import org.wildstang.framework.io.inputs.DigitalInput;
@@ -25,7 +28,7 @@ public class WsVision implements Subsystem {
 
     public LimeConsts LC;
 
-    public DriverStation station = DriverStation.getAlliance(); 
+    public Optional<Alliance> station; 
 
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
 
@@ -50,21 +53,23 @@ public class WsVision implements Subsystem {
         double yPosition;
         double angleToSpeaker;
 
-        
-            if(DriverStation.getAlliance().equals(Alliance.Blue)){
+        try{
+            if(station.get().equals(Alliance.Blue)){
                 xPosition = LC.BLUE_SPEAKER_X - left.blue3D[0];
                 yPosition = -left.blue3D[1];
 
                 angleToSpeaker = Math.atan(xPosition/yPosition);
                 
                 
-            }else if(DriverStation.getAlliance().equals(Alliance.Red)){
+            }else if(station.get().equals(Alliance.Red)){
                 xPosition = LC.RED_SPEAKER_X - left.red3D[0];
                 yPosition = -left.red3D[1];
                 
                 angleToSpeaker = Math.atan(xPosition/yPosition);
             }
-
+        }catch(Exception e){
+            return 0;
+        }
             return angleToSpeaker;
     }
 
@@ -76,9 +81,10 @@ public class WsVision implements Subsystem {
 
         // Red Alliance April Tag
         if(ID == 5||ID == 6){
-            if(DriverStation.getAlliance().equals(Alliance.Red)){
+            try{
+            if(station.get().equals(Alliance.Red)){
                 robotDistance = Math.sqrt((Math.pow((0 - left.red3D[0]),2)) + (Math.pow((LC.AMP_Y - left.red3D[1]),2)));
-            }else if(DriverStation.getAlliance().equals(Alliance.Blue)){
+            }else if(station.get().equals(Alliance.Blue)){
                 robotDistance = Math.sqrt((Math.pow((LC.FIELD_WIDTH - left.red3D[0]),2)) + (Math.pow((LC.AMP_Y - left.red3D[1]),2)));
             }
             
@@ -87,12 +93,16 @@ public class WsVision implements Subsystem {
             }else{
                 return false;
             }
+        }catch(Exception e){
+            return false;
+        }
 
     }
 
     public double getDistanceToCenterOfChainPlusOffset(){
         double robotDriveDistance;
-        if(DriverStation.getAlliance().equals(Alliance.Blue)){
+        try{
+        if(station.get().equals(Alliance.Blue)){
             double xPos = left.blue3D[0];
             double yPos = left.blue3D[1];
             double aprilTagX = left.getTagX();
@@ -106,7 +116,9 @@ public class WsVision implements Subsystem {
                     ) + 
                     (Math.pow(robotDistance,2)) - (2*((LC.CORE_OF_STAGE_TO_CHAIN + LC.CLIMBER_OFFSET)))) * Math.cos(Math.toRadians(angleAtAprilTag)))
         }
-
+    }catch(Exception e){
+        return 0;
+    }
         return robotDriveDistance;
         
 
@@ -135,19 +147,28 @@ public class WsVision implements Subsystem {
 */
     
     public double getPosX(){
-        if (DriverStation.getAlliance().equals(Alliance.Red)){
-            return (double)left.red3D[0];
-        }else if(DriverStation.getAlliance().equals(Alliance.Blue)){
-            return (double)left.blue3D[0];
+    try{
+        if (station.get().equals(Alliance.Red)){
+            return (double)(left.red3D[0]);
+        }else if(station.get().equals(Alliance.Blue)){
+            return (double)(left.blue3D[0]);
         }
+    }catch(Exception e){
+        return 0;
+    }
     }
 
     public double getPosY(){
-        if (DriverStation.getAlliance().equals(Alliance.Red)){
+        try{
+        if (station.get().equals(Alliance.Red)){
             return left.red3D[1];
-        }else if(DriverStation.getAlliance().equals(Alliance.Blue)){
+        }else if(station.get().equals(Alliance.Blue)){
             return left.blue3D[1];
         }
+    }catch(Exception e){
+        return 0;
+    }
+
     }
 
     public double getDistanceFromAprilTag(){
@@ -259,6 +280,7 @@ public class WsVision implements Subsystem {
         left.update();
         right.update();
         SmartDashboard.putBoolean("limelight target in view", TargetInView());
+        station = DriverStation.getAlliance();
     }
 
     @Override
