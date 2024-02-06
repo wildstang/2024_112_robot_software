@@ -11,6 +11,7 @@ import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 import org.wildstang.year2024.robot.WsSubsystems;
 import com.revrobotics.AbsoluteEncoder;
+import org.wildstang.year2024.subsystems.targeting.WsVision;
 
 public class ShooterSubsystem implements Subsystem{
     /* 1. rename this ^ to be whatever your file is called
@@ -26,7 +27,7 @@ public class ShooterSubsystem implements Subsystem{
 
     public WsVision limelight;
     public WsSpark shooterMotor;
-    public WsSparn angleMotor;
+    public WsSpark angleMotor;
     public double robotDistance;
     public double motorSpeed;
     public DigitalInput shootButton;
@@ -36,11 +37,11 @@ public class ShooterSubsystem implements Subsystem{
 
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
-    public double[] angles = new double[6];
+    public double[] angles = {1,1,1,1,1,1};
 
-    public double[] distanceMarks = new double[6];
+    public double[] distanceMarks = {1,1,1,1,1,1};
 
-    public double[] indexes = new double[2];
+    public int[] indexes = new int[2];
 
     public double getSpeed(double distance){
         for(int i = 0; i < distanceMarks.length; i++){
@@ -48,8 +49,8 @@ public class ShooterSubsystem implements Subsystem{
                 indexes[0] = i;
                 indexes[1] = i+1;
                 
-                return speeds[i]+((speeds[i+1] - speeds[i]) * 
-                    ((distance - distanceMarks[i]) / (distanceMarks[i+1] - distanceMarks[i])));
+                return (double)((speeds[i]+((speeds[i+1] - speeds[i]) * 
+                    ((distance - distanceMarks[i]) / (distanceMarks[i+1] - distanceMarks[i])))));
             }
         }
 
@@ -58,7 +59,7 @@ public class ShooterSubsystem implements Subsystem{
 
     public double getAngle(double distance){
         return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
-            * ((distance - distanceMarks[indexes[0]]) / (distabceMarks[indexes[1]] - distanceMarks[indexes[0]])));
+            * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
     }
 
    /*  public double setAngle(double targetAngle){
@@ -88,13 +89,13 @@ public class ShooterSubsystem implements Subsystem{
     @Override
     public void init() {
         //example
-        absEncoder = moter.getController().getAbsoluteEncoder(Type.kDutyCycle);
+        absEncoder = motor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         shootButton = (DigitalInput) WsInputs.OPERATOR_LEFT_TRIGGER.get();
         shootButton.addInputListener(this);
         shooterMotor = (WsSparks) WsOutputs.SHOOTERSPEED.get();
-        shooterMoter.setCurrentLimit(50,50,0);
+        shooterMotor.setCurrentLimit(50,50,0);
         angleMotor = (WsSparks) WsOutputs.SHOOTERANGLE.get();
-        angleMoter.setCurrentLimit(50,50,0);
+        angleMotor.setCurrentLimit(50,50,0);
     }
 
     @Override
