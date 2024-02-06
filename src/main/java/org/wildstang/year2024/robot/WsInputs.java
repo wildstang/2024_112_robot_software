@@ -6,7 +6,9 @@ import org.wildstang.framework.hardware.InputConfig;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.hardware.JoystickConstants;
 import org.wildstang.hardware.roborio.inputs.config.WsJSButtonInputConfig;
+import org.wildstang.hardware.roborio.inputs.WsDigitalInput;
 import org.wildstang.hardware.roborio.inputs.config.WsDPadButtonInputConfig;
+import org.wildstang.hardware.roborio.inputs.config.WsDigitalInputConfig;
 import org.wildstang.hardware.roborio.inputs.config.WsJSJoystickInputConfig;
 
 /**
@@ -131,7 +133,7 @@ public enum WsInputs implements Inputs {
     // ********************************
     // Digital IOs
     // ********************************
-
+    BEAMBREAK_SENSOR ("Beambreak sensor", new WsDigitalInputConfig(0, false))
     // -------------------------------
     // Networked sensors
     // -------------------------------

@@ -24,6 +24,8 @@ public class TagOnStep extends AutoStep{
         swerve.setAutoTag(on, color);
         limelight.setGamePiece(false);
         this.setFinished();
+
+
     }
     public void initialize(){
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
