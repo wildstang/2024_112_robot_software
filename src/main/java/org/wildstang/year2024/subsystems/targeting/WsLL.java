@@ -44,15 +44,15 @@ public class WsLL {
         result = LimelightHelpers.getLatestResults(CameraID).targetingResults;
     }
 
-    public int getAprilID(){
+    public double getAprilID(){
         return tid;
     }
 
-    public static double getTagX(){
+    public double getTagX(){
         return tx;
     }
 
-    public static double getTagY(){
+    public double getTagY(){
         return ty;
     }
 

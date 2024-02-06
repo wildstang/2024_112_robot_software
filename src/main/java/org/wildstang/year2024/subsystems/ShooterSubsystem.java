@@ -11,6 +11,8 @@ import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 import org.wildstang.year2024.robot.WsSubsystems;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
+
 import org.wildstang.year2024.subsystems.targeting.WsVision;
 
 public class ShooterSubsystem implements Subsystem{
@@ -49,10 +51,12 @@ public class ShooterSubsystem implements Subsystem{
                 indexes[0] = i;
                 indexes[1] = i+1;
                 
-                return (double)((speeds[i]+((speeds[i+1] - speeds[i]) * 
-                    ((distance - distanceMarks[i]) / (distanceMarks[i+1] - distanceMarks[i])))));
+                
             }
         }
+
+        return (double)((speeds[indexes[0]]+((speeds[indexes[1]] - speeds[indexes[0]]) * 
+                    ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])))));
 
 
     }
@@ -89,12 +93,12 @@ public class ShooterSubsystem implements Subsystem{
     @Override
     public void init() {
         //example
-        absEncoder = motor.getController().getAbsoluteEncoder(Type.kDutyCycle);
+        absEncoder = shooterMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         shootButton = (DigitalInput) WsInputs.OPERATOR_LEFT_TRIGGER.get();
         shootButton.addInputListener(this);
-        shooterMotor = (WsSparks) WsOutputs.SHOOTERSPEED.get();
+        shooterMotor = (WsSpark) WsOutputs.SHOOTERSPEED.get();
         shooterMotor.setCurrentLimit(50,50,0);
-        angleMotor = (WsSparks) WsOutputs.SHOOTERANGLE.get();
+        angleMotor = (WsSpark) WsOutputs.SHOOTERANGLE.get();
         angleMotor.setCurrentLimit(50,50,0);
     }
 

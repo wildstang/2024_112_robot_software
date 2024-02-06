@@ -9,6 +9,7 @@ public class LimeConsts {
     public int RADIUS_OF_AMP_TARGETING_ZONE = 49; //Inches
     public double AMP_Y = 61.5; //Inches
     public double FIELD_WIDTH = 323.25; //INCHES
+    public WsLL aprilTags;
     
     /*Blank for now. Offset of climber which will assist in alligning the robot climber to the chain
      * With correct offset.
@@ -17,11 +18,11 @@ public class LimeConsts {
 
     public double CORE_OF_STAGE_TO_CHAIN = 16.625; //Inches
 
-    public double[] Chain14Midpoint = {WsLL.getTagX, WsLL.getTagY + CORE_OF_STAGE_TO_CHAIN};
-    public double[] Chain15Midpoint = {WsLL.getTagX+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), WsLL.getTagY + (CORE_OF_STAGE_TO_CHAIN/2)};
-    public double[] Chain16Midpoint = {WsLL.getTagX-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), WsLL.getTagY - (CORE_OF_STAGE_TO_CHAIN/2)};
-    public double[] Chain13Midpoint = {WsLL.getTagX, WsLL.getTagY + CORE_OF_STAGE_TO_CHAIN};
-    public double[] Chain11Midpoint = {WsLL.getTagX+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), WsLL.getTagY + (CORE_OF_STAGE_TO_CHAIN/2)};
-    public double[] Chain12Midpoint = {WsLL.getTagX-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), WsLL.getTagY - (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain14Midpoint = {aprilTags.getTagX(), aprilTags.getTagY() + CORE_OF_STAGE_TO_CHAIN};
+    public double[] Chain15Midpoint = {aprilTags.getTagX()+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() + (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain16Midpoint = {aprilTags.getTagX()-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() - (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain13Midpoint = {aprilTags.getTagX(), aprilTags.getTagY() + CORE_OF_STAGE_TO_CHAIN};
+    public double[] Chain11Midpoint = {aprilTags.getTagX()+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() + (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain12Midpoint = {aprilTags.getTagX()-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() - (CORE_OF_STAGE_TO_CHAIN/2)};
     
 }

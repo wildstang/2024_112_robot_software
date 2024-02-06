@@ -25,6 +25,8 @@ public class WsVision implements Subsystem {
 
     public LimeConsts LC;
 
+    public DriverStation station = DriverStation.getAlliance(); 
+
     ShuffleboardTab tab = Shuffleboard.getTab("Tab");
 
     public boolean TargetInView(){
@@ -32,7 +34,7 @@ public class WsVision implements Subsystem {
     }
 
     //get ySpeed value for auto drive
-    public double getScoreY(double offset){
+    /*public double getScoreY(double offset){
         if (right.TargetInView() && left.TargetInView()){
             return LC.VERT_AUTOAIM_P * (offset*LC.OFFSET_VERTICAL + (getLeftVertical() + getRightVertical())/2.0);
         } else if (left.tv > 0.0){
@@ -40,7 +42,7 @@ public class WsVision implements Subsystem {
         } else {
             return (getRightVertical()+offset*LC.OFFSET_VERTICAL) * LC.VERT_AUTOAIM_P;
         }
-    }
+    }*/
 
     // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
     public double getAngleToSpeaker(){
@@ -49,14 +51,14 @@ public class WsVision implements Subsystem {
         double angleToSpeaker;
 
         
-            if(DriverStation.getAlliance() == Alliance.Blue){
+            if(DriverStation.getAlliance().equals(Alliance.Blue)){
                 xPosition = LC.BLUE_SPEAKER_X - left.blue3D[0];
                 yPosition = -left.blue3D[1];
 
                 angleToSpeaker = Math.atan(xPosition/yPosition);
                 
                 
-            }else if(DriverStation.getAlliance() == Alliance.Red){
+            }else if(DriverStation.getAlliance().equals(Alliance.Red)){
                 xPosition = LC.RED_SPEAKER_X - left.red3D[0];
                 yPosition = -left.red3D[1];
                 
@@ -69,14 +71,14 @@ public class WsVision implements Subsystem {
     // Get the distance the robot is from AMP within a 49 inch radius and return the angle and direction the robot needs to drive
     public boolean isInAmpRadius(){
 
-        int ID = left.getAprilID(); // ID of AprilTags
+        double ID = left.getAprilID(); // ID of AprilTags
         double robotDistance; // Distance of robot from AprilTag
 
         // Red Alliance April Tag
         if(ID == 5||ID == 6){
-            if(DriverStation.getAlliance() == Alliance.Red){
+            if(DriverStation.getAlliance().equals(Alliance.Red)){
                 robotDistance = Math.sqrt((Math.pow((0 - left.red3D[0]),2)) + (Math.pow((LC.AMP_Y - left.red3D[1]),2)));
-            }else if(DriverStation.getAlliance() == Alliance.Blue){
+            }else if(DriverStation.getAlliance().equals(Alliance.Blue)){
                 robotDistance = Math.sqrt((Math.pow((LC.FIELD_WIDTH - left.red3D[0]),2)) + (Math.pow((LC.AMP_Y - left.red3D[1]),2)));
             }
             
@@ -90,19 +92,19 @@ public class WsVision implements Subsystem {
 
     public double getDistanceToCenterOfChainPlusOffset(){
         double robotDriveDistance;
-        if(DriverStation.getAlliance() == Alliance.Blue){
+        if(DriverStation.getAlliance().equals(Alliance.Blue)){
             double xPos = left.blue3D[0];
             double yPos = left.blue3D[1];
             double aprilTagX = left.getTagX();
             double aprilTagY = left.getTagY();
-            double robotDistance = Math.sqrt((Math.pow((xPos - aprilTagX,2)) + (Math.pow((yPos -aprilTagY),2)));
+            double robotDistance = Math.sqrt(Math.pow(xPos - aprilTagX,2) + Math.pow(yPos - aprilTagY,2));
             double angleAtAprilTag = 0;
             robotDriveDistance = 
                 Math.sqrt((
                     (Math.pow(
                         (LC.CORE_OF_STAGE_TO_CHAIN + LC.CLIMBER_OFFSET),2)
                     ) + 
-                    (Math.pow(robotDistance,2)) - (2*((LC.CORE_OF_STAGE_TO_CHAIN + LC.CLIMBER_OFFSET)))) * Math.cos(Math.toRadians(angleAtAprilTage)))
+                    (Math.pow(robotDistance,2)) - (2*((LC.CORE_OF_STAGE_TO_CHAIN + LC.CLIMBER_OFFSET)))) * Math.cos(Math.toRadians(angleAtAprilTag)))
         }
 
         return robotDriveDistance;
@@ -127,23 +129,23 @@ public class WsVision implements Subsystem {
     
     }
 
-    public double[] getPointOfCenterChain(){
+    /*public double[] getPointOfCenterChain(){
         
     }
-
+*/
     
     public double getPosX(){
-        if (DriverStation.getAlliance() == Alliance.Red){
-            return left.red3D[0];
-        }else if(DriverStation.getAlliance() == Alliance.Blue){
-            return left.blue3D[0];
+        if (DriverStation.getAlliance().equals(Alliance.Red)){
+            return (double)left.red3D[0];
+        }else if(DriverStation.getAlliance().equals(Alliance.Blue)){
+            return (double)left.blue3D[0];
         }
     }
 
     public double getPosY(){
-        if (DriverStation.getAlliance() == Alliance.Red){
+        if (DriverStation.getAlliance().equals(Alliance.Red)){
             return left.red3D[1];
-        }else if(DriverStation.getAlliance() == Alliance.Blue){
+        }else if(DriverStation.getAlliance().equals(Alliance.Blue)){
             return left.blue3D[1];
         }
     }
@@ -155,7 +157,7 @@ public class WsVision implements Subsystem {
     
 
     //get ySpeed value for station auto drive
-    public double getStationY(double offset){
+    /*public double getStationY(double offset){
         if (left.TargetInView()){
             return (offset*LC.STATION_OFFSETS + (left.tid > 4.5 ? -left.blue3D[0] + LC.STATION_VERTICAL 
                 : -left.red3D[0] + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
@@ -163,9 +165,9 @@ public class WsVision implements Subsystem {
             return (offset*LC.STATION_OFFSETS + (right.tid > 4.5 ? -right.blue3D[0] + LC.STATION_VERTICAL 
                 : -right.red3D[0] + LC.STATION_VERTICAL)) * -LC.VERT_AUTOAIM_P;
         }
-    }
+    }*/
     //get xSpeed value for station auto drive
-    public double getStationX(double offset){
+    /*public double getStationX(double offset){
         if (left.TargetInView()){
             if (left.isSeeingBlue()){
                 //basically this garbage line determines whether we're going to the left or right double substation
@@ -186,9 +188,9 @@ public class WsVision implements Subsystem {
                 LC.STATION_HORIZONTAL*Math.signum(right.red3D[1]-LC.RED_STATION_X)));
             }
         }
-    }
+    }*/
     //gets the vertical distance to target for grid targets from the left limelight
-    private double getLeftVertical(){
+    /*private double getLeftVertical(){
         if (left.isSeeingBlue()){
             return -left.blue3D[0] + (LC.VERTICAL_APRILTAG_DISTANCE + (isLow ? 10.0 : 0.0)); 
         } else {
@@ -215,17 +217,17 @@ public class WsVision implements Subsystem {
         }
     }
     //get the horizontal distance to targets on the grid from the left limelight
-   
+   /* */
 
     @Override
     public void inputUpdate(Input source) {
-        if (rightBumper.getValue())
+       /* if (rightBumper.getValue())
         {
             gamepiece = LC.CUBE;
         }
         if (leftBumper.getValue()){
             gamepiece = LC.CONE;
-        }
+        }*/
         if (source == low && low.getValue()) isLow = true;
         if ((source == mid && mid.getValue()) || (source == high && high.getValue())) isLow = false;
     }
@@ -261,7 +263,7 @@ public class WsVision implements Subsystem {
 
     @Override
     public void resetState() {
-        gamepiece = LC.CONE;
+       // gamepiece = LC.CONE;
         isLow = false;
         left.update();
         right.update();
