@@ -5,6 +5,7 @@ import org.wildstang.framework.subsystems.Subsystem;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -24,6 +25,7 @@ public class WsVision implements Subsystem {
     AprilTagFieldLayout aprilTagFieldLayout;
     PhotonPoseEstimator photonPoseEstimator;
     public EstimatedRobotPose curPose;
+    boolean hasTargets;
 
     @Override
     public void inputUpdate(Input source) {
@@ -51,8 +53,9 @@ public class WsVision implements Subsystem {
     public void update() {
         var result = camera.getLatestResult();
         SmartDashboard.putBoolean("hasTargets", result.hasTargets());
+        hasTargets = result.hasTargets();
 
-        if(result.hasTargets()) {
+        if(hasTargets) {
             try{
                 curPose = photonPoseEstimator.update().get();
                 SmartDashboard.putNumber("pose", curPose.estimatedPose.getX());
@@ -64,8 +67,15 @@ public class WsVision implements Subsystem {
         }
     }
 
+    public void odometryUpdate(SwerveDrivePoseEstimator estimator) {
+        if(hasTargets){
+            estimator.addVisionMeasurement(curPose.estimatedPose.toPose2d(), curPose.timestampSeconds);
+        }
+    }
+
     @Override
     public void resetState() {
+        hasTargets = false;
     }
 
     @Override
