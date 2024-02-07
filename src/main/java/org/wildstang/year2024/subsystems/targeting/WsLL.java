@@ -5,8 +5,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class WsLL {
-
-    private final double mToIn = 39.3701;
     
     public NetworkTable limelight;
 
@@ -90,11 +88,5 @@ public class WsLL {
      */
     public void setCam(int cameraMode){
         limelight.getEntry("camMode").setNumber(cameraMode);
-    }
-
-    private void setToIn(){
-        for (int i = 0; i < 7; i++){
-            this.blue3D[i] *= mToIn;
-        }
     }
 }
