@@ -28,19 +28,6 @@ public class WsLL {
         result = LimelightHelpers.getLatestResults(CameraID).targetingResults;
     }
 
-    public double getAprilID(){
-        return tid;
-    }
-
-    public double getTagX(){
-        return tx;
-    }
-
-    public double getTagY(){
-        return ty;
-    }
-
-
     /*
      * updates all values to the latest value
      */

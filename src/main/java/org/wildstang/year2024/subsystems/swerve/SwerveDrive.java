@@ -219,7 +219,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void update() {
         poseEstimator.update(odoAngle(), odoPosition());
         limelight.odometryUpdate(poseEstimator);
-        
+
         if (driveState == driveType.CROSS) {
             //set to cross - done in inputupdate
             this.swerveSignal = swerveHelper.setCross();
@@ -234,7 +234,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
             drive();
         }
-        /*if (driveState == driveType.AUTO) {
+        if (driveState == driveType.AUTO) {
             //get controller generated rotation value
             // rotSpeed = Math.max(-0.2, Math.min(0.2, swerveHelper.getRotControl(pathTarget, getGyroAngle())));
             rotSpeed = swerveHelper.getRotControl(pathTarget, getGyroAngle());
@@ -243,7 +243,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             //update where the robot is, to determine error in path
             this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel, pathAccel), pathHeading, rotSpeed,getGyroAngle(),pathXOffset, pathYOffset);
             drive();        
-        } */
+        }
         //Turn Robot Toward Speaker
         if(driveState == driveType.SPEAKER){
             rotTarget = limelight.getAngleToSpeaker();
@@ -258,64 +258,58 @@ public class SwerveDrive extends SwerveDriveTemplate {
         if(driveState == driveType.AMP && limelight.isInAmpRadius()){
             double xSpeed,ySpeed;
 
-            ySpeed = (DriveConstants.AMP_Y - limelight.getPosY()) * DriveConstants.DRIVE_P;
+            ySpeed = (DriveConstants.AMP_Y - limelight.getPosY()) * DriveConstants.POS_P;
             
             if(DriverStation.getAlliance().equals(Alliance.Blue)){
-                xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.POS_P);
                 rotSpeed = swerveHelper.getRotControl(-90, getGyroAngle());
             }else if(DriverStation.getAlliance().equals(Alliance.Red)){
-                xSpeed = ((0 - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                xSpeed = ((0 - limelight.getPosX()) * DriveConstants.POS_P);
                 rotSpeed = swerveHelper.getRotControl(90, getGyroAngle());
             }
-
-            
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
             SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
             drive();
         }
-
         if(driveState == driveType.STAGE){
             double xSpeed, ySpeed;
             double robotDistanceToChain = limelight.getDistanceToCenterOfChainPlusOffset();
             if(DriverStation.getAlliance().equals(Alliance.Blue)){
-                
                 if(limelight.left.getAprilID() == 16){
-                   ySpeed = (LC.Chain16Midpoint[1] - limelight.getPosY()) * DriveConstants.DRIVE_P;
-                   xSpeed = ((LC.Chain16Midpoint[0] - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                   ySpeed = (lc.Chain16Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
+                   xSpeed = ((lc.Chain16Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
                    rotSpeed = swerveHelper.getRotControl(-135, getGyroAngle());
                 }else if(limelight.left.getAprilID() == 15){
-                    ySpeed = (LC.Chain15Midpoint[1] - limelight.getPosY()) * DriveConstants.DRIVE_P;
-                    xSpeed = ((LC.Chain15Midpoint[0] - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                    ySpeed = (lc.Chain15Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
+                    xSpeed = ((lc.Chain15Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
                     rotSpeed = swerveHelper.getRotControl(135, getGyroAngle());
-                 }
                 }else if(limelight.left.getAprilID() == 14){
-                    ySpeed = (LC.Chain14Midpoint[1] - limelight.getPosY()) * DriveConstants.DRIVE_P;
-                    xSpeed = ((LC.Chain14Midpoint[0] - limelight.getPosX()) * DriveConstants.DRIVE_P);
+                    ySpeed = (lc.Chain14Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
+                    xSpeed = ((lc.Chain14Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
                     rotSpeed = swerveHelper.getRotControl(0, getGyroAngle());
                  }
-            
-        }else if(DriverStation.getAlliance().equals(Alliance.Red)){
+            } else if(DriverStation.getAlliance().equals(Alliance.Red)){
+                if(limelight.left.getAprilID() == 13){
+                    ySpeed = (lc.Chain13Midpoint[1]- limelight.getPosY()) * DriveConstants.POS_P;
+                    xSpeed = ((lc.Chain13Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                    rotSpeed = swerveHelper.getRotControl(180, getGyroAngle());
+                }else if(limelight.left.getAprilID() == 12){
+                        ySpeed = (lc.Chain12Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
+                        xSpeed = ((lc.Chain12Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                        rotSpeed = swerveHelper.getRotControl(45, getGyroAngle());
                 
-            if(limelight.left.getAprilID() == 13){
-                   ySpeed = (LC.Chain13Midpoint[1]- limelight.getPosY()) * DriveConstants.DRIVE_P;
-                   xSpeed = ((LC.Chain13Midpoint[0] - limelight.getPosX()) * DriveConstants.DRIVE_P);
-                   rotSpeed = swerveHelper.getRotControl(180, getGyroAngle());
-            }else if(limelight.left.getAprilID() == 12){
-                    ySpeed = (LC.Chain12Midpoint[1] - limelight.getPosY()) * DriveConstants.DRIVE_P;
-                    xSpeed = ((LC.Chain12Midpoint[0] - limelight.getPosX()) * DriveConstants.DRIVE_P);
-                    rotSpeed = swerveHelper.getRotControl(45, getGyroAngle());
-            
-            }else if(limelight.left.getAprilID() == 11){
-                    ySpeed = (LC.Chain11Midpoint[1] - limelight.getPosY()) * DriveConstants.DRIVE_P;
-                    xSpeed = ((LC.Chain11Midpoint[0] - limelight.getPosX()) * DriveConstants.DRIVE_P);
-                    rotSpeed = swerveHelper.getRotControl(-45, getGyroAngle());
+                }else if(limelight.left.getAprilID() == 11){
+                        ySpeed = (lc.Chain11Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
+                        xSpeed = ((lc.Chain11Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                        rotSpeed = swerveHelper.getRotControl(-45, getGyroAngle());
+                }
             }
         }
         
         this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
         SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
         drive();
-    }
+
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
