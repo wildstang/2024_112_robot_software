@@ -11,7 +11,8 @@ import com.choreo.lib.*;
 
 public class SwervePathFollowerStep extends AutoStep {
 
-    private static final double mToIn = 39.3701;
+    private static final double M_TO_IN = 39.3701;
+    private static final double FIELD_WIDTH = 8.016; // field width in meters
     private SwerveDriveTemplate m_drive;
     private ChoreoTrajectory pathtraj;
     private boolean isBlue;
@@ -58,10 +59,10 @@ public class SwervePathFollowerStep extends AutoStep {
             if (isBlue){
                 xOffset = localRobotPose.getY() - localAutoPose.getY();
             } else {
-                xOffset = localRobotPose.getY() - (8.016 - localAutoPose.getY());
+                xOffset = localRobotPose.getY() - (FIELD_WIDTH - localAutoPose.getY());
             }
             //update values the robot is tracking to
-            m_drive.setAutoValues( getVelocity(),getHeading(), getAccel(), 2.0*xOffset,2.0*yOffset );
+            m_drive.setAutoValues( getVelocity(),getHeading(), getAccel(), xOffset, yOffset );
             prevVelocity = getVelocity();
             prevTime = timer.get();
             }
@@ -73,7 +74,7 @@ public class SwervePathFollowerStep extends AutoStep {
     }
 
     public double getVelocity(){
-        return mToIn * Math.hypot(pathtraj.sample(timer.get()).velocityX, pathtraj.sample(timer.get()).velocityY);
+        return M_TO_IN * Math.hypot(pathtraj.sample(timer.get()).velocityX, pathtraj.sample(timer.get()).velocityY);
     }
     public double getHeading(){
         if (isBlue) return ((-pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360; 
