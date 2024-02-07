@@ -70,7 +70,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private Timer autoTimer = new Timer();
 
     private WsVision limelight;
-    private LimeConsts LC;
 
     public enum driveType {TELEOP, AUTO, CROSS};
     public driveType driveState;
@@ -153,7 +152,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public void initInputs() {
-        LC = new LimeConsts();
+        limelight = (WsVision) Core.getSubsystemManager().getSubsystem("Ws Vision");
 
         leftStickX = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_JOYSTICK_X);
         leftStickX.addInputListener(this);
