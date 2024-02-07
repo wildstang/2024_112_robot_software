@@ -19,13 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class WsVision implements Subsystem {
 
-    public WsLL left = new WsLL("limelight-left");
-    public WsLL right = new WsLL("limelight-right");
-
-    public boolean gamepiece, isLow;
-
-    private DigitalInput rightBumper, leftBumper, high, mid, low;//, dup, ddown;
-
     public LimeConsts LC;
 
     public Optional<Alliance> station; 
@@ -242,31 +235,11 @@ public class WsVision implements Subsystem {
 
     @Override
     public void inputUpdate(Input source) {
-       /* if (rightBumper.getValue())
-        {
-            gamepiece = LC.CUBE;
-        }
-        if (leftBumper.getValue()){
-            gamepiece = LC.CONE;
-        }*/
-        if (source == low && low.getValue()) isLow = true;
-        if ((source == mid && mid.getValue()) || (source == high && high.getValue())) isLow = false;
     }
 
     @Override
     public void init() {
         LC = new LimeConsts();
-
-        rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_RIGHT_SHOULDER);
-        rightBumper.addInputListener(this);
-        leftBumper = (DigitalInput) WsInputs.OPERATOR_LEFT_SHOULDER.get();
-        leftBumper.addInputListener(this);
-        high = (DigitalInput) WsInputs.OPERATOR_FACE_UP.get();
-        high.addInputListener(this);
-        mid = (DigitalInput) WsInputs.OPERATOR_FACE_RIGHT.get();
-        mid.addInputListener(this);
-        low = (DigitalInput) WsInputs.OPERATOR_FACE_DOWN.get();
-        low.addInputListener(this);
 
         resetState();
     }
@@ -285,13 +258,6 @@ public class WsVision implements Subsystem {
 
     @Override
     public void resetState() {
-       // gamepiece = LC.CONE;
-        isLow = false;
-        left.update();
-        right.update();
-    }
-    public void setGamePiece(boolean newPiece){
-        gamepiece = newPiece;
     }
 
     @Override

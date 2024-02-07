@@ -17,12 +17,7 @@ public class SwerveSignal {
 
     /**ensures all speed values are below 1, and scales down if needed */
     public void normalize() {
-        maxSpeed = 1;
-        for (int i = 0; i < speed.length; i++){
-            if (Math.abs(speed[i]) > maxSpeed){
-                maxSpeed = Math.abs(speed[i]);
-            }
-        }
+        maxSpeed = getMaxSpeed();
         if (maxSpeed > 1.0){
             for (int i = 0; i < speed.length; i++){
                 speed[i] /= maxSpeed;
@@ -31,12 +26,7 @@ public class SwerveSignal {
     }
 
     public boolean isNotZeroed() {
-        maxSpeed = 0;
-        for (int i = 0; i < speed.length; i++){
-            if (Math.abs(speed[i]) > maxSpeed){
-                maxSpeed = Math.abs(speed[i]);
-            }
-        }
+        maxSpeed = getMaxSpeed();
         for (int i = 0; i < speed.length; i++){
             if (Math.abs(speed[i]) + 0.01 <= maxSpeed * 0.1){
                 return false;
@@ -58,6 +48,19 @@ public class SwerveSignal {
      */
     public double[] getSpeeds() {
         return speed;
+    }
+
+    /**returns max speed from the swerve signal
+     * @return maximum speed across all four modules
+     */
+    public double getMaxSpeed() {
+        double maxSpeed = 0.0;
+        for (int i = 0; i < speed.length; i++){
+            if (Math.abs(speed[i]) > maxSpeed){
+                maxSpeed = Math.abs(speed[i]);
+            }
+        }
+        return maxSpeed;
     }
 
     /**angle is robot centric, in bearing degrees 

@@ -79,13 +79,6 @@ public class WsLL {
         return tv>0;
     }
 
-    /*
-     * returns true if seeing a blue apriltag, false if a red one
-     */
-    public boolean isSeeingBlue(){
-        return tid > 4.5;
-    }
-
     public void updateDashboard(){
         SmartDashboard.putBoolean(CameraID + " tv", TargetInView());
         SmartDashboard.putNumber(CameraID + " tid", tid);
