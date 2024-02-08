@@ -17,6 +17,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
 import org.wildstang.framework.io.inputs.Input;
 
 public class WsVision implements Subsystem {
@@ -26,6 +27,8 @@ public class WsVision implements Subsystem {
     PhotonPoseEstimator photonPoseEstimator;
     public EstimatedRobotPose curPose;
     boolean hasTargets;
+    PhotonTrackedTarget target;
+    double yaw;
 
     @Override
     public void inputUpdate(Input source) {
@@ -52,23 +55,29 @@ public class WsVision implements Subsystem {
     @Override
     public void update() {
         var result = camera.getLatestResult();
-        SmartDashboard.putBoolean("hasTargets", result.hasTargets());
         hasTargets = result.hasTargets();
+        SmartDashboard.putBoolean("hasTargets", hasTargets);
 
         if(hasTargets) {
-            try{
-                curPose = photonPoseEstimator.update().get();
-                SmartDashboard.putNumber("pose", curPose.estimatedPose.getX());
-            } catch(NoSuchElementException e) {
-                SmartDashboard.putNumber("pose", 0);
+            target = result.getBestTarget();
+            yaw = target.getYaw();
+            SmartDashboard.putNumber("yaw", yaw);
+            curPose = photonPoseEstimator.update().orElse(null);
+            if(curPose != null){
+                double[] pose = {curPose.estimatedPose.getX(),curPose.estimatedPose.getY(),curPose.estimatedPose.getZ()};
+                SmartDashboard.putNumberArray("pose", pose);
             }
         } else {
             SmartDashboard.putNumber("pose", 0);
         }
     }
 
+    public double getYaw(){
+        return yaw;
+    }
+
     public void odometryUpdate(SwerveDrivePoseEstimator estimator) {
-        if(hasTargets){
+        if(curPose != null){
             estimator.addVisionMeasurement(curPose.estimatedPose.toPose2d(), curPose.timestampSeconds);
         }
     }
