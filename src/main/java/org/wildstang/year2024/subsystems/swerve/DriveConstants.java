@@ -41,13 +41,26 @@ public final class DriveConstants {
     public static double FIELD_WIDTH = 323.25; //INCHES
     public static double FIELD_LENGTH = 651.25; //INCHES
 
+
+
     /*Blank for now. Offset of climber which will assist in alligning the robot climber to the chain
      * With correct offset.
      */
     public double CLIMBER_OFFSET = 0; 
 
     public double CORE_OF_STAGE_TO_CHAIN = 16.625; //Inches
+
     
+    /*Blue Alliance Stage AprilTag Positions  [x,y]*/
+    public double[] tag16 = {182.73, 146.19};
+    public double[] tag15 = {182.73, 177.10};
+    public double[] tag14 = {209.48, 161.62};
+
+    /*Red Alliance Stage AprilTag Positions [x,y] */
+    public double[] tag13 = {441.74, 161.62};
+    public double[] tag12 = {468.69, 177.10};
+    public double[] tag11 = {468.69, 146.19};
+
 
 
 }

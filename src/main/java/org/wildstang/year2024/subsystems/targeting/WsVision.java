@@ -40,7 +40,7 @@ public class WsVision implements Subsystem {
     public EstimatedRobotPose curPose;
     boolean hasTargets;
 
-    public Optional<Alliance> station;
+    
 
    
     
