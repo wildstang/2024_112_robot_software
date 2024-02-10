@@ -4,11 +4,14 @@ import java.util.Hashtable;
 
 public class LimeConsts {
 
-    public double RED_SPEAKER_X = 104.83; //Inches
-    public double BLUE_SPEAKER_X = 218.42; //Inches
-    public int RADIUS_OF_AMP_TARGETING_ZONE = 49; //Inches
-    public double AMP_Y = 61.5; //Inches
     public double FIELD_WIDTH = 323.25; //INCHES
+    public double BLUE_SPEAKER_X = 36.125; //Inches
+    public double RED_SPEAKER_X = FIELD_WIDTH-BLUE_SPEAKER_X; //Inches
+    public double ALLIANCE_LENGTH = 118.25; // INCHES
+    public double CENTER_FIELD_LENGTH = FIELD_WIDTH-(ALLIANCE_LENGTH*2); // INCHES
+    public int RADIUS_OF_AMP_TARGETING_ZONE = 49; //Inches
+    public double AMP_X = 61.5; //Inches
+    
     public WsLL aprilTags;
     
     /*Blank for now. Offset of climber which will assist in alligning the robot climber to the chain

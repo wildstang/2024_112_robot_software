@@ -37,8 +37,9 @@ public final class DriveConstants {
     /**Swerve Module Names */
     public static final String[] POD_NAMES = new String[]{"FL", "FR", "BL", "BR"};
 
-    public static double AMP_Y = 61.5; //Inches
+    public static double AMP_Y = 323.125; //Inches
     public static double FIELD_WIDTH = 323.25; //INCHES
+    public static double FIELD_LENGTH = 651.25; //INCHES
 
     /*Blank for now. Offset of climber which will assist in alligning the robot climber to the chain
      * With correct offset.

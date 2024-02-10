@@ -77,8 +77,107 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public enum driveType {TELEOP, AUTO, CROSS, SPEAKER, AMP, STAGE};
     public driveType driveState;
 
+     // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
+     public double getAngleToSpeaker(){
+        double xPosition;
+        double yPosition;
+        double angleToSpeaker = 0;
 
+        if(poseEstimator.getEstimatedPosition().getX() < lc.ALLIANCE_LENGTH){
+            xPosition = lc.BLUE_SPEAKER_X - poseEstimator.getEstimatedPosition().getX();
+            yPosition = -poseEstimator.getEstimatedPosition().getY();
 
+            angleToSpeaker = Math.atan(xPosition/yPosition);
+            
+            
+        }else if(poseEstimator.getEstimatedPosition().getX() > (lc.ALLIANCE_LENGTH + lc.CENTER_FIELD_LENGTH)){
+            xPosition = poseEstimator.getEstimatedPosition().getX() - lc.RED_SPEAKER_X;
+            yPosition = -poseEstimator.getEstimatedPosition().getY();
+            
+            angleToSpeaker = Math.atan(xPosition/yPosition);
+        }
+        return angleToSpeaker;
+    }
+
+    // Get the distance the robot is from AMP within a 49 inch radius and return the angle and direction the robot needs to drive
+    public boolean isInAmpRadius(){
+
+        double ID = camera.getAprilID(); // ID of AprilTags
+        double robotDistance; // Distance of robot from AprilTag
+
+        // Red Alliance April Tag
+        if(ID == 5||ID == 6){
+            if(poseEstimator.getEstimatedPosition().getX() > (lc.ALLIANCE_LENGTH + lc.CENTER_FIELD_LENGTH)){
+                robotDistance = Math.sqrt((Math.pow((Math.pow((lc.AMP_X - poseEstimator.getEstimatedPosition().getX()),2)) + (-poseEstimator.getEstimatedPosition().getY()),2)));
+            }else if(poseEstimator.getEstimatedPosition().getX() < lc.ALLIANCE_LENGTH){
+                robotDistance = Math.sqrt((Math.pow((((lc.AMP_X+(lc.FIELD_WIDTH-(lc.AMP_X*2))) - poseEstimator.getEstimatedPosition().getX()),2))) + (Math.pow((-poseEstimator.getEstimatedPosition().getY()),2)));
+            }
+            
+            if(robotDistance <= lc.RADIUS_OF_AMP_TARGETING_ZONE){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    }
+
+    public double getDistanceToCenterOfChainPlusOffset(){
+        double robotDriveDistance;
+            double xPos = poseEstimator.getEstimatedPosition().getX();
+            double yPos = poseEstimator.getEstimatedPosition().getY();
+            double aprilTagX = left.getTagX();
+            double aprilTagY = left.getTagY();
+            double robotDistance = Math.sqrt(Math.pow(xPos - aprilTagX,2) + Math.pow(yPos - aprilTagY,2));
+            double angleAtAprilTag = 0;
+            robotDriveDistance = 
+                Math.sqrt((
+                    (Math.pow(
+                        (lc.CORE_OF_STAGE_TO_CHAIN + lc.CLIMBER_OFFSET),2)
+                    ) + 
+                    (Math.pow(robotDistance,2)) - (2*((lc.CORE_OF_STAGE_TO_CHAIN + lc.CLIMBER_OFFSET)))) * Math.cos(Math.toRadians(angleAtAprilTag)))
+        
+        return robotDriveDistance;
+        
+
+    }
+
+    public double[] FindThirdVertex(double sideA, double sideB, double sideC, double[] vertex1, double[] vertex2){
+        double angleA = Math.toDegrees(Math.acos(((sideB*sideB)+(sideC*sideC) - (sideA*sideA)) / (2*sideB*sideC))); // Degrees
+        
+        double directionX = Math.cos(Math.toRadians(angleA));
+        double directionY = Math.sin(Math.toRadians(angleA));
+
+        double thirdVertexX = vertex2[0] + sideA * directionX;
+        double thirdVertexY = vertex2[1] + sideA * directionY;
+
+        double[] thirdVertex = {thirdVertexX, thirdVertexY};
+
+        return thirdVertex;
+    
+    }
+
+    /*public double getPosX(){
+        if (station.orElse(null).equals(Alliance.Red)){
+            return (double)(left.red3D[0]);
+        }else if(station.orElse(null).equals(Alliance.Blue)){
+            return (double)(left.blue3D[0]);
+        }
+    }*/
+
+    /*public double getPosY(){
+        if (station.orElse(null).equals(Alliance.Red)){
+            return left.red3D[1];
+        }else if(station.orElse(null).equals(Alliance.Blue)){
+            return left.blue3D[1];
+        }
+
+    }*/
+
+    /*public double getDistanceFromAprilTag(){
+        return Math.sqrt(Math.pow(left.getTagX() - getPosX(),2) + Math.pow((left.getTagY() - getPosY()),2));
+    }
+*/
     @Override
     public void inputUpdate(Input source) {
 
@@ -246,7 +345,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         //Turn Robot Toward Speaker
         if(driveState == driveType.SPEAKER){
-            rotTarget = limelight.getAngleToSpeaker();
+            rotTarget = getAngleToSpeaker();
             rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
             this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
             SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
@@ -255,16 +354,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
         }
 
-        if(driveState == driveType.AMP && limelight.isInAmpRadius()){
+        if(driveState == driveType.AMP && isInAmpRadius()){
             double xSpeed,ySpeed;
 
-            ySpeed = (DriveConstants.AMP_Y - limelight.getPosY()) * DriveConstants.POS_P;
+            ySpeed = (DriveConstants.AMP_Y-poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
             
-            if(DriverStation.getAlliance().equals(Alliance.Blue)){
-                xSpeed = ((DriveConstants.FIELD_WIDTH - limelight.getPosX()) * DriveConstants.POS_P);
-                rotSpeed = swerveHelper.getRotControl(-90, getGyroAngle());
-            }else if(DriverStation.getAlliance().equals(Alliance.Red)){
-                xSpeed = ((0 - limelight.getPosX()) * DriveConstants.POS_P);
+            if(poseEstimator.getEstimatedPosition().getX() < lc.ALLIANCE_LENGTH){
+                xSpeed = ((lc.ALLIANCE_LENGTH - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
+                rotSpeed = swerveHelper.getRotControl(90, getGyroAngle());
+            }else if(poseEstimator.getEstimatedPosition().getX() > (lc.ALLIANCE_LENGTH + lc.CENTER_FIELD_LENGTH))){
+                xSpeed = ((DriveConstants.FIELD_LENGTH - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                 rotSpeed = swerveHelper.getRotControl(90, getGyroAngle());
             }
             this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
@@ -273,34 +372,34 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         if(driveState == driveType.STAGE){
             double xSpeed, ySpeed;
-            double robotDistanceToChain = limelight.getDistanceToCenterOfChainPlusOffset();
+            double robotDistanceToChain = getDistanceToCenterOfChainPlusOffset();
             if(DriverStation.getAlliance().equals(Alliance.Blue)){
                 if(limelight.left.getAprilID() == 16){
-                   ySpeed = (lc.Chain16Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
-                   xSpeed = ((lc.Chain16Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                   ySpeed = (lc.Chain16Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                   xSpeed = ((lc.Chain16Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                    rotSpeed = swerveHelper.getRotControl(-135, getGyroAngle());
                 }else if(limelight.left.getAprilID() == 15){
-                    ySpeed = (lc.Chain15Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
-                    xSpeed = ((lc.Chain15Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                    ySpeed = (lc.Chain15Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                    xSpeed = ((lc.Chain15Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                     rotSpeed = swerveHelper.getRotControl(135, getGyroAngle());
                 }else if(limelight.left.getAprilID() == 14){
-                    ySpeed = (lc.Chain14Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
-                    xSpeed = ((lc.Chain14Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                    ySpeed = (lc.Chain14Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                    xSpeed = ((lc.Chain14Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                     rotSpeed = swerveHelper.getRotControl(0, getGyroAngle());
                  }
             } else if(DriverStation.getAlliance().equals(Alliance.Red)){
                 if(limelight.left.getAprilID() == 13){
-                    ySpeed = (lc.Chain13Midpoint[1]- limelight.getPosY()) * DriveConstants.POS_P;
-                    xSpeed = ((lc.Chain13Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                    ySpeed = (lc.Chain13Midpoint[1]- poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                    xSpeed = ((lc.Chain13Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                     rotSpeed = swerveHelper.getRotControl(180, getGyroAngle());
                 }else if(limelight.left.getAprilID() == 12){
-                        ySpeed = (lc.Chain12Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
-                        xSpeed = ((lc.Chain12Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                        ySpeed = (lc.Chain12Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                        xSpeed = ((lc.Chain12Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                         rotSpeed = swerveHelper.getRotControl(45, getGyroAngle());
                 
                 }else if(limelight.left.getAprilID() == 11){
-                        ySpeed = (lc.Chain11Midpoint[1] - limelight.getPosY()) * DriveConstants.POS_P;
-                        xSpeed = ((lc.Chain11Midpoint[0] - limelight.getPosX()) * DriveConstants.POS_P);
+                        ySpeed = (lc.Chain11Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                        xSpeed = ((lc.Chain11Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                         rotSpeed = swerveHelper.getRotControl(-45, getGyroAngle());
                 }
             }
