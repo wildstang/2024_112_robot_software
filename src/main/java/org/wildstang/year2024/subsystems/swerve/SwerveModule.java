@@ -8,19 +8,18 @@ import org.wildstang.hardware.roborio.outputs.WsSpark;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 public class SwerveModule {
 
     private double target;
-    private double encoderTarget;
     private double drivePower;
     private double chassisOffset;
 
     private WsSpark driveMotor;
     private WsSpark angleMotor;
     private AbsoluteEncoder absEncoder;
+
+    private static final double inToM = 0.0254;
 
     /** Class: SwerveModule
      *  controls a single swerve pod, featuring two motors and one offboard sensor
@@ -42,11 +41,11 @@ public class SwerveModule {
         chassisOffset = offset;
         
         //set up angle and drive with pid and kpid respectively
-        driveMotor.initClosedLoop(DriveConstants.DRIVE_P, DriveConstants.DRIVE_I, DriveConstants.DRIVE_D, 0);
-        angleMotor.initClosedLoop(DriveConstants.ANGLE_P, DriveConstants.ANGLE_I, DriveConstants.ANGLE_D, 0, this.absEncoder);
+        driveMotor.initClosedLoop(ModuleConstants.DRIVE_P, ModuleConstants.DRIVE_I, ModuleConstants.DRIVE_D, 0);
+        angleMotor.initClosedLoop(ModuleConstants.ANGLE_P, ModuleConstants.ANGLE_I, ModuleConstants.ANGLE_D, 0, this.absEncoder);
 
-        driveMotor.setCurrentLimit(DriveConstants.DRIVE_CURRENT_LIMIT, DriveConstants.DRIVE_CURRENT_LIMIT, 0);
-        angleMotor.setCurrentLimit(DriveConstants.ANGLE_CURRENT_LIMIT, DriveConstants.ANGLE_CURRENT_LIMIT, 0);
+        driveMotor.setCurrentLimit(ModuleConstants.DRIVE_CURRENT_LIMIT, ModuleConstants.DRIVE_CURRENT_LIMIT, 0);
+        angleMotor.setCurrentLimit(ModuleConstants.ANGLE_CURRENT_LIMIT, ModuleConstants.ANGLE_CURRENT_LIMIT, 0);
 
     }
 
@@ -82,8 +81,7 @@ public class SwerveModule {
             driveMotor.setBrake();
         }
         else {
-            //driveMotor.setCoast();
-            driveMotor.setBrake();
+            driveMotor.setCoast();
         }
     }
 
@@ -137,7 +135,7 @@ public class SwerveModule {
      * @return double drive encoder distance in inches
     */
     public double getPosition() {
-        return driveMotor.getPosition() * DriveConstants.WHEEL_DIAMETER * Math.PI / DriveConstants.DRIVE_RATIO;
+        return driveMotor.getPosition() * ModuleConstants.WHEEL_DIAMETER * Math.PI / ModuleConstants.DRIVE_RATIO;
     }
 
     /**returns raw drive encoder value, rotations
@@ -159,6 +157,6 @@ public class SwerveModule {
         return driveMotor;
     }
     public SwerveModulePosition odoPosition(){
-        return new SwerveModulePosition(getPosition()*0.0254*0.98, new Rotation2d(Math.toRadians(360-getAngle())));
+        return new SwerveModulePosition(getPosition()*inToM, new Rotation2d(Math.toRadians(360-getAngle())));
     }
 }
