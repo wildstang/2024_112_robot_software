@@ -7,7 +7,7 @@ import org.wildstang.hardware.roborio.outputs.WsSpark;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 
-public class notepath implements Subsystem{
+public class Notepath implements Subsystem{
     private WsSpark intakeMotor;
     private WsSpark feedMotor;
     private double intakeMotorSpeed = 0;
