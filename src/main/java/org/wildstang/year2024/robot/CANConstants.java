@@ -28,7 +28,7 @@ public final class CANConstants {
     public static final int ANGLE4 = 18;
 
     //mechanism constants
-    public static final int SHOOTER_ANGLE1 = 21;
-    public static final int SHOOTER_ANGLE2 = 22;
+    public static final int SHOOTER_ANGLE1 = 20;
+    public static final int SHOOTER_ANGLE2 = 21;
     
 }

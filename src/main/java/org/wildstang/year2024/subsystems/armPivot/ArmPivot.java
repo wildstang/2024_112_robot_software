@@ -32,6 +32,7 @@ public class ArmPivot implements Subsystem {
     private WsSpark angleMotor2;
     private AbsoluteEncoder absEncoder;
     double goalPos = 0;
+    double error = 0;
 
     @Override
     public void inputUpdate(Input source) {
@@ -58,14 +59,20 @@ public class ArmPivot implements Subsystem {
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         // absEncoder.setInverted(true);
         absEncoder.setZeroOffset(ArmConstants.ZERO_OFFSET);
-        angleMotor1.initClosedLoop(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD, 0, absEncoder, false);
+        // angleMotor1.initClosedLoop(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD, 0, absEncoder, false);
     }
 
     @Override
     public void update() {
-        angleMotor1.setPosition(goalPos);
+        // angleMotor1.setPosition(goalPos);
+        // angleMotor2.setPosition(goalPos);
+        error = goalPos - getPosition();
+        angleMotor1.setSpeed(error*.1);
+        angleMotor2.setSpeed(error*.1);
+
         SmartDashboard.putNumber("goal position", goalPos);
         SmartDashboard.putNumber("shooter position", getPosition());
+        SmartDashboard.putNumber("shooter error", error);
     }
 
     @Override
