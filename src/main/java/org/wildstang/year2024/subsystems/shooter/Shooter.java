@@ -14,8 +14,8 @@ public class Shooter implements Subsystem {
     private WsSpark shooterMotor2;
     private double shooterSpeed = 0.5;
     private DigitalInput leftBumper;
-    private DigitalInput dpadUp;
-    private DigitalInput dpadDown;
+    private DigitalInput dpadRight;
+    private DigitalInput dpadLeft;
     private boolean leftBumperPressed = false;
 
     @Override
@@ -26,10 +26,10 @@ public class Shooter implements Subsystem {
         else{
             leftBumperPressed = false;
         }
-        if (source == dpadUp && dpadUp.getValue()){
+        if (source == dpadRight && dpadRight.getValue()){
             shooterSpeed += 0.05;
         }
-        if (source == dpadDown && dpadDown.getValue()){
+        if (source == dpadLeft && dpadLeft.getValue()){
             shooterSpeed -= 0.05;
         }
     }
@@ -41,10 +41,10 @@ public class Shooter implements Subsystem {
         leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
         leftBumper.addInputListener(this);
         //remember to add .addInputListener(this) for all inputs (including dpadUp and dpadDown)
-        dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
-        dpadUp.addInputListener(this);
-        dpadDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_DOWN);
-        dpadDown.addInputListener(this);
+        dpadRight = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_UP);
+        dpadRight.addInputListener(this);
+        dpadLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_DOWN);
+        dpadLeft.addInputListener(this);
 
 
     }
