@@ -28,7 +28,7 @@ public final class CANConstants {
     public static final int ANGLE4 = 18;
 
     // notepath motors
-    public static final int INTAKE = 25;
-    public static final int FEED = 26;
+    public static final int INTAKE = 22;
+    public static final int FEED = 23;
     
 }
