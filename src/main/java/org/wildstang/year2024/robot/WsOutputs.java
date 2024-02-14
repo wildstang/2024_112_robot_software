@@ -31,6 +31,8 @@ public enum WsOutputs implements Outputs {
     // Other Motors
     // ---------------------------------
 
+    SHOOTER_ANGLE("Shooter elevation motor", new WsSparkConfig(CANConstants.SHOOTER_ANGLE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+
     // ---------------------------------
     // Solenoids
     // ---------------------------------
