@@ -28,7 +28,8 @@ public class ArmPivot implements Subsystem {
 
     private DigitalInput angleUp;
     private DigitalInput angleDown;
-    private WsSpark motor;
+    private WsSpark angleMotor1;
+    private WsSpark angleMotor2;
     private AbsoluteEncoder absEncoder;
     double goalPos = 0;
 
@@ -48,19 +49,21 @@ public class ArmPivot implements Subsystem {
         angleUp.addInputListener(this);
         angleDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_DOWN);
         angleDown.addInputListener(this);
-        motor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE);
-        motor.setBrake();
-        absEncoder = motor.getController().getAbsoluteEncoder(Type.kDutyCycle);
+        angleMotor1 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE1);
+        angleMotor1.setBrake();
+        angleMotor2 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE2);
+        angleMotor2.setBrake();
+        absEncoder = angleMotor1.getController().getAbsoluteEncoder(Type.kDutyCycle);
         absEncoder.setPositionConversionFactor(360.0);
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         // absEncoder.setInverted(true);
         absEncoder.setZeroOffset(ArmConstants.ZERO_OFFSET);
-        motor.initClosedLoop(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD, 0, absEncoder, false);
+        angleMotor1.initClosedLoop(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD, 0, absEncoder, false);
     }
 
     @Override
     public void update() {
-        motor.setPosition(goalPos);
+        angleMotor1.setPosition(goalPos);
         SmartDashboard.putNumber("goal position", goalPos);
         SmartDashboard.putNumber("shooter position", getPosition());
     }
