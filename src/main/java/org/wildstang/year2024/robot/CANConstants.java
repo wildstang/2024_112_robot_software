@@ -27,12 +27,12 @@ public final class CANConstants {
     public static final int DRIVE4 = 17;
     public static final int ANGLE4 = 18;
 
+    // notepath motors
+    public static final int INTAKE = 19;
+    public static final int FEED = 22;
+
     // shooter constants
     public static final int SHOOTER1 = 23;
     public static final int SHOOTER2 = 24;
-
-    // notepath motors
-    public static final int INTAKE = 22;
-    public static final int FEED = 23;
     
 }

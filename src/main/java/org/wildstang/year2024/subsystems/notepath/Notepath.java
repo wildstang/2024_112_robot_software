@@ -20,12 +20,12 @@ public class Notepath implements Subsystem{
         //it wasn't listed originally, but it might be good to add another button that would run
         //the feed and intake backwards, in case it's needed for testing
         if (aButton.getValue()){
-            feedMotorSpeed = 1;
-            intakeMotorSpeed = 1;
+            feedMotorSpeed = -0.25;
+            intakeMotorSpeed = 0.5;
         }
         else if (bButton.getValue()){
-            feedMotorSpeed = -1;
-            intakeMotorSpeed = -1;
+            feedMotorSpeed = 0.25;
+            intakeMotorSpeed = -0.5;
         }
         else{
             feedMotorSpeed = 0;
@@ -38,9 +38,9 @@ public class Notepath implements Subsystem{
     public void init() {
         intakeMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.INTAKE);
         feedMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.FEED);
-        aButton = (DigitalInput) WsInputs.OPERATOR_FACE_DOWN.get();
+        aButton = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
         aButton.addInputListener(this);
-        bButton = (DigitalInput) WsInputs.OPERATOR_FACE_RIGHT.get();
+        bButton = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_DOWN);
         bButton.addInputListener(this);
 
     }

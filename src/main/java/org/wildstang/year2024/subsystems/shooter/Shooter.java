@@ -16,15 +16,15 @@ public class Shooter implements Subsystem {
     private DigitalInput leftBumper;
     private DigitalInput dpadRight;
     private DigitalInput dpadLeft;
-    private boolean leftBumperPressed = false;
+    private boolean shooterEnable = false;
 
     @Override
     public void inputUpdate(Input source) {
         if (source == leftBumper && leftBumper.getValue()){
-            leftBumperPressed = true;
+            shooterEnable = true;
         }
         else{
-            leftBumperPressed = false;
+            shooterEnable = false;
         }
         if (source == dpadRight && dpadRight.getValue()){
             shooterSpeed += 0.05;
@@ -38,14 +38,13 @@ public class Shooter implements Subsystem {
     public void init() {
         shooterMotor1 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER1);
         shooterMotor2 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER2);
+
         leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
         leftBumper.addInputListener(this);
-        //remember to add .addInputListener(this) for all inputs (including dpadUp and dpadDown)
-        dpadRight = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_UP);
+        dpadRight = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_RIGHT);
         dpadRight.addInputListener(this);
-        dpadLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_DOWN);
+        dpadLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_LEFT);
         dpadLeft.addInputListener(this);
-
 
     }
 
@@ -55,9 +54,9 @@ public class Shooter implements Subsystem {
 
     @Override
     public void update() {
-        if (leftBumperPressed){
+        if (shooterEnable){
             shooterMotor1.setSpeed(shooterSpeed);
-            shooterMotor2.setSpeed(shooterSpeed);
+            shooterMotor2.setSpeed(-shooterSpeed);
         }
         //you can use else instead of this
         else{
@@ -70,7 +69,7 @@ public class Shooter implements Subsystem {
     
     public void setShooterSpeed(double speed){
         shooterSpeed = speed;
-        leftBumperPressed = true;
+        shooterEnable = true;
     }
 
     @Override
