@@ -72,7 +72,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WsSwerveHelper swerveHelper = new WsSwerveHelper();
     private SwerveDrivePoseEstimator poseEstimator;
     private Timer autoTimer = new Timer();
-    public Optional<Alliance> station;
+public Optional<Alliance> station;
 
     private WsVision limelight;
     private LimeConsts lc;
@@ -142,6 +142,24 @@ public class SwerveDrive extends SwerveDriveTemplate {
         return angleToSpeaker;
     }
 
+     //blue is true and red is falase
+     public double getDistanceFromSpeaker(){
+        double xDifference = 0;
+        Pose2d fieldPose = returnPose();
+        double yDifference = lc.SPEAKER_Y - fieldPose.getY();
+        if(DriverStation.getAlliance().equals(Alliance.Blue)){
+            xDifference = lc.BLUE_SPEAKER_X - fieldPose.getX();
+        }
+        else if (DriverStation.getAlliance().equals(Alliance.Red)){
+            xDifference = lc.RED_SPEAKER_X - fieldPose.getX();
+        }
+        double distance = Math.sqrt(yDifference * yDifference + xDifference * xDifference);
+        return distance;
+
+    }
+
+
+
     // Get the distance the robot is from AMP within a 49 inch radius and return the angle and direction the robot needs to drive
     public boolean isInAmpRadius(){
 
@@ -150,17 +168,17 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
         // Red Alliance April Tag
         if(station.orElse(null).equals(Alliance.Blue)){
-            robotDistance = Math.sqrt((Math.pow((Math.pow((lc.AMP_X - poseEstimator.getEstimatedPosition().getX()),2)) + (-poseEstimator.getEstimatedPosition().getY()),2)));
-        }else{
-            robotDistance = Math.sqrt((Math.pow(((lc.AMP_X+(lc.FIELD_WIDTH-(lc.AMP_X*2))) - poseEstimator.getEstimatedPosition().getX()),2))) + (Math.pow((-poseEstimator.getEstimatedPosition().getY()),2));
-        }
-        
-        if(robotDistance <= lc.RADIUS_OF_AMP_TARGETING_ZONE){
-            return true;
-        }else{
-            return false;
-        }
-        
+                robotDistance = Math.sqrt((Math.pow((Math.pow((lc.AMP_X - poseEstimator.getEstimatedPosition().getX()),2)) + (-poseEstimator.getEstimatedPosition().getY()),2)));
+            }else{
+                robotDistance = Math.sqrt((Math.pow(((lc.AMP_X+(lc.FIELD_WIDTH-(lc.AMP_X*2))) - poseEstimator.getEstimatedPosition().getX()),2))) + (Math.pow((-poseEstimator.getEstimatedPosition().getY()),2));
+            }
+            
+            if(robotDistance <= lc.RADIUS_OF_AMP_TARGETING_ZONE){
+                return true;
+            }else{
+                return false;
+                    }
+
 
     }
 
@@ -202,9 +220,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public double getPosX(){
         return (double)(poseEstimator.getEstimatedPosition().getX());
     }
-
+    
     public double getPosY(){
-         return (double)(poseEstimator.getEstimatedPosition().getY());
+        return (double)(poseEstimator.getEstimatedPosition().getY());
     }
 
     public double getDistanceFromPose(Pose2d goalPose){

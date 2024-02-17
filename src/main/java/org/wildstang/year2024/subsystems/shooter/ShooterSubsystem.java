@@ -1,4 +1,4 @@
-package org.wildstang.year2024.subsystems.shooting;
+package org.wildstang.year2024.subsystems.shooter;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
@@ -36,7 +36,8 @@ public class ShooterSubsystem implements Subsystem{
     public DigitalInput shootButton;
     public double motorAngle;
     public AbsoluteEncoder absEncoder;
-    public SwerveDrive swerveDrive;
+    public SwerveDrive drive;
+
     
 
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
@@ -82,7 +83,7 @@ public class ShooterSubsystem implements Subsystem{
     @Override
     public void inputUpdate(Input source) {
         if(shootButton.getValue()){
-            //robotDistance = limelight.getDistanceFromAprilTag();
+            robotDistance = drive.getDistanceFromSpeaker();
             setShooterSpeed(true, robotDistance);
             
         }else if(!shootButton.getValue()){
@@ -100,6 +101,7 @@ public class ShooterSubsystem implements Subsystem{
         shooterMotor.setCurrentLimit(50,50,0);
         angleMotor = (WsSpark) WsOutputs.SHOOTERANGLE.get();
         angleMotor.setCurrentLimit(50,50,0);
+        drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
     }
 
     @Override
