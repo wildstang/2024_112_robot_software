@@ -1,4 +1,4 @@
-package org.wildstang.year2024.subsystems;
+package org.wildstang.year2024.subsystems.shooting;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;

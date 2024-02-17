@@ -80,6 +80,22 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public enum driveType {TELEOP, AUTO, CROSS, SPEAKER, AMP, STAGE};
     public driveType driveState;
 
+
+    public double[] getClosestChain(){
+        double robotX = getPosX();
+        double robotY = getPosY();
+        if(station.orElse(null).equals(Alliance.Blue)){
+            double distanceFromTag13 = distanceFrom(robotX, DriveConstants.tag13[0], robotY, DriveConstants.tag13[1]);
+            double distanceFromTag12 = distanceFrom(robotX, DriveConstants.tag12[0], robotY, DriveConstants.tag12[1]);
+            double distanceFromTag11 = distanceFrom(robotX, DriveConstants.tag11[0], robotY, DriveConstants.tag11[1]);
+        }
+        return new double[]{0,0};
+    }
+
+    public double distanceFrom(double x1, double x2, double y1, double y2){
+        return (double)(Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2)));
+    }
+
      // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
      public double getAngleToSpeaker(){
         double xPosition;
@@ -309,7 +325,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     public double[] findClosestAprilTag(){
         if(station.orElse(null).equals(Alliance.Blue)){
-            double rPosX = getPosX();
+            double rPosX = getPosX()
             double rPosY = getPosY();
             for(int i = 0; i < 3; i++){
                 
@@ -381,9 +397,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();
         }
         if(driveState == driveType.STAGE){
-            double xSpeed, ySpeed;
+            double robotX = getPosX();
+            double robotY = getPosY();
             //double robotDistanceToChain = getDistanceToCenterOfChainPlusOffset();
-            if(DriverStation.getAlliance().equals(Alliance.Blue)){
+            /*if(DriverStation.getAlliance().equals(Alliance.Blue)){
                 if(limelight.left.getAprilID() == 16){
                    ySpeed = (lc.Chain16Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
                    xSpeed = ((lc.Chain16Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
@@ -412,7 +429,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
                         xSpeed = ((lc.Chain11Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                         rotSpeed = swerveHelper.getRotControl(-45, getGyroAngle());
                 }
-            }
+            }*/
+
         }
         
         this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());

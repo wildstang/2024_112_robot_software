@@ -52,14 +52,14 @@ public final class DriveConstants {
 
     
     /*Blue Alliance Stage AprilTag Positions  [x,y]*/
-    public double[] tag16 = {182.73, 146.19};
-    public double[] tag15 = {182.73, 177.10};
-    public double[] tag14 = {209.48, 161.62};
+    public static double[] tag16 = {182.73, 146.19};
+    public static double[] tag15 = {182.73, 177.10};
+    public static double[] tag14 = {209.48, 161.62};
 
     /*Red Alliance Stage AprilTag Positions [x,y] */
-    public double[] tag13 = {441.74, 161.62};
-    public double[] tag12 = {468.69, 177.10};
-    public double[] tag11 = {468.69, 146.19};
+    public static double[] tag13 = {441.74, 161.62};
+    public static double[] tag12 = {468.69, 177.10};
+    public static double[] tag11 = {468.69, 146.19};
 
 
 

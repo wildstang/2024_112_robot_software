@@ -39,6 +39,7 @@ public class WsVision implements Subsystem {
     PhotonPoseEstimator photonPoseEstimator;
     public EstimatedRobotPose curPose;
     boolean hasTargets;
+    public Optional<Alliance> station;
 
     
 

@@ -2,6 +2,8 @@ package org.wildstang.year2024.subsystems.targeting;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.wildstang.year2024.subsystems.swerve.DriveConstants;
+
 public class LimeConsts {
 
     public double FIELD_WIDTH = 323.25; //INCHES
@@ -21,9 +23,9 @@ public class LimeConsts {
 
     public double CORE_OF_STAGE_TO_CHAIN = 16.625; //Inches
 
-    public double[] Chain14Midpoint = {aprilTags.getTagX(), aprilTags.getTagY() + CORE_OF_STAGE_TO_CHAIN};
-    public double[] Chain15Midpoint = {aprilTags.getTagX()+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() + (CORE_OF_STAGE_TO_CHAIN/2)};
-    public double[] Chain16Midpoint = {aprilTags.getTagX()-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() - (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain14Midpoint = {DriveConstants.tag14[0], DriveConstants.tag14[1] + CORE_OF_STAGE_TO_CHAIN};
+    public double[] Chain15Midpoint = {DriveConstants.tag15[0]+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), DriveConstants.tag15[1] + (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain16Midpoint = {DriveConstants.tag16[0]-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), DriveConstants.tag16[1] - (CORE_OF_STAGE_TO_CHAIN/2)};
     public double[] Chain13Midpoint = {aprilTags.getTagX(), aprilTags.getTagY() + CORE_OF_STAGE_TO_CHAIN};
     public double[] Chain11Midpoint = {aprilTags.getTagX()+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() + (CORE_OF_STAGE_TO_CHAIN/2)};
     public double[] Chain12Midpoint = {aprilTags.getTagX()-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() - (CORE_OF_STAGE_TO_CHAIN/2)};
