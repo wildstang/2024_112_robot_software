@@ -68,27 +68,28 @@ public class ShooterSubsystem implements Subsystem{
             * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
     }
 
-   /*  public double setAngle(double targetAngle){
-        //double currentAngle = shooterMotor.getPosition();
-        angleMotor.setPosition(targetAngle);
-
-
-
-
-    }*/
-
-
+   public void setShooterSpeed(boolean shootAllowed, double robotDistance){
+        if (shootAllowed){
+            motorSpeed = getSpeed(robotDistance);
+            motorAngle = getAngle(robotDistance);
+        }
+        else{
+           motorSpeed = 0;
+            motorAngle = 0; 
+        }
+   }
 
     @Override
     public void inputUpdate(Input source) {
         if(shootButton.getValue()){
-            //robotDistance =
+         
             motorSpeed = getSpeed(robotDistance);
             motorAngle = getAngle(robotDistance);
+            //robotDistance = limelight.getDistanceFromAprilTag();
+            setShooterSpeed(true, robotDistance);
             
         }else if(!shootButton.getValue()){
-            motorSpeed = 0;
-            motorAngle = 0;
+            setShooterSpeed(false,robotDistance);
         }
     }
 
