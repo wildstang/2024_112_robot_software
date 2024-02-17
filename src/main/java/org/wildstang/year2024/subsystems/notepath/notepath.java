@@ -19,22 +19,20 @@ public class notepath implements Subsystem{
 
     @Override
     public void inputUpdate(Input source) {
-        //it wasn't listed originally, but it might be good to add another button that would run
-        //the feed and intake backwards, in case it's needed for testing
+        //aButton is for intake and feed on and sets both motor speeds to 1
         if (aButton.getValue() && beamBreakSensor.getValue() == false){
-            feedMotorSpeed = 1;
-            intakeMotorSpeed = 1;
+            setNotepathSpeed(true, true);
         }
         else if (rightTrigger.getValue() && beamBreakSensor.getValue()){
             feedMotorSpeed = 1;
         }
+        //bButton reverses speed and sets both motor speeds to -1
         else if (bButton.getValue()){
-            feedMotorSpeed = -1;
-            intakeMotorSpeed = -1;
+            setNotepathSpeed(false,false);
         }
+        //sets both motor speeds to 0
         else{
-            feedMotorSpeed = 0;
-            intakeMotorSpeed = 0;
+            setNotepathSpeed(true, false);
         }
         
     }
@@ -72,6 +70,20 @@ public class notepath implements Subsystem{
     public String getName() {
         //make sure to put a string name for the system here
         return "notepath";
+    }
+    public void setNotepathSpeed(boolean speedForward, boolean speedBackwards){
+        if (speedForward == true && speedBackwards == false){
+            feedMotorSpeed = 1;
+            intakeMotorSpeed = 1;
+        }
+        else if (speedForward == false && speedBackwards == false){
+            feedMotorSpeed = -1;
+            intakeMotorSpeed = -1;
+        }
+        else{
+            feedMotorSpeed = 0;
+            intakeMotorSpeed = 0;
+        }
     }
 
 
