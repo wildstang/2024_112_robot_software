@@ -81,18 +81,42 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public driveType driveState;
 
 
-    public double[] getClosestChain(){
+    public String getClosestChain(){
         double robotX = getPosX();
         double robotY = getPosY();
-        if(station.orElse(null).equals(Alliance.Blue)){
+        if(station.orElse(null).equals(Alliance.Red)){
             double distanceFromTag13 = distanceFrom(robotX, DriveConstants.tag13[0], robotY, DriveConstants.tag13[1]);
             double distanceFromTag12 = distanceFrom(robotX, DriveConstants.tag12[0], robotY, DriveConstants.tag12[1]);
             double distanceFromTag11 = distanceFrom(robotX, DriveConstants.tag11[0], robotY, DriveConstants.tag11[1]);
+            double smallest = Math.min(Math.min(distanceFromTag13, distanceFromTag12), distanceFromTag11);
+
+            if(smallest == distanceFromTag11){
+                return "tag11";
+            }else if(smallest == distanceFromTag12){
+                return "tag12";
+            }else if(smallest == distanceFromTag13){
+                return "tag13";
+            }
+            
+        }else if(station.orElse(null).equals(Alliance.Blue)){
+            double distanceFromTag16 = distanceFrom(robotX,DriveConstants.tag16[0],robotY, DriveConstants.tag16[1]);
+            double distanceFromTag15 = distanceFrom(robotX,DriveConstants.tag15[0],robotY, DriveConstants.tag15[1]);
+            double distanceFromTag14 = distanceFrom(robotX,DriveConstants.tag14[0],robotY, DriveConstants.tag14[1]);
+            double smallest = Math.min(Math.min(distanceFromTag16, distanceFromTag15), distanceFromTag14);
+
+            if(smallest == distanceFromTag16){
+                return "tag16";
+            }else if(smallest == distanceFromTag15){
+                return "tag15";
+            }else if(smallest == distanceFromTag14){
+                return "tag14";
+            }
         }
-        return new double[]{0,0};
+            
+        return "none";
     }
 
-    public double distanceFrom(double x1, double x2, double y1, double y2){
+    public static double distanceFrom(double x1, double x2, double y1, double y2){
         return (double)(Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2)));
     }
 
@@ -323,23 +347,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void selfTest() {
     }
 
-    public double[] findClosestAprilTag(){
-        if(station.orElse(null).equals(Alliance.Blue)){
-            double rPosX = getPosX()
-            double rPosY = getPosY();
-            for(int i = 0; i < 3; i++){
-                
-            }
-
-
-        }else if(station.orElse(null).equals(Alliance.Red)){
-
-
-        }
-    }
-
-
-
     @Override
     public void update() {
         poseEstimator.update(odoAngle(), odoPosition());
@@ -381,14 +388,15 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
 
         if(driveState == driveType.AMP && isInAmpRadius()){
-            double xSpeed,ySpeed;
+            double xSpeed = 0;
+            double ySpeed = 0;
 
             ySpeed = (DriveConstants.AMP_Y-poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
             
             if(poseEstimator.getEstimatedPosition().getX() < lc.ALLIANCE_LENGTH){
                 xSpeed = ((lc.ALLIANCE_LENGTH - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                 rotSpeed = swerveHelper.getRotControl(90, getGyroAngle());
-            }else if(poseEstimator.getEstimatedPosition().getX() > (lc.ALLIANCE_LENGTH + lc.CENTER_FIELD_LENGTH))){
+            }else if(poseEstimator.getEstimatedPosition().getX() > (lc.ALLIANCE_LENGTH + lc.CENTER_FIELD_LENGTH)){
                 xSpeed = ((DriveConstants.FIELD_LENGTH - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                 rotSpeed = swerveHelper.getRotControl(90, getGyroAngle());
             }
@@ -397,8 +405,40 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();
         }
         if(driveState == driveType.STAGE){
-            double robotX = getPosX();
-            double robotY = getPosY();
+            double ySpeed;
+            double xSpeed;
+            String closestTag = getClosestChain();
+
+            if(station.orElse(null).equals(Alliance.Blue)){
+                if(closestTag.equals("tag16")) {
+                   ySpeed = (lc.Chain16Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                   xSpeed = ((lc.Chain16Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
+                   rotSpeed = swerveHelper.getRotControl(-135, getGyroAngle());
+                }else if(closestTag.equals("tag15")){
+                   ySpeed = (lc.Chain15Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                   xSpeed = ((lc.Chain15Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
+                   rotSpeed = swerveHelper.getRotControl(135, getGyroAngle());
+                }else if(closestTag.equals("tag14")){
+                   ySpeed = (lc.Chain14Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                   xSpeed = ((lc.Chain14Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
+                   rotSpeed = swerveHelper.getRotControl(0, getGyroAngle());
+                }
+            }else if(station.orElse(null).equals(Alliance.Red)){
+                if(closestTag.equals("tag13")) {
+                   ySpeed = (lc.Chain13Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                   xSpeed = ((lc.Chain13Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
+                   rotSpeed = swerveHelper.getRotControl(180, getGyroAngle());
+                }else if(closestTag.equals("tag12")){
+                   ySpeed = (lc.Chain12Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                   xSpeed = ((lc.Chain12Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
+                   rotSpeed = swerveHelper.getRotControl(45, getGyroAngle());
+                }else if(closestTag.equals("tag11")){
+                   ySpeed = (lc.Chain11Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
+                   xSpeed = ((lc.Chain11Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
+                   rotSpeed = swerveHelper.getRotControl(-45, getGyroAngle());
+                }
+            }
+
             //double robotDistanceToChain = getDistanceToCenterOfChainPlusOffset();
             /*if(DriverStation.getAlliance().equals(Alliance.Blue)){
                 if(limelight.left.getAprilID() == 16){

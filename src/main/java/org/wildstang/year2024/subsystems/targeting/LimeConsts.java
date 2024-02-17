@@ -26,8 +26,8 @@ public class LimeConsts {
     public double[] Chain14Midpoint = {DriveConstants.tag14[0], DriveConstants.tag14[1] + CORE_OF_STAGE_TO_CHAIN};
     public double[] Chain15Midpoint = {DriveConstants.tag15[0]+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), DriveConstants.tag15[1] + (CORE_OF_STAGE_TO_CHAIN/2)};
     public double[] Chain16Midpoint = {DriveConstants.tag16[0]-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), DriveConstants.tag16[1] - (CORE_OF_STAGE_TO_CHAIN/2)};
-    public double[] Chain13Midpoint = {aprilTags.getTagX(), aprilTags.getTagY() + CORE_OF_STAGE_TO_CHAIN};
-    public double[] Chain11Midpoint = {aprilTags.getTagX()+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() + (CORE_OF_STAGE_TO_CHAIN/2)};
-    public double[] Chain12Midpoint = {aprilTags.getTagX()-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), aprilTags.getTagY() - (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain13Midpoint = {DriveConstants.tag13[0], DriveConstants.tag14[1] + CORE_OF_STAGE_TO_CHAIN};
+    public double[] Chain11Midpoint = {DriveConstants.tag11[0]+((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), DriveConstants.tag11[1] + (CORE_OF_STAGE_TO_CHAIN/2)};
+    public double[] Chain12Midpoint = {DriveConstants.tag12[0]-((CORE_OF_STAGE_TO_CHAIN/2)*Math.sqrt(3)), DriveConstants.tag12[1] - (CORE_OF_STAGE_TO_CHAIN/2)};
     
 }

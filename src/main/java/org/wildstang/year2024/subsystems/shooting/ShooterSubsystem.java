@@ -13,6 +13,7 @@ import org.wildstang.year2024.robot.WsSubsystems;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
+import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 import org.wildstang.year2024.subsystems.targeting.WsVision;
 
 public class ShooterSubsystem implements Subsystem{
@@ -35,6 +36,7 @@ public class ShooterSubsystem implements Subsystem{
     public DigitalInput shootButton;
     public double motorAngle;
     public AbsoluteEncoder absEncoder;
+    public SwerveDrive swerveDrive;
     
 
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
@@ -80,7 +82,7 @@ public class ShooterSubsystem implements Subsystem{
     @Override
     public void inputUpdate(Input source) {
         if(shootButton.getValue()){
-            robotDistance = limelight.getDistanceFromAprilTag();
+            //robotDistance =
             motorSpeed = getSpeed(robotDistance);
             motorAngle = getAngle(robotDistance);
             
