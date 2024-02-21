@@ -32,7 +32,7 @@ public class intakeNoteStep extends AutoStep{
         }
         else{
             //Sets the feed and motor speeds to 0
-            notepath.setNotepathSpeed(true,false);
+            notepath.setNotepathSpeed(false,true);
         }
         setFinished();
     }

@@ -2,11 +2,9 @@ package org.wildstang.year2024.subsystems.shooter;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.outputs.WsSpark;
-import org.wildstang.year2024.robot.CANConstants;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 import org.wildstang.year2024.robot.WsSubsystems;
@@ -37,8 +35,9 @@ public class ShooterSubsystem implements Subsystem{
     public double motorAngle;
     public AbsoluteEncoder absEncoder;
     public SwerveDrive drive;
+    private double velocityDifference;
+    private double angleDifference;
 
-    
 
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
@@ -48,7 +47,7 @@ public class ShooterSubsystem implements Subsystem{
 
     public int[] indexes = new int[2];
 
-    public double getSpeed(double distance){
+    public double getTargetSpeed(double distance){
         for(int i = 0; i < distanceMarks.length; i++){
             if((distance >= distanceMarks[i]) && (distance >= distanceMarks[i+1])){
                 indexes[0] = i;
@@ -63,31 +62,53 @@ public class ShooterSubsystem implements Subsystem{
 
 
     }
-
-    public double getAngle(double distance){
+    public double getTargetAngle(double distance){
         return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
             * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
     }
 
-   public void setShooterSpeed(boolean shootAllowed, double robotDistance){
+   public void setShooterTarget(boolean shootAllowed, double robotDistance){
         if (shootAllowed){
-            motorSpeed = getSpeed(robotDistance);
-            motorAngle = getAngle(robotDistance);
+            motorSpeed = getTargetSpeed(robotDistance);
+            motorAngle = getTargetAngle(robotDistance);
         }
         else{
            motorSpeed = 0;
             motorAngle = 0; 
         }
    }
+   public boolean velocityAtTarget(){
+    double currentVelocity1 = shooterMotor.getVelocity();
+    robotDistance = drive.getDistanceFromSpeaker();
+    double velocityNeeded1 = getTargetSpeed(robotDistance);
+    if (Math.abs(velocityNeeded1 - currentVelocity1) < velocityDifference){
+        return true;
+    }
+    else{
+        return false;
+    }
+   }
+   
+   public boolean angleAtTarget(){
+    double currentAngle = angleMotor.getPosition();
+    robotDistance = drive.getDistanceFromSpeaker();
+    double angleNeeded = getTargetAngle(robotDistance);
+    if (Math.abs(angleNeeded-currentAngle) < angleDifference){
+        return true;
+    }
+    else{
+        return false;
+    }
+   }
 
     @Override
     public void inputUpdate(Input source) {
         if(shootButton.getValue()){
             robotDistance = drive.getDistanceFromSpeaker();
-            setShooterSpeed(true, robotDistance);
+            setShooterTarget(true, robotDistance);
             
         }else if(!shootButton.getValue()){
-            setShooterSpeed(false,robotDistance);
+            setShooterTarget(false,robotDistance);
         }
     }
 
@@ -112,6 +133,7 @@ public class ShooterSubsystem implements Subsystem{
 
 
     }
+
 
     
     @Override

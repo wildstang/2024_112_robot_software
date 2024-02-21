@@ -32,7 +32,7 @@ public class notepath implements Subsystem{
         }
         //sets both motor speeds to 0
         else{
-            setNotepathSpeed(true, false);
+            setNotepathSpeed(false,  true);
         }
         
     }
@@ -79,6 +79,9 @@ public class notepath implements Subsystem{
         else if (speedForward == false && speedBackwards == false){
             feedMotorSpeed = -1;
             intakeMotorSpeed = -1;
+        }
+        else if (speedForward == false && speedBackwards == true){
+            feedMotorSpeed = 1;
         }
         else{
             feedMotorSpeed = 0;
