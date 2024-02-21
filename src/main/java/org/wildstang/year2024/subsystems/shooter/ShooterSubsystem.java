@@ -79,7 +79,7 @@ public class ShooterSubsystem implements Subsystem{
    public void setShooterSpeed(boolean shootAllowed, double robotDistance){
         if (shootAllowed){
             leftMotorSpeed = getSpeed(robotDistance);
-            rightMotorSpeed = getSpeed(robotDistance);
+            rightMotorSpeed = -getSpeed(robotDistance);
             leftMotorAngle = getAngle(robotDistance);
             rightMotorAngle = -getAngle(robotDistance);
         }
@@ -136,8 +136,8 @@ public class ShooterSubsystem implements Subsystem{
         while(rightBumperShootButton.getValue()){
             setShooterSpeed(true, robot_Distance);
             rightShooterMotor.setSpeed(rightMotorSpeed);
-            leftShooterMotor.setSpeed(leftMotorSpeed);
-            leftAngleMotor.setPosition(leftMotorAngle);
+            leftShooterMotor.setSpeed(-leftMotorSpeed);
+            leftAngleMotor.setPosition(-leftMotorAngle);
             rightAngleMotor.setPosition(rightMotorAngle);
         }
         if(!rightBumperShootButton.getValue()){
