@@ -26,7 +26,10 @@ public final class CANConstants {
     public static final int ANGLE3 = 16;
     public static final int DRIVE4 = 17;
     public static final int ANGLE4 = 18;
-    public static final int SHOOTERANGLE = 0; //Not assigned yet
-    public static final int SHOOTERSPEED = 0; //Not assigned yet
+    public static final int LEFTSHOOTERANGLE = 21; 
+    public static final int RIGHTSHOOTERANGLE = 20;
+    public static final int LEFTSHOOTERSPEED = 23; 
+    public static final int RIGHTSHOOTERSPEED = 24;
+    public static final int SHOOTERFEEDMOTOR = 22;
     
 }
