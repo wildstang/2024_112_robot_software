@@ -6,40 +6,44 @@ import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.outputs.WsSpark;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
-import org.wildstang.year2024.robot.WsInputs;
 
 public class AmpHood implements Subsystem{
-    private DigitalInput aButton;
+    private DigitalInput dpadUp;
     private WsSpark ampHoodMotor; 
     private double initialEncoderPosition;
-    private double ampHoodSpeed;
+    private final double ampHoodSpeed = 0.5;
+    private boolean retract;
 
     @Override
     public void init() {
-        aButton = (DigitalInput) WsInputs.OPERATOR_FACE_DOWN.get();
-        aButton.addInputListener(this);
-        ampHoodMotor =  (WsSpark) WsOutputs.AMPHOOD.get();
+        dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
+        dpadUp.addInputListener(this);
+        ampHoodMotor =  (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
         initialEncoderPosition = ampHoodMotor.getPosition();
-        ampHoodSpeed = 0; 
+        retract = true;
     }
 
    
 
     @Override
     public void update() {
-        ampHoodMotor.setSpeed(ampHoodSpeed);
+        if (!retract){
+            ampHoodMotor.setSpeed(ampHoodSpeed);
+        } 
+       else if (Math.abs(ampHoodMotor.getPosition()-initialEncoderPosition) < 0.1){
+            ampHoodMotor.setSpeed(-ampHoodSpeed);
+       } else {
+        ampHoodMotor.setSpeed(0);
+       }
     }
 
     @Override
     public void inputUpdate(Input source) {
-       if (aButton.getValue()){
-        ampHoodSpeed = 0.5;
-       }
-       else if (ampHoodMotor.getPosition() > initialEncoderPosition){
-            ampHoodSpeed = -1;
+       if (dpadUp.getValue()){
+        retract = false;
        }
        else{
-        ampHoodSpeed = 0;
+        retract = true;
        }
     }
     @Override
