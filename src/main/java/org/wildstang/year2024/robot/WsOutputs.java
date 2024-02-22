@@ -33,7 +33,7 @@ public enum WsOutputs implements Outputs {
     // ---------------------------------
 
     SHOOTER_ANGLE1("Shooter elevation motor", new WsSparkConfig(CANConstants.SHOOTER_ANGLE1, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    SHOOTER_ANGLE2("Shooter elevation follower", new WsSparkConfig(CANConstants.SHOOTER_ANGLE2,WsMotorControllers.SPARK_MAX_BRUSHED, true)),
+    SHOOTER_ANGLE2("Shooter elevation follower", new WsSparkFollowerConfig("Shooter elevation motor",CANConstants.SHOOTER_ANGLE2,WsMotorControllers.SPARK_MAX_BRUSHED, true)),
 
     // ---------------------------------
     // Solenoids

@@ -2,15 +2,11 @@ package org.wildstang.year2024.subsystems.armPivot;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.subsystems.Subsystem;
-import org.wildstang.hardware.roborio.inputs.WsAbsoluteEncoder;
 import org.wildstang.hardware.roborio.outputs.WsSpark;
-import org.wildstang.year2024.robot.CANConstants;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
-import org.wildstang.year2024.robot.WsSubsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -40,15 +36,15 @@ public class ArmPivot implements Subsystem {
             goalPos += 5;
         }
         if (source == angleDown && angleDown.getValue()){
-            goalPos += 5;
+            goalPos -= 5;
         }
     }
 
     @Override
     public void init() {
-        angleUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_UP);
+        angleUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_RIGHT);
         angleUp.addInputListener(this);
-        angleDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_DOWN);
+        angleDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_LEFT);
         angleDown.addInputListener(this);
         angleMotor1 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE1);
         angleMotor1.setBrake();
