@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Shooter implements Subsystem {
     private WsSpark shooterMotor1;
     private WsSpark shooterMotor2;
-    private double shooterSpeed = 0.5;
+    private double shooterSpeed = 0.45;
     private DigitalInput leftBumper;
-    private DigitalInput dpadRight;
-    private DigitalInput dpadLeft;
+    // private DigitalInput dpadRight;
+    // private DigitalInput dpadLeft;
     private boolean shooterEnable = false;
 
     @Override
@@ -26,12 +26,12 @@ public class Shooter implements Subsystem {
         else{
             shooterEnable = false;
         }
-        if (source == dpadRight && dpadRight.getValue()){
-            shooterSpeed += 0.05;
-        }
-        if (source == dpadLeft && dpadLeft.getValue()){
-            shooterSpeed -= 0.05;
-        }
+        // if (source == dpadRight && dpadRight.getValue()){
+        //     shooterSpeed += 0.05;
+        // }
+        // if (source == dpadLeft && dpadLeft.getValue()){
+        //     shooterSpeed -= 0.05;
+        // }
     }
 
     @Override
@@ -41,10 +41,10 @@ public class Shooter implements Subsystem {
 
         leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
         leftBumper.addInputListener(this);
-        dpadRight = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_RIGHT);
-        dpadRight.addInputListener(this);
-        dpadLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_LEFT);
-        dpadLeft.addInputListener(this);
+        // dpadRight = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_RIGHT);
+        // dpadRight.addInputListener(this);
+        // dpadLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_LEFT);
+        // dpadLeft.addInputListener(this);
 
     }
 

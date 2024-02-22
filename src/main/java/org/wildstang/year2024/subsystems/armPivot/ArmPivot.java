@@ -27,8 +27,11 @@ public class ArmPivot implements Subsystem {
     private WsSpark angleMotor1;
     private WsSpark angleMotor2;
     private AbsoluteEncoder absEncoder;
-    double goalPos = 0;
+    double goalPos = 45;
     double error = 0;
+    double curPos;
+    double ff = 0;
+    double out = 0;
 
     @Override
     public void inputUpdate(Input source) {
@@ -42,9 +45,9 @@ public class ArmPivot implements Subsystem {
 
     @Override
     public void init() {
-        angleUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_RIGHT);
+        angleUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_RIGHT);
         angleUp.addInputListener(this);
-        angleDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.OPERATOR_DPAD_LEFT);
+        angleDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_LEFT);
         angleDown.addInputListener(this);
         angleMotor1 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE1);
         angleMotor1.setBrake();
@@ -54,21 +57,32 @@ public class ArmPivot implements Subsystem {
         absEncoder.setPositionConversionFactor(360.0);
         absEncoder.setVelocityConversionFactor(360.0/60.0);
         // absEncoder.setInverted(true);
-        absEncoder.setZeroOffset(ArmConstants.ZERO_OFFSET);
+        // absEncoder.setZeroOffset(ArmConstants.ZERO_OFFSET);
         // angleMotor1.initClosedLoop(ArmConstants.kP, ArmConstants.kI, ArmConstants.kD, 0, absEncoder, false);
+        curPos = getPosition();
     }
 
     @Override
     public void update() {
         // angleMotor1.setPosition(goalPos);
         // angleMotor2.setPosition(goalPos);
-        error = goalPos - getPosition();
-        angleMotor1.setSpeed(error*.1);
-        angleMotor2.setSpeed(error*.1);
+        curPos = getPosition();
+        error = goalPos - curPos;
+        ff = 300.925 * Math.cos(curPos*Math.PI/360) * ArmConstants.kF; // 300.925 arm in*lbs
+
+        out = error*ArmConstants.kP + ff;
+
+        if (Math.abs(out)>0.4){
+            out = 0.4 * Math.signum(out);
+        }
+
+        angleMotor1.setSpeed(out);
+        angleMotor2.setSpeed(-out);
 
         SmartDashboard.putNumber("goal position", goalPos);
         SmartDashboard.putNumber("shooter position", getPosition());
         SmartDashboard.putNumber("shooter error", error);
+        SmartDashboard.putNumber("Output", out);
     }
 
     @Override
@@ -86,7 +100,7 @@ public class ArmPivot implements Subsystem {
     }
 
     public double getPosition(){
-        return (absEncoder.getPosition())%360;
+        return (absEncoder.getPosition()+ArmConstants.ZERO_OFFSET)%360;
     }
     
     public void setPosition(double position){

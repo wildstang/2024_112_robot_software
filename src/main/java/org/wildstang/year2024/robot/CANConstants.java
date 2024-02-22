@@ -32,10 +32,10 @@ public final class CANConstants {
     public static final int FEED = 22;
 
     // shooter constants
-    public static final int SHOOTER_ANGLE1 = 20;
-    public static final int SHOOTER_ANGLE2 = 21;
+    public static final int SHOOTER_ANGLE1 = 21;
+    public static final int SHOOTER_ANGLE2 = 20;
     public static final int SHOOTER1 = 23;
     public static final int SHOOTER2 = 24;
-    public static final int AMPHOOD = 27;
+    public static final int AMPHOOD = 25;
     
 }

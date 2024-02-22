@@ -44,7 +44,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private DigitalInput faceRight;//rotation lock 90 degrees
     private DigitalInput faceLeft;//rotation lock 270 degrees
     private DigitalInput faceDown;//rotation lock 180 degrees
-    private DigitalInput dpadUp;//defense mode
+    // private DigitalInput dpadUp;//defense mode
     private DigitalInput rightStickButton;//auto drive override
 
     private double xSpeed;
@@ -78,7 +78,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public void inputUpdate(Input source) {
 
         //determine if we are in cross or teleop
-        if (driveState != driveType.AUTO && dpadUp.getValue()) {
+        if (driveState != driveType.AUTO && start.getValue()) {
             driveState = driveType.CROSS;
             for (int i = 0; i < modules.length; i++) {
                 modules[i].setDriveBrake(true);
@@ -180,8 +180,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         faceRight.addInputListener(this);
         faceDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_DOWN);
         faceDown.addInputListener(this);
-        dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
-        dpadUp.addInputListener(this);
+        // dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
+        // dpadUp.addInputListener(this);
         rightStickButton = (DigitalInput) WsInputs.DRIVER_RIGHT_JOYSTICK_BUTTON.get();
         rightStickButton.addInputListener(this);
     }

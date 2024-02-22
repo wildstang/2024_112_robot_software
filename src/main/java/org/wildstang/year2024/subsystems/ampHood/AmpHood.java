@@ -7,6 +7,8 @@ import org.wildstang.hardware.roborio.outputs.WsSpark;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class AmpHood implements Subsystem{
     private DigitalInput dpadUp;
     private WsSpark ampHoodMotor; 
@@ -28,13 +30,14 @@ public class AmpHood implements Subsystem{
     @Override
     public void update() {
         if (!retract){
-            ampHoodMotor.setSpeed(ampHoodSpeed);
+            ampHoodMotor.setSpeed(-ampHoodSpeed);
         } 
        else if (Math.abs(ampHoodMotor.getPosition()-initialEncoderPosition) < 0.1){
-            ampHoodMotor.setSpeed(-ampHoodSpeed);
+            ampHoodMotor.setSpeed(ampHoodSpeed);
        } else {
         ampHoodMotor.setSpeed(0);
        }
+       SmartDashboard.putBoolean("hood", retract);
     }
 
     @Override
@@ -57,16 +60,12 @@ public class AmpHood implements Subsystem{
 
     @Override
     public void selfTest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'selfTest'");
     }
 
 
 
     @Override
     public void resetState() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'resetState'");
     }
 }
 
