@@ -34,5 +34,6 @@ public final class CANConstants {
     // shooter constants
     public static final int SHOOTER1 = 23;
     public static final int SHOOTER2 = 24;
+    public static final int AMPHOOD = 27;
     
 }
