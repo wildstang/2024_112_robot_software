@@ -7,6 +7,7 @@ import org.wildstang.framework.hardware.OutputConfig;
 import org.wildstang.framework.io.outputs.Output;
 import org.wildstang.hardware.roborio.outputs.config.WsMotorControllers;
 import org.wildstang.hardware.roborio.outputs.config.WsSparkConfig;
+import org.wildstang.hardware.roborio.outputs.config.WsSparkFollowerConfig;
 
 /**
  * Output mappings are stored here.
@@ -37,6 +38,9 @@ public enum WsOutputs implements Outputs {
     SHOOTER1("First shooter motor", new WsSparkConfig(CANConstants.SHOOTER1, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
     SHOOTER2("Second shooter motor", new WsSparkConfig(CANConstants.SHOOTER2, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
     AMPHOOD("Amp hood motor", new WsSparkConfig(CANConstants.AMPHOOD, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+
+    SHOOTER_ANGLE1("Shooter elevation motor", new WsSparkConfig(CANConstants.SHOOTER_ANGLE1, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+    SHOOTER_ANGLE2("Shooter elevation follower", new WsSparkFollowerConfig("Shooter elevation motor",CANConstants.SHOOTER_ANGLE2,WsMotorControllers.SPARK_MAX_BRUSHED, true)),
 
     // ---------------------------------
     // Solenoids
