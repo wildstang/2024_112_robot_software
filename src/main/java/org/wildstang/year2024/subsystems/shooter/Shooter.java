@@ -58,7 +58,6 @@ public class Shooter implements Subsystem {
             shooterMotor1.setSpeed(shooterSpeed);
             shooterMotor2.setSpeed(-shooterSpeed);
         }
-        //you can use else instead of this
         else{
             shooterMotor1.setSpeed(0);
             shooterMotor2.setSpeed(0);

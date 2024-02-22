@@ -7,25 +7,27 @@ import org.wildstang.hardware.roborio.outputs.WsSpark;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Notepath implements Subsystem{
     private WsSpark intakeMotor;
     private WsSpark feedMotor;
     private double intakeMotorSpeed = 0;
     private double feedMotorSpeed = 0;
-    private DigitalInput aButton;
-    private DigitalInput bButton;
+    private DigitalInput rightBumper;
+    private DigitalInput dpadDown;
 
     @Override
     public void inputUpdate(Input source) {
         //it wasn't listed originally, but it might be good to add another button that would run
         //the feed and intake backwards, in case it's needed for testing
-        if (aButton.getValue()){
+        if (rightBumper.getValue()){
             feedMotorSpeed = -0.25;
-            intakeMotorSpeed = 0.5;
+            intakeMotorSpeed = 0.8;
         }
-        else if (bButton.getValue()){
+        else if (dpadDown.getValue()){
             feedMotorSpeed = 0.25;
-            intakeMotorSpeed = -0.5;
+            intakeMotorSpeed = -0.4;
         }
         else{
             feedMotorSpeed = 0;
@@ -38,10 +40,10 @@ public class Notepath implements Subsystem{
     public void init() {
         intakeMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.INTAKE);
         feedMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.FEED);
-        aButton = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
-        aButton.addInputListener(this);
-        bButton = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_DOWN);
-        bButton.addInputListener(this);
+        rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
+        rightBumper.addInputListener(this);
+        dpadDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_DOWN);
+        dpadDown.addInputListener(this);
 
     }
 
@@ -53,6 +55,7 @@ public class Notepath implements Subsystem{
     public void update() {
         intakeMotor.setSpeed(intakeMotorSpeed);
         feedMotor.setSpeed(feedMotorSpeed);
+        SmartDashboard.putNumber("intake speed", intakeMotorSpeed);
     }
 
     @Override
