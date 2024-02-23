@@ -30,5 +30,9 @@ public final class CANConstants {
     public static final int FEED = 21;
     public static final int SHOOTERANGLE = 0; //Not assigned yet
     public static final int SHOOTERSPEED = 0; //Not assigned yet
+    public static final int LEFTSHOOTERANGLE = 21; 
+    public static final int RIGHTSHOOTERANGLE = 20;
+    public static final int LEFTSHOOTERSPEED = 23; 
+    public static final int RIGHTSHOOTERSPEED = 24;
     
 }
