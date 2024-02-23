@@ -141,6 +141,7 @@ public enum WsInputs implements Inputs {
     // ********************************
     // Others ...
     // ********************************
+    BEAMBREAK_SENSOR ("Beambreak sensor", new WsDigitalInputConfig(0, false))
             
     ; // end of enum
     

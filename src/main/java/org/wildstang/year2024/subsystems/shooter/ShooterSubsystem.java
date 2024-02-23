@@ -13,7 +13,7 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
-public class ShooterSubsystem implements Subsystem{
+public class  ShooterSubsystem implements Subsystem{
     /* 1. rename this ^ to be whatever your file is called
      * 2. go to getName() and change the string "template" to a string that describes this subsystem
      * 3. add any variables you need under this comment block (inputs, outputs, doubles/booleans/ints)
@@ -26,24 +26,27 @@ public class ShooterSubsystem implements Subsystem{
     //  private WsSpark motor;
 
     
-    public WsSpark leftAngleMotor;
-    public WsSpark rightAngleMotor;
-    public WsSpark leftShooterMotor;
-    public WsSpark rightShooterMotor;
+    public WsSpark angleMotor;
+    public WsSpark shooterMotor;
     public WsSpark feedMotor;
     public double robot_Distance;
-    public double leftMotorSpeed;
-    public double rightMotorSpeed;
-    public DigitalInput rightBumperShootButton;
-    public DigitalInput leftBumperFeedButton;
-    public double leftMotorAngle;
-    public double rightMotorAngle;
-    public AbsoluteEncoder absEncoderShooter1;
-    public AbsoluteEncoder absEncoderShooter2;
+    public double motorSpeed;
+    public DigitalInput leftTrigger;
+    public double motorAngle;
+    public AbsoluteEncoder absEncoderShooter;
     public AbsoluteEncoder absEncoderFeed;
     public SwerveDrive drive;
     private double velocityDifference;
     private double angleDifference;
+    private DigitalInput beamBreakSensor;
+    private WsSpark intakeMotor;
+    private double feedMotorSpeed = 0;
+    private double intakeMotorSpeed;
+    private DigitalInput aButton;
+    private DigitalInput bButton;
+    
+    
+
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
     public double[] angles = {1,1,1,1,1,1};
@@ -67,30 +70,27 @@ public class ShooterSubsystem implements Subsystem{
 
 
     }
+
     public double getTargetAngle(double distance){
         return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
             * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
     }
 
-   public void setShooterTarget(boolean shootAllowed, double robotDistance){
+   public void setShooterSpeed(boolean shootAllowed, double robotDistance){
         if (shootAllowed){
-            leftMotorSpeed = getTargetSpeed(robotDistance);
-            rightMotorSpeed = getTargetSpeed(robotDistance);
-            leftMotorAngle = getTargetAngle(robotDistance);
-            rightMotorAngle = getTargetAngle(robotDistance);
+            motorSpeed = getTargetSpeed(robotDistance);
+            motorAngle = getTargetAngle(robotDistance);
         }
         else{
-           leftMotorSpeed = 0;
-           rightMotorSpeed = 0;
-           leftMotorAngle = 0; 
-           rightMotorAngle = 0;
+           motorSpeed = 0;
+           motorAngle = 0;
         }
    }
    public boolean velocityAtTarget(){
-    double currentVelocity1 = rightShooterMotor.getVelocity();
+    double currentVelocity = shooterMotor.getVelocity();
     robot_Distance = drive.getDistanceFromSpeaker();
     double velocityNeeded1 = getTargetSpeed(robot_Distance);
-    if (Math.abs(velocityNeeded1 - currentVelocity1) < velocityDifference){
+    if (Math.abs(velocityNeeded1 - currentVelocity) < velocityDifference){
         return true;
     }
     else{
@@ -99,7 +99,7 @@ public class ShooterSubsystem implements Subsystem{
    }
    
    public boolean angleAtTarget(){
-    double currentAngle = leftAngleMotor.getPosition();
+    double currentAngle = angleMotor.getPosition();
     robot_Distance = drive.getDistanceFromSpeaker();
     double angleNeeded = getTargetAngle(robot_Distance);
     if (Math.abs(angleNeeded-currentAngle) < angleDifference){
@@ -109,68 +109,86 @@ public class ShooterSubsystem implements Subsystem{
         return false;
     }
    }
+   public void setNotepathSpeed(boolean speedForward, boolean speedBackwards){
+    if (speedForward == true && speedBackwards == false){
+        feedMotorSpeed = 1;
+        intakeMotorSpeed = 1;
+    }
+    else if (speedForward == false && speedBackwards == false){
+        feedMotorSpeed = -1;
+        intakeMotorSpeed = -1;
+    }
+    else if (speedForward == false && speedBackwards == true){
+        feedMotorSpeed = 1;
+    }
+    else{
+        feedMotorSpeed = 0;
+        intakeMotorSpeed = 0;
+    }
+}
 
     @Override
     public void inputUpdate(Input source) {
-        if(leftBumperFeedButton.getValue()){
-            feedMotor.setSpeed(0.5);
-            
-        }else if(!leftBumperFeedButton.getValue()){
-            feedMotor.setSpeed(0);
+        robot_Distance = drive.getDistanceFromSpeaker();
+        if(leftTrigger.getValue()){
+            setShooterSpeed(true, robot_Distance);
+           
         }
+        else if(!leftTrigger.getValue()){
+            setShooterSpeed(false, robot_Distance);
+        }
+        if (aButton.getValue() && beamBreakSensor.getValue() == false){
+            setNotepathSpeed(true, true);
+        }
+        //bButton reverses speed and sets both motor speeds to -1
+        else if (bButton.getValue()){
+            setNotepathSpeed(false,false);
+        }
+        //sets both motor speeds to 0
+        else{
+            setNotepathSpeed(true, false);
+        }
+
+
     }
 
     @Override
     public void init() {
         /**** Abs Encoders ****/
-        absEncoderShooter1 = leftShooterMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
-        absEncoderShooter2 = rightShooterMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
+        absEncoderShooter = shooterMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         absEncoderFeed = feedMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         
         /**** Button Inputs ****/
-        leftBumperFeedButton = (DigitalInput) WsInputs.OPERATOR_LEFT_SHOULDER.get();
-        leftBumperFeedButton.addInputListener(this);
-        rightBumperShootButton = (DigitalInput) WsInputs.OPERATOR_RIGHT_SHOULDER.get();
-        rightBumperShootButton.addInputListener(this);
+        leftTrigger = (DigitalInput) WsInputs.DRIVER_LEFT_TRIGGER.get();
+        leftTrigger.addInputListener(this);
+        aButton = (DigitalInput) WsInputs.OPERATOR_FACE_DOWN.get();
+        aButton.addInputListener(this);
+        bButton = (DigitalInput) WsInputs.OPERATOR_FACE_RIGHT.get();
+        bButton.addInputListener(this);
+        
 
         /**** Motors ****/
-        leftShooterMotor = (WsSpark) WsOutputs.LEFTSHOOTERSPEED.get();
-        leftShooterMotor.setCurrentLimit(50,50,0);
-        rightShooterMotor = (WsSpark) WsOutputs.RIGHTSHOOTERSPEED.get();
-        rightShooterMotor.setCurrentLimit(50,50,0);
-        leftAngleMotor = (WsSpark) WsOutputs.LEFTSHOOTERANGLE.get();
-        leftAngleMotor.setCurrentLimit(50,50,0);
-        rightAngleMotor = (WsSpark) WsOutputs.RIGHTSHOOTERANGLE.get();
-        rightAngleMotor.setCurrentLimit(50,50,0);
+        shooterMotor = (WsSpark) WsOutputs.SHOOTERSPEED.get();
+        shooterMotor.setCurrentLimit(50,50,0);
+        angleMotor = (WsSpark) WsOutputs.SHOOTERANGLE.get();
+        angleMotor.setCurrentLimit(50,50,0);
         feedMotor = (WsSpark) WsOutputs.SHOOTERFEEDMOTOR.get();
         feedMotor.setCurrentLimit(50, 50, 0);
+        intakeMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.INTAKE);
 
         /**** Other ****/
         drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
+        beamBreakSensor = (DigitalInput) WsInputs.BEAMBREAK_SENSOR.get();
+        beamBreakSensor.addInputListener(this);
     }
 
     @Override
     public void update() {
-        robot_Distance = drive.getDistanceFromSpeaker();
-        while(rightBumperShootButton.getValue()){
-            setShooterTarget(true, robot_Distance);
-            rightShooterMotor.setSpeed(rightMotorSpeed);
-            leftShooterMotor.setSpeed(-leftMotorSpeed);
-            leftAngleMotor.setPosition(-leftMotorAngle);
-            rightAngleMotor.setPosition(rightMotorAngle);
-        }
-        if(!rightBumperShootButton.getValue()){
-            setShooterTarget(false, robot_Distance);
-            rightShooterMotor.setSpeed(rightMotorSpeed);
-            leftShooterMotor.setSpeed(leftMotorSpeed);
-            leftAngleMotor.setPosition(leftMotorAngle);
-            rightAngleMotor.setPosition(rightMotorAngle);
-        }
-       
-
-
+        intakeMotor.setSpeed(intakeMotorSpeed);
+        shooterMotor.setSpeed(motorSpeed);
+        angleMotor.setPosition(motorAngle);
+        feedMotor.setSpeed(feedMotorSpeed);
     }
-
 
     
     @Override
