@@ -3,7 +3,6 @@ package org.wildstang.year2024.auto.Steps;
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.robot.WsSubsystems;
-import org.wildstang.year2024.subsystems.notepath.notepath;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
@@ -11,7 +10,6 @@ import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 public class ShootNoteStep extends AutoStep {
     private boolean shootPossible;
     private ShooterSubsystem shooter;
-    private notepath Notepath;
     private double robotDistance;
     private SwerveDrive drive;
 
@@ -22,7 +20,6 @@ public class ShootNoteStep extends AutoStep {
     @Override
     public void initialize() {
        shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
-       Notepath = (notepath) Core.getSubsystemManager().getSubsystem(WsSubsystems.NOTEPATH);
        drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
     }
 
@@ -30,9 +27,9 @@ public class ShootNoteStep extends AutoStep {
     public void update() {
         if(shootPossible){
             robotDistance = drive.getDistanceFromSpeaker();
-            shooter.setShooterTarget(true,robotDistance);
+            shooter.setShooterSpeed(true,robotDistance);
             if (shooter.angleAtTarget() && shooter.velocityAtTarget()){
-                Notepath.setNotepathSpeed(false, true);
+                shooter.setNotepathSpeed(false, true);
             }
         }
     }

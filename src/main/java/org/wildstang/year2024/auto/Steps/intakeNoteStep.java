@@ -3,11 +3,11 @@ package org.wildstang.year2024.auto.Steps;
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.robot.WsSubsystems;
-import org.wildstang.year2024.subsystems.notepath.notepath;
+import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 
 public class intakeNoteStep extends AutoStep{
     private boolean speedForward;
-    private notepath notepath;
+    private ShooterSubsystem shooter;
     private boolean speedBackwards;
 
     public intakeNoteStep(boolean speedForward, boolean speedBackwards){
@@ -17,22 +17,22 @@ public class intakeNoteStep extends AutoStep{
 
     @Override
     public void initialize() {
-        notepath = (notepath) Core.getSubsystemManager().getSubsystem(WsSubsystems.NOTEPATH);
+        shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
     }
 
     @Override
     public void update() {
         if (speedForward && speedBackwards){
-            notepath.setNotepathSpeed(true, true);
+            shooter.setNotepathSpeed(true, true);
             //moves the feed and intake motor speed to 1
         }
         else if( speedForward == false && speedForward == false) {
             //Sets the feed and intake motor speeds to -1
-            notepath.setNotepathSpeed(false, false);
+            shooter.setNotepathSpeed(false, false);
         }
         else{
             //Sets the feed and motor speeds to 0
-            notepath.setNotepathSpeed(false,true);
+            shooter.setNotepathSpeed(false,true);
         }
         setFinished();
     }
