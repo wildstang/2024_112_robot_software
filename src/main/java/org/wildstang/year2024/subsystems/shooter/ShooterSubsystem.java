@@ -36,12 +36,19 @@ public class ShooterSubsystem implements Subsystem{
     public AbsoluteEncoder absEncoderShooter;
     public AbsoluteEncoder absEncoderFeed;
     public SwerveDrive drive;
+    private double velocityDifference;
+    private double angleDifference;
     private DigitalInput beamBreakSensor;
     private WsSpark intakeMotor;
     private double feedMotorSpeed = 0;
     private double intakeMotorSpeed;
     private DigitalInput aButton;
     private DigitalInput bButton;
+    private DigitalInput dpadUp;
+    private WsSpark ampHoodMotor; 
+    private double initialEncoderPosition;
+    private final double ampHoodSpeed = 0.5;
+    private boolean retract;
     
     
 
@@ -53,7 +60,7 @@ public class ShooterSubsystem implements Subsystem{
 
     public int[] indexes = new int[2];
 
-    public double getSpeed(double distance){
+    public double getTargetSpeed(double distance){
         for(int i = 0; i < distanceMarks.length; i++){
             if((distance >= distanceMarks[i]) && (distance >= distanceMarks[i+1])){
                 indexes[0] = i;
@@ -69,21 +76,54 @@ public class ShooterSubsystem implements Subsystem{
 
     }
 
-    public double getAngle(double distance){
+    public double getTargetAngle(double distance){
         return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
             * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
     }
 
    public void setShooterSpeed(boolean shootAllowed, double robotDistance){
         if (shootAllowed){
-            motorSpeed = getSpeed(robotDistance);
-            motorAngle = getAngle(robotDistance);
+            motorSpeed = getTargetSpeed(robotDistance);
+            motorAngle = getTargetAngle(robotDistance);
         }
         else{
            motorSpeed = 0;
            motorAngle = 0;
         }
    }
+   public void setAngle(boolean angleAllowed, double ampAngle){
+    if (angleAllowed){
+        motorAngle = ampAngle;
+    }
+    else{
+        motorAngle = 0;
+    }
+   }
+
+   public boolean velocityAtTarget(){
+    double currentVelocity = shooterMotor.getVelocity();
+    robot_Distance = drive.getDistanceFromSpeaker();
+    double velocityNeeded1 = getTargetSpeed(robot_Distance);
+    if (Math.abs(velocityNeeded1 - currentVelocity) < velocityDifference){
+        return true;
+    }
+    else{
+        return false;
+    }
+   }
+   
+   public boolean angleAtTarget(){
+    double currentAngle = angleMotor.getPosition();
+    robot_Distance = drive.getDistanceFromSpeaker();
+    double angleNeeded = getTargetAngle(robot_Distance);
+    if (Math.abs(angleNeeded-currentAngle) < angleDifference){
+        return true;
+    }
+    else{
+        return false;
+    }
+   }
+
    public void setNotepathSpeed(boolean speedForward, boolean speedBackwards){
     if (speedForward == true && speedBackwards == false){
         feedMotorSpeed = 1;
@@ -123,6 +163,12 @@ public class ShooterSubsystem implements Subsystem{
         else{
             setNotepathSpeed(true, false);
         }
+        if (dpadUp.getValue()){
+            retract = false;
+           }
+        else{
+            retract = true;
+        }
 
 
     }
@@ -140,7 +186,8 @@ public class ShooterSubsystem implements Subsystem{
         aButton.addInputListener(this);
         bButton = (DigitalInput) WsInputs.OPERATOR_FACE_RIGHT.get();
         bButton.addInputListener(this);
-        
+        dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
+        dpadUp.addInputListener(this);
 
         /**** Motors ****/
         shooterMotor = (WsSpark) WsOutputs.SHOOTERSPEED.get();
@@ -150,6 +197,9 @@ public class ShooterSubsystem implements Subsystem{
         feedMotor = (WsSpark) WsOutputs.SHOOTERFEEDMOTOR.get();
         feedMotor.setCurrentLimit(50, 50, 0);
         intakeMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.INTAKE);
+        ampHoodMotor =  (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
+        initialEncoderPosition = ampHoodMotor.getPosition();
+        retract = true;
 
         /**** Other ****/
         drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
@@ -161,8 +211,16 @@ public class ShooterSubsystem implements Subsystem{
     public void update() {
         intakeMotor.setSpeed(intakeMotorSpeed);
         shooterMotor.setSpeed(motorSpeed);
-       angleMotor.setPosition(motorAngle);
+        angleMotor.setPosition(motorAngle);
         feedMotor.setSpeed(feedMotorSpeed);
+        if (!retract){
+            ampHoodMotor.setSpeed(ampHoodSpeed);
+        } 
+       else if (Math.abs(ampHoodMotor.getPosition()-initialEncoderPosition) < 0.1){
+            ampHoodMotor.setSpeed(-ampHoodSpeed);
+       } else {
+        ampHoodMotor.setSpeed(0);
+       }
     }
 
     
