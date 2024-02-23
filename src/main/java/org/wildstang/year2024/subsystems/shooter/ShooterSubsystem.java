@@ -167,10 +167,10 @@ public class ShooterSubsystem implements Subsystem{
             setNotepathSpeed(true, false);
         }
         if (dpadUp.getValue()){
-            retract = false;
+            setRetract(false);
            }
         else{
-            retract = true;
+           setRetract(true);
         }
 
 
