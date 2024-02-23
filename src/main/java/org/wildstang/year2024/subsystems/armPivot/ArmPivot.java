@@ -25,7 +25,7 @@ public class ArmPivot implements Subsystem {
     private DigitalInput angleUp;
     private DigitalInput angleDown;
     private WsSpark angleMotor1;
-    private WsSpark angleMotor2;
+    // private WsSpark angleMotor2;
     private AbsoluteEncoder absEncoder;
     double goalPos = 45;
     double error = 0;
@@ -51,8 +51,8 @@ public class ArmPivot implements Subsystem {
         angleDown.addInputListener(this);
         angleMotor1 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE1);
         angleMotor1.setBrake();
-        angleMotor2 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE2);
-        angleMotor2.setBrake();
+        // angleMotor2 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE2);
+        // angleMotor2.setBrake();
         absEncoder = angleMotor1.getController().getAbsoluteEncoder(Type.kDutyCycle);
         absEncoder.setPositionConversionFactor(360.0);
         absEncoder.setVelocityConversionFactor(360.0/60.0);
@@ -77,7 +77,7 @@ public class ArmPivot implements Subsystem {
         }
 
         angleMotor1.setSpeed(out);
-        angleMotor2.setSpeed(-out);
+        // angleMotor2.setSpeed(-out);
 
         SmartDashboard.putNumber("goal position", goalPos);
         SmartDashboard.putNumber("shooter position", getPosition());

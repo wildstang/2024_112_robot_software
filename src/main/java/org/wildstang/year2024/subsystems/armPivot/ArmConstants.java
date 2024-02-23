@@ -4,7 +4,7 @@ public final class ArmConstants {
 
     public static final double ZERO_OFFSET = 29.0;
 
-    public static final double kP = 0.1;
+    public static final double kP = 0.01;
 
     public static final double kI = 0.01;
 
