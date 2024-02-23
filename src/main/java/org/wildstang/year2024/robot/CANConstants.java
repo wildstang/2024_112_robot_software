@@ -30,5 +30,6 @@ public final class CANConstants {
     public static final int SHOOTERSPEED = 24;
     public static final int SHOOTERFEEDMOTOR = 22;
     public static final int INTAKE= 25;
+    public static final int AMPHOOD = 27;
     
 }
