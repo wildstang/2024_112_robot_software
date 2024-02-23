@@ -26,11 +26,10 @@ public enum WsOutputs implements Outputs {
     ANGLE3("Module 3 Angle Motor", new WsSparkConfig(CANConstants.ANGLE3, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
     DRIVE4("Module 4 Drive Motor", new WsSparkConfig(CANConstants.DRIVE4, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
     ANGLE4("Module 4 Angle Motor", new WsSparkConfig(CANConstants.ANGLE4, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    LEFTSHOOTERANGLE("Left Shooter Angle Motor", new WsSparkConfig(CANConstants.LEFTSHOOTERANGLE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    RIGHTSHOOTERANGLE("Right Shooter Angle Motor", new WsSparkConfig(CANConstants.RIGHTSHOOTERANGLE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    LEFTSHOOTERSPEED("Left Shooter Speed Motor", new WsSparkConfig(CANConstants.LEFTSHOOTERSPEED, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
-    RIGHTSHOOTERSPEED("Right Shooter Speed Motor", new WsSparkConfig(CANConstants.RIGHTSHOOTERSPEED, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
-    SHOOTERFEEDMOTOR("Shooter Feed Motor", new WsSparkConfig(CANConstants.SHOOTERFEEDMOTOR, WsMotorControllers.SPARK_MAX_BRUSHLESS))
+    SHOOTERANGLE("Left Shooter Angle Motor", new WsSparkConfig(CANConstants.SHOOTERANGLE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+    SHOOTERSPEED("Right Shooter Speed Motor", new WsSparkConfig(CANConstants.SHOOTERSPEED, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
+    SHOOTERFEEDMOTOR("Shooter Feed Motor", new WsSparkConfig(CANConstants.SHOOTERFEEDMOTOR, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+    INTAKE("Intake motor", new WsSparkConfig(CANConstants.INTAKE, WsMotorControllers.SPARK_MAX_BRUSHLESS))
     // ---------------------------------
     // Other Motors
     // ---------------------------------
