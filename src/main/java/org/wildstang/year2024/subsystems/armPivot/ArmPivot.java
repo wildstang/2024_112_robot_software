@@ -28,9 +28,9 @@ public class ArmPivot implements Subsystem {
     // private WsSpark angleMotor2;
     private AbsoluteEncoder absEncoder;
     double goalPos = 45;
-    double error = 0;
+    double error, prevError = 0;
     double curPos;
-    double ff = 0;
+    double ff, d = 0;
     double out = 0;
 
     @Override
@@ -66,22 +66,31 @@ public class ArmPivot implements Subsystem {
     public void update() {
         // angleMotor1.setPosition(goalPos);
         // angleMotor2.setPosition(goalPos);
+        if (goalPos < ArmConstants.ZERO_OFFSET){
+            goalPos = ArmConstants.ZERO_OFFSET;
+        }
         curPos = getPosition();
         error = goalPos - curPos;
         ff = 300.925 * Math.cos(curPos*Math.PI/360) * ArmConstants.kF; // 300.925 arm in*lbs
-
+        d = (error - prevError) * ArmConstants.kD;
         out = error*ArmConstants.kP + ff;
 
         if (Math.abs(out)>0.4){
             out = 0.4 * Math.signum(out);
         }
 
+        if (curPos <= ArmConstants.ZERO_OFFSET && out < 0){
+            out = 0;
+        }
+
         angleMotor1.setSpeed(out);
         // angleMotor2.setSpeed(-out);
+        prevError = error;
 
         SmartDashboard.putNumber("goal position", goalPos);
         SmartDashboard.putNumber("shooter position", getPosition());
         SmartDashboard.putNumber("shooter error", error);
+        SmartDashboard.putNumber("Shooter d", d);
         SmartDashboard.putNumber("Output", out);
     }
 

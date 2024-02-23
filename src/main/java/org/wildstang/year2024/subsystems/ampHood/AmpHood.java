@@ -13,7 +13,7 @@ public class AmpHood implements Subsystem{
     private DigitalInput dpadUp;
     private WsSpark ampHoodMotor; 
     private double initialEncoderPosition;
-    private final double ampHoodSpeed = 0.5;
+    private final double ampHoodSpeed = 0.25;
     private boolean retract;
 
     @Override
@@ -21,6 +21,7 @@ public class AmpHood implements Subsystem{
         dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
         dpadUp.addInputListener(this);
         ampHoodMotor =  (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
+        ampHoodMotor.setBrake();
         initialEncoderPosition = ampHoodMotor.getPosition();
         retract = true;
     }
@@ -29,15 +30,16 @@ public class AmpHood implements Subsystem{
 
     @Override
     public void update() {
-        if (!retract){
+        if (!retract && ampHoodMotor.getPosition() > -55){
             ampHoodMotor.setSpeed(-ampHoodSpeed);
         } 
-       else if (Math.abs(ampHoodMotor.getPosition()-initialEncoderPosition) < 0.1){
+       else if (ampHoodMotor.getPosition() < -1){
             ampHoodMotor.setSpeed(ampHoodSpeed);
        } else {
         ampHoodMotor.setSpeed(0);
        }
        SmartDashboard.putBoolean("hood", retract);
+       SmartDashboard.putNumber("hood position", ampHoodMotor.getPosition());
     }
 
     @Override
