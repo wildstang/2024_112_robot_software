@@ -37,8 +37,7 @@ public class ShooterSubsystem implements Subsystem{
     public double robot_Distance;
     public double leftMotorSpeed;
     public double rightMotorSpeed;
-    public DigitalInput rightBumperShootButton;
-    public DigitalInput leftBumperFeedButton;
+    public DigitalInput leftTrigger;
     public double leftMotorAngle;
     public double rightMotorAngle;
     public AbsoluteEncoder absEncoderShooter1;
@@ -93,11 +92,20 @@ public class ShooterSubsystem implements Subsystem{
 
     @Override
     public void inputUpdate(Input source) {
-        if(leftBumperFeedButton.getValue()){
-            feedMotor.setSpeed(0.5);
-            
-        }else if(!leftBumperFeedButton.getValue()){
-            feedMotor.setSpeed(0);
+        robot_Distance = drive.getDistanceFromSpeaker();
+        if(leftTrigger.getValue()){
+            setShooterSpeed(true, robot_Distance);
+            rightShooterMotor.setSpeed(rightMotorSpeed);
+            leftShooterMotor.setSpeed(-leftMotorSpeed);
+            leftAngleMotor.setPosition(-leftMotorAngle);
+            rightAngleMotor.setPosition(rightMotorAngle);
+        }
+        else if(!leftTrigger.getValue()){
+            setShooterSpeed(false, robot_Distance);
+            rightShooterMotor.setSpeed(rightMotorSpeed);
+            leftShooterMotor.setSpeed(leftMotorSpeed);
+            leftAngleMotor.setPosition(leftMotorAngle);
+            rightAngleMotor.setPosition(rightMotorAngle);
         }
     }
 
@@ -109,10 +117,9 @@ public class ShooterSubsystem implements Subsystem{
         absEncoderFeed = feedMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         
         /**** Button Inputs ****/
-        leftBumperFeedButton = (DigitalInput) WsInputs.OPERATOR_LEFT_SHOULDER.get();
-        leftBumperFeedButton.addInputListener(this);
-        rightBumperShootButton = (DigitalInput) WsInputs.OPERATOR_RIGHT_SHOULDER.get();
-        rightBumperShootButton.addInputListener(this);
+        leftTrigger = (DigitalInput) WsInputs.DRIVER_LEFT_TRIGGER.get();
+        leftTrigger.addInputListener(this);
+        
 
         /**** Motors ****/
         leftShooterMotor = (WsSpark) WsOutputs.LEFTSHOOTERSPEED.get();
@@ -132,21 +139,7 @@ public class ShooterSubsystem implements Subsystem{
 
     @Override
     public void update() {
-        robot_Distance = drive.getDistanceFromSpeaker();
-        while(rightBumperShootButton.getValue()){
-            setShooterSpeed(true, robot_Distance);
-            rightShooterMotor.setSpeed(rightMotorSpeed);
-            leftShooterMotor.setSpeed(-leftMotorSpeed);
-            leftAngleMotor.setPosition(-leftMotorAngle);
-            rightAngleMotor.setPosition(rightMotorAngle);
-        }
-        if(!rightBumperShootButton.getValue()){
-            setShooterSpeed(false, robot_Distance);
-            rightShooterMotor.setSpeed(rightMotorSpeed);
-            leftShooterMotor.setSpeed(leftMotorSpeed);
-            leftAngleMotor.setPosition(leftMotorAngle);
-            rightAngleMotor.setPosition(rightMotorAngle);
-        }
+        
        
 
 
