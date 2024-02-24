@@ -4,7 +4,9 @@ import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
+import org.wildstang.year2024.auto.Steps.ShootNoteStep;
 import org.wildstang.year2024.auto.Steps.StartOdometryStep;
+import org.wildstang.year2024.auto.Steps.intakeNoteStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
@@ -23,24 +25,32 @@ public class FullWingAuto extends AutoProgram{
          color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
        //Preload Shot
-       addStep(new StartOdometryStep(1.7615007162094116,6.884628772735596, -140.1944271002657274, color));
-       // addStep(new )  ##Shooting Step
+       addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));
+       addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(new ShootNoteStep(true));
+       
 
-       // Wing Notes
+       // Wing Note 1
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-       group0.addStep(new StartOdometryStep(2.898200511932373, 7.020035743713379, 180, color));
-       //group0.addStep(); ##Notepath Intake
-       addStep(new StartOdometryStep(2.898200511932373, 7.020035743713379, -155.01896534315011422, color));
-       //addStep() ##Shooter
+       group0.addStep(new intakeNoteStep(finishedPreviousStep, finished));
+       group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(new ShootNoteStep(true));
+
+       //Wing Note 2
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 90, color));
        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
-       group1.addStep(new StartOdometryStep(2.8950469493865967, 5.580051422119141, 90, color));
-       //group1.addStep(); ## Notepath Intake
-       addStep(new StartOdometryStep(2.8950469493865967, 5.580051422119141, 180, color));
-       //addStep(); ##Shooter
+       group1.addStep(new intakeNoteStep(finishedPreviousStep, finished));
+       group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(new ShootNoteStep(true));
+
+       //Wing Note 3
        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-       group2.addStep(new StartOdometryStep(2.595386028289795, 4.098014831542969, 90, color));
-       //group2.addStep(); ## Notepath Intake
-       addStep(new StartOdometryStep(2.3024895191192627, 4.1174726486206055, 145.7842990703085206, color));
+       group2.addStep(new intakeNoteStep(finishedPreviousStep, finished));
+       group2.addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 178.31533352936483539, color));
+       addStep(new ShootNoteStep(finished));
+
+
 
 
          
