@@ -15,11 +15,11 @@ import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.targeting.LimeConsts;
 import org.wildstang.year2024.subsystems.targeting.WsVision;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,8 +36,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private AnalogInput rightStickX;//rot joystick
     private AnalogInput rightTrigger;//thrust
     private AnalogInput leftTrigger;//scoring autodrive
-    // private DigitalInput rightBumper;//
-    // private DigitalInput leftBumper;//hp station pickup
+    private DigitalInput rightBumper;//
+    private DigitalInput leftBumper;//
     private DigitalInput select;//gyro reset
     private DigitalInput start;//
     private DigitalInput faceUp;//rotation lock 0 degrees
@@ -66,12 +66,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public SwerveModule[] modules;
     private SwerveSignal swerveSignal;
     private WsSwerveHelper swerveHelper = new WsSwerveHelper();
-    private SwerveDriveOdometry odometry;
+    private SwerveDrivePoseEstimator poseEstimator;
     private Timer autoTimer = new Timer();
 
-    private WsVision limelight;
+    private WsVision cam1;
+    private LimeConsts lc;
 
-    public enum driveType {TELEOP, AUTO, CROSS};
+    public enum driveType {TELEOP, AUTO, CROSS, VISION};
     public driveType driveState;
 
     @Override
@@ -87,6 +88,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
             driveState = driveType.TELEOP;
+        }
+
+        if(source == leftBumper ){
+            if(leftBumper.getValue()) driveState = driveType.VISION;
+            else driveState = driveType.TELEOP;
+            
         }
 
         //get x and y speeds
@@ -152,7 +159,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public void initInputs() {
-        limelight = (WsVision) Core.getSubsystemManager().getSubsystem("Ws Vision");
+        cam1 = (WsVision) Core.getSubsystemManager().getSubsystem("Ws Vision");
+        lc = new LimeConsts();
 
         leftStickX = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_JOYSTICK_X);
         leftStickX.addInputListener(this);
@@ -200,8 +208,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         };
         //create default swerveSignal
         swerveSignal = new SwerveSignal(new double[]{0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0});
-        limelight = (WsVision) Core.getSubsystemManager().getSubsystem(WsSubsystems.WS_VISION);
-        odometry = new SwerveDriveOdometry(new SwerveDriveKinematics(new Translation2d(DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2),
+        cam1 = (WsVision) Core.getSubsystemManager().getSubsystem(WsSubsystems.WS_VISION);
+        poseEstimator = new SwerveDrivePoseEstimator(new SwerveDriveKinematics(new Translation2d(DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2),
             new Translation2d(-DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(-DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2)), odoAngle(), odoPosition(), new Pose2d());
     }
     
@@ -211,8 +219,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     @Override
     public void update() {
-        odometry.update(odoAngle(), odoPosition());
-
+        poseEstimator.update(odoAngle(), odoPosition());
+        // cam1.odometryUpdate(poseEstimator);
+        
         if (driveState == driveType.CROSS) {
             //set to cross - done in inputupdate
             this.swerveSignal = swerveHelper.setCross();
@@ -237,6 +246,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel, pathAccel), pathHeading, rotSpeed,getGyroAngle(),pathXOffset, pathYOffset);
             drive();        
         } 
+        if (driveState == driveType.VISION){
+            rotSpeed = cam1.getYaw() * .01;
+            this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
+            drive();
+
+        }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
         SmartDashboard.putNumber("Y speed", ySpeed);
@@ -350,11 +365,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     public SwerveModulePosition[] odoPosition(){
         return new SwerveModulePosition[]{modules[0].odoPosition(), modules[1].odoPosition(), modules[2].odoPosition(), modules[3].odoPosition()};
     }
-    public void setOdo(Pose2d starting){
-        this.odometry.resetPosition(odoAngle(), odoPosition(), starting);
+    public void setOdo(Pose2d pos){
+        this.poseEstimator.resetPosition(odoAngle(), odoPosition(), pos);
         autoTimer.start();
     }
     public Pose2d returnPose(){
-        return odometry.getPoseMeters();
+        return poseEstimator.getEstimatedPosition();
     }
 }
