@@ -13,7 +13,7 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
-public class ShooterSubsystem implements Subsystem{
+public class  ShooterSubsystem implements Subsystem{
     /* 1. rename this ^ to be whatever your file is called
      * 2. go to getName() and change the string "template" to a string that describes this subsystem
      * 3. add any variables you need under this comment block (inputs, outputs, doubles/booleans/ints)
@@ -36,6 +36,8 @@ public class ShooterSubsystem implements Subsystem{
     public AbsoluteEncoder absEncoderShooter;
     public AbsoluteEncoder absEncoderFeed;
     public SwerveDrive drive;
+    private double velocityDifference;
+    private double angleDifference;
     private DigitalInput beamBreakSensor;
     private WsSpark intakeMotor;
     private double feedMotorSpeed = 0;
@@ -53,7 +55,7 @@ public class ShooterSubsystem implements Subsystem{
 
     public int[] indexes = new int[2];
 
-    public double getSpeed(double distance){
+    public double getTargetSpeed(double distance){
         for(int i = 0; i < distanceMarks.length; i++){
             if((distance >= distanceMarks[i]) && (distance >= distanceMarks[i+1])){
                 indexes[0] = i;
@@ -69,20 +71,43 @@ public class ShooterSubsystem implements Subsystem{
 
     }
 
-    public double getAngle(double distance){
+    public double getTargetAngle(double distance){
         return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
             * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
     }
 
    public void setShooterSpeed(boolean shootAllowed, double robotDistance){
         if (shootAllowed){
-            motorSpeed = getSpeed(robotDistance);
-            motorAngle = getAngle(robotDistance);
+            motorSpeed = getTargetSpeed(robotDistance);
+            motorAngle = getTargetAngle(robotDistance);
         }
         else{
            motorSpeed = 0;
            motorAngle = 0;
         }
+   }
+   public boolean velocityAtTarget(){
+    double currentVelocity = shooterMotor.getVelocity();
+    robot_Distance = drive.getDistanceFromSpeaker();
+    double velocityNeeded1 = getTargetSpeed(robot_Distance);
+    if (Math.abs(velocityNeeded1 - currentVelocity) < velocityDifference){
+        return true;
+    }
+    else{
+        return false;
+    }
+   }
+   
+   public boolean angleAtTarget(){
+    double currentAngle = angleMotor.getPosition();
+    robot_Distance = drive.getDistanceFromSpeaker();
+    double angleNeeded = getTargetAngle(robot_Distance);
+    if (Math.abs(angleNeeded-currentAngle) < angleDifference){
+        return true;
+    }
+    else{
+        return false;
+    }
    }
    public void setNotepathSpeed(boolean speedForward, boolean speedBackwards){
     if (speedForward == true && speedBackwards == false){
@@ -161,7 +186,7 @@ public class ShooterSubsystem implements Subsystem{
     public void update() {
         intakeMotor.setSpeed(intakeMotorSpeed);
         shooterMotor.setSpeed(motorSpeed);
-       angleMotor.setPosition(motorAngle);
+        angleMotor.setPosition(motorAngle);
         feedMotor.setSpeed(feedMotorSpeed);
     }
 
