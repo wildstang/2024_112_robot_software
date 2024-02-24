@@ -74,6 +74,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     public enum driveType {TELEOP, AUTO, CROSS, VISION};
     public driveType driveState;
+    private double targetYaw;
 
     @Override
     public void inputUpdate(Input source) {
@@ -85,16 +86,18 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 modules[i].setDriveBrake(true);
             }
             this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
+        } else if (source == leftBumper){
+            if(leftBumper.getValue()){
+                driveState = driveType.VISION;
+            } else {
+                driveState = driveType.TELEOP;
+            }
         }
         else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
             driveState = driveType.TELEOP;
         }
 
-        if(source == leftBumper ){
-            if(leftBumper.getValue()) driveState = driveType.VISION;
-            else driveState = driveType.TELEOP;
-            
-        }
+        
 
         //get x and y speeds
         xSpeed = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
@@ -174,8 +177,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         leftTrigger.addInputListener(this);
         // rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
         // rightBumper.addInputListener(this);
-        // leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
-        // leftBumper.addInputListener(this);
+        leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
+        leftBumper.addInputListener(this);
         select = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_SELECT);
         select.addInputListener(this);
         start = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_START);
@@ -220,6 +223,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     @Override
     public void update() {
         poseEstimator.update(odoAngle(), odoPosition());
+        targetYaw = cam1.getYaw();
         // cam1.odometryUpdate(poseEstimator);
         
         if (driveState == driveType.CROSS) {
@@ -247,10 +251,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
             drive();        
         } 
         if (driveState == driveType.VISION){
-            rotSpeed = cam1.getYaw() * .01;
-            this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
-            drive();
-
+            if (!Double.isNaN(targetYaw)){
+                rotSpeed = cam1.getYaw() * .005;
+                this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
+                drive();
+            }
         }
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
@@ -261,6 +266,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
+        SmartDashboard.putBoolean("drive at target", isAtTarget());
+        SmartDashboard.putNumber("target yaw", targetYaw);
     }
     
     @Override
@@ -277,6 +284,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathTarget = 0.0;
 
         isFieldCentric = true;
+    }
+
+    public Boolean isAtTarget(){
+        return (Math.abs(targetYaw) < 4 || Double.isNaN(targetYaw));
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.ampHood.AmpHood;
 import org.wildstang.year2024.subsystems.armPivot.ArmPivot;
 import org.wildstang.year2024.subsystems.shooter.Shooter;
+import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -25,6 +26,7 @@ public class Notepath implements Subsystem{
     private AmpHood ampHood;
     private enum feedType {SPEAKER, AMP, INTAKE, OUTTAKE, OFF};
     private feedType feedState;
+    private SwerveDrive drive;
 
     @Override
     public void inputUpdate(Input source) {
@@ -60,6 +62,7 @@ public class Notepath implements Subsystem{
         armPivot = (ArmPivot) Core.getSubsystemManager().getSubsystem(WsSubsystems.ARM_PIVOT);
         shooter = (Shooter) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
         ampHood = (AmpHood) Core.getSubsystemManager().getSubsystem(WsSubsystems.AMP_HOOD);
+        drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
 
         resetState();
 
@@ -74,7 +77,7 @@ public class Notepath implements Subsystem{
         switch (feedState) {
             case SPEAKER:
             case AMP:
-                if (armPivot.isAtTarget() && shooter.isAtTarget() && ampHood.isAtTarget()) {
+                if (armPivot.isAtTarget() && shooter.isAtTarget() && ampHood.isAtTarget() && drive.isAtTarget()) {
                     feedMotorSpeed = 0.5;
                 } else {
                     feedMotorSpeed = 0.0;
