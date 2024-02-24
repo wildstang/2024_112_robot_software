@@ -10,42 +10,39 @@ import org.wildstang.year2024.robot.WsOutputs;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter implements Subsystem {
-    private WsSpark shooterMotor1;
-    private WsSpark shooterMotor2;
-    private double shooterSpeed = 0.45;
-    private DigitalInput leftBumper;
-    // private DigitalInput dpadRight;
-    // private DigitalInput dpadLeft;
-    private boolean shooterEnable = false;
+    private WsSpark shooterMotor;
+    private double goalVel, curVel, velErr;
+    private double out;
+    private Boolean shooterEnable;
+    private DigitalInput leftBumper, rightBumper, dpadUp;
 
     @Override
     public void inputUpdate(Input source) {
-        if (source == leftBumper && leftBumper.getValue()){
+        if (source == dpadUp && dpadUp.getValue()) {
+            goalVel = 150;
             shooterEnable = true;
-        }
-        else{
+        } else if (source == leftBumper && leftBumper.getValue()){
+            goalVel = 445;  // 445
+            shooterEnable = true;
+        } else if (source == rightBumper && rightBumper.getValue()) {
+            goalVel = -300;
+            shooterEnable = true;
+        } else {
             shooterEnable = false;
         }
-        // if (source == dpadRight && dpadRight.getValue()){
-        //     shooterSpeed += 0.05;
-        // }
-        // if (source == dpadLeft && dpadLeft.getValue()){
-        //     shooterSpeed -= 0.05;
-        // }
     }
 
     @Override
     public void init() {
-        shooterMotor1 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER1);
-        shooterMotor2 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER2);
-
+        shooterMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER1);
+        shooterMotor.setCoast();
         leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
         leftBumper.addInputListener(this);
-        // dpadRight = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_RIGHT);
-        // dpadRight.addInputListener(this);
-        // dpadLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_LEFT);
-        // dpadLeft.addInputListener(this);
-
+        rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
+        rightBumper.addInputListener(this);
+        dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
+        dpadUp.addInputListener(this);
+        resetState();
     }
 
     @Override
@@ -54,31 +51,49 @@ public class Shooter implements Subsystem {
 
     @Override
     public void update() {
-        if (shooterEnable){
-            shooterMotor1.setSpeed(shooterSpeed);
-            shooterMotor2.setSpeed(-shooterSpeed);
-        }
-        else{
-            shooterMotor1.setSpeed(0);
-            shooterMotor2.setSpeed(0);
-        }
-        SmartDashboard.putNumber("shooter speed", shooterSpeed);
+        if (shooterEnable) {
+            goalVel = Math.min (goalVel, ShooterConstants.MAX_VEL);
+            goalVel = Math.max(goalVel, -ShooterConstants.MAX_VEL);
 
+            curVel = getVelocity();
+            velErr = goalVel - curVel;
+
+            out = goalVel * ShooterConstants.kF + velErr * ShooterConstants.kP;
+            
+            shooterMotor.setSpeed(out);
+        } else {
+            shooterMotor.setSpeed(0);
+        }
+
+        SmartDashboard.putNumber("shooter target", goalVel);
+        SmartDashboard.putNumber("shooter speed", out);
+        SmartDashboard.putBoolean("shooter at target", isAtTarget());
+        SmartDashboard.putNumber("shooter velocity", getVelocity());
     }
     
     public void setShooterSpeed(double speed){
-        shooterSpeed = speed;
+        goalVel = speed;
         shooterEnable = true;
+    }
+
+    public Boolean isAtTarget(){
+        return Math.abs(goalVel - getVelocity()) < 20;
+    }
+
+    public double getVelocity() {
+        return shooterMotor.getVelocity() * ShooterConstants.RATIO * 2 * Math.PI / 60.0;
     }
 
     @Override
     public void resetState() {
+        shooterEnable = false;
+        goalVel = 0.0;
     }
 
     @Override
     public String getName() {
         //make sure to include a name in this file
-        return "shooter";
+        return "Shooter";
     }
     
 }

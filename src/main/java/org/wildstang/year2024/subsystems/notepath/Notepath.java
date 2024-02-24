@@ -6,6 +6,10 @@ import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.outputs.WsSpark;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
+import org.wildstang.year2024.robot.WsSubsystems;
+import org.wildstang.year2024.subsystems.ampHood.AmpHood;
+import org.wildstang.year2024.subsystems.armPivot.ArmPivot;
+import org.wildstang.year2024.subsystems.shooter.Shooter;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -14,25 +18,29 @@ public class Notepath implements Subsystem{
     private WsSpark feedMotor;
     private double intakeMotorSpeed = 0;
     private double feedMotorSpeed = 0;
-    private DigitalInput rightBumper;
-    private DigitalInput dpadDown;
+    private DigitalInput rightBumper, leftBumper;
+    private DigitalInput dpadDown, dpadUp;
+    private ArmPivot armPivot;
+    private Shooter shooter;
+    private AmpHood ampHood;
+    private enum feedType {SPEAKER, AMP, INTAKE, OUTTAKE, OFF};
+    private feedType feedState;
 
     @Override
     public void inputUpdate(Input source) {
-        //it wasn't listed originally, but it might be good to add another button that would run
-        //the feed and intake backwards, in case it's needed for testing
-        if (rightBumper.getValue()){
-            feedMotorSpeed = -0.25;
-            intakeMotorSpeed = 0.8;
+        if (leftBumper.getValue()){
+            feedState = feedType.SPEAKER;
+        } else if (dpadUp.getValue()) {
+            feedState = feedType.AMP;
+        } else if (rightBumper.getValue()){
+            feedState = feedType.INTAKE;
+        } else if (dpadDown.getValue()){
+            feedState = feedType.OUTTAKE;
+        } else {
+            feedState = feedType.OFF;
         }
-        else if (dpadDown.getValue()){
-            feedMotorSpeed = 0.25;
-            intakeMotorSpeed = -0.4;
-        }
-        else{
-            feedMotorSpeed = 0;
-            intakeMotorSpeed = 0;
-        }
+
+        
         
     }
 
@@ -42,8 +50,18 @@ public class Notepath implements Subsystem{
         feedMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.FEED);
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
         rightBumper.addInputListener(this);
+        leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
+        leftBumper.addInputListener(this);
+        dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
+        dpadUp.addInputListener(this);
         dpadDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_DOWN);
         dpadDown.addInputListener(this);
+
+        armPivot = (ArmPivot) Core.getSubsystemManager().getSubsystem(WsSubsystems.ARM_PIVOT);
+        shooter = (Shooter) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
+        ampHood = (AmpHood) Core.getSubsystemManager().getSubsystem(WsSubsystems.AMP_HOOD);
+
+        resetState();
 
     }
 
@@ -53,13 +71,45 @@ public class Notepath implements Subsystem{
 
     @Override
     public void update() {
-        intakeMotor.setSpeed(intakeMotorSpeed);
+        switch (feedState) {
+            case SPEAKER:
+            case AMP:
+                if (armPivot.isAtTarget() && shooter.isAtTarget() && ampHood.isAtTarget()) {
+                    feedMotorSpeed = 0.5;
+                } else {
+                    feedMotorSpeed = 0.0;
+                }
+                intakeMotorSpeed = 0.0;
+                break;
+
+            case INTAKE:
+                feedMotorSpeed = -0.5;
+                intakeMotorSpeed = 0.0;
+                break;
+
+            case OUTTAKE:
+                feedMotorSpeed = -0.5;
+                intakeMotorSpeed = -0.5;
+                break;
+
+            case OFF:
+            default:
+                feedMotorSpeed = 0.0;
+                intakeMotorSpeed = 0.0;
+                break;
+        }
+
         feedMotor.setSpeed(feedMotorSpeed);
-        SmartDashboard.putNumber("intake speed", intakeMotorSpeed);
+        intakeMotor.setSpeed(intakeMotorSpeed);
+
+        SmartDashboard.putNumber("feed speed", feedMotorSpeed);
     }
 
     @Override
     public void resetState() {
+        feedMotorSpeed = 0.0;
+        intakeMotorSpeed = 0.0;
+        feedState = feedType.OFF;
     }
 
     @Override

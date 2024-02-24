@@ -18,9 +18,9 @@ public enum WsSubsystems implements Subsystems {
     WS_VISION("Ws Vision", WsVision.class),
     SWERVE_DRIVE("Swerve Drive", SwerveDrive.class),
     SHOOTER("Shooter", Shooter.class),
+    AMP_HOOD("AmpHood", AmpHood.class),
+    ARM_PIVOT("Arm Pivot", ArmPivot.class),
     NOTEPATH("Notepath", Notepath.class),
-    AMP_HOOD("Amp Hood", AmpHood.class),
-    ARM_PIVOT("Arm Pivot", ArmPivot.class)
     ;
 
     /**

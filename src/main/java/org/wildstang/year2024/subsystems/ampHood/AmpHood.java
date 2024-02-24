@@ -12,8 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class AmpHood implements Subsystem{
     private DigitalInput dpadUp;
     private WsSpark ampHoodMotor; 
-    private double initialEncoderPosition;
-    private final double ampHoodSpeed = 0.25;
+    private double ampHoodSpeed;
     private boolean retract;
 
     @Override
@@ -22,30 +21,31 @@ public class AmpHood implements Subsystem{
         dpadUp.addInputListener(this);
         ampHoodMotor =  (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
         ampHoodMotor.setBrake();
-        initialEncoderPosition = ampHoodMotor.getPosition();
-        retract = true;
+        resetState();
     }
 
    
 
     @Override
     public void update() {
-        if (!retract && ampHoodMotor.getPosition() > -55){
-            ampHoodMotor.setSpeed(-ampHoodSpeed);
-        } 
-       else if (ampHoodMotor.getPosition() < -1){
-            ampHoodMotor.setSpeed(ampHoodSpeed);
-       } else {
-        ampHoodMotor.setSpeed(0);
-       }
-       SmartDashboard.putBoolean("hood", retract);
+        if (!retract && ampHoodMotor.getPosition() < 1.75){
+            ampHoodSpeed = 0.15;
+        } else if (ampHoodMotor.getPosition() > 0.1){
+            ampHoodSpeed = -0.15;
+        } else {
+            ampHoodSpeed = 0.0;
+        }
+       ampHoodMotor.setSpeed(ampHoodSpeed);
+
        SmartDashboard.putNumber("hood position", ampHoodMotor.getPosition());
+       SmartDashboard.putNumber("amp speed", ampHoodSpeed);
+       SmartDashboard.putBoolean("hood at target", isAtTarget());
     }
 
     @Override
     public void inputUpdate(Input source) {
        if (dpadUp.getValue()){
-        retract = false;
+        retract = true;
        }
        else{
         retract = true;
@@ -58,6 +58,10 @@ public class AmpHood implements Subsystem{
         return "AmpHood";
     }
 
+    public Boolean isAtTarget(){
+        return (retract && ampHoodMotor.getPosition() < 0.1) || (!retract && ampHoodMotor.getPosition() > 1.9);  // TODO: Check position travel limits
+    }
+
 
 
     @Override
@@ -68,6 +72,8 @@ public class AmpHood implements Subsystem{
 
     @Override
     public void resetState() {
+        ampHoodSpeed = 0.0;
+        retract = true;
     }
 }
 

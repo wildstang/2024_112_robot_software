@@ -33,11 +33,11 @@ public enum WsOutputs implements Outputs {
     // ---------------------------------
     
     INTAKE("Intake motor", new WsSparkConfig(CANConstants.INTAKE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    FEED("Feed Motor", new WsSparkConfig(CANConstants.FEED, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+    FEED("Feed Motor", new WsSparkConfig(CANConstants.FEED, WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
 
     SHOOTER1("First shooter motor", new WsSparkConfig(CANConstants.SHOOTER1, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
-    SHOOTER2("Second shooter motor", new WsSparkConfig(CANConstants.SHOOTER2, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
-    AMPHOOD("Amp hood motor", new WsSparkConfig(CANConstants.AMPHOOD, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+    SHOOTER2("Second shooter motor", new WsSparkFollowerConfig("First shooter motor", CANConstants.SHOOTER2, WsMotorControllers.SPARK_FLEX_BRUSHLESS, true)),
+    AMPHOOD("Amp hood motor", new WsSparkConfig(CANConstants.AMPHOOD, WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
 
     SHOOTER_ANGLE1("Shooter elevation motor", new WsSparkConfig(CANConstants.SHOOTER_ANGLE1, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
     SHOOTER_ANGLE2("Shooter elevation follower", new WsSparkFollowerConfig("Shooter elevation motor", CANConstants.SHOOTER_ANGLE2,WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
