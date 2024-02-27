@@ -86,8 +86,8 @@ public class Notepath implements Subsystem{
                 break;
 
             case INTAKE:
-                feedMotorSpeed = -0.5;
-                intakeMotorSpeed = 0.0;
+                feedMotorSpeed = 0.5;
+                intakeMotorSpeed = 0.5;
                 break;
 
             case OUTTAKE:

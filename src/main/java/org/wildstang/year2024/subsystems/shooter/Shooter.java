@@ -26,7 +26,7 @@ public class Shooter implements Subsystem {
             shooterEnable = true;
         } else if (source == rightBumper && rightBumper.getValue()) {
             goalVel = -300;
-            shooterEnable = true;
+            shooterEnable = false;
         } else {
             shooterEnable = false;
         }
