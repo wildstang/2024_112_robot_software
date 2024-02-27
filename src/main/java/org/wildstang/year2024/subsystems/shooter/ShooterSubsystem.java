@@ -99,7 +99,7 @@ public class  ShooterSubsystem implements Subsystem{
         motorAngle = 0;
     }
    }
-    
+   
    public boolean velocityAtTarget(){
     double currentVelocity = shooterMotor.getVelocity();
     robot_Distance = drive.getDistanceFromSpeaker();
