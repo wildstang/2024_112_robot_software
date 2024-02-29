@@ -44,6 +44,7 @@ public class  ShooterSubsystem implements Subsystem{
     private double intakeMotorSpeed;
     private DigitalInput aButton;
     private DigitalInput bButton;
+    private boolean retract;
     
     
 
