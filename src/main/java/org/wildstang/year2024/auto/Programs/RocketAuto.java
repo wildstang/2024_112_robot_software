@@ -14,46 +14,46 @@ import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class FullWingAuto extends AutoProgram{
+public class RocketAuto extends AutoProgram{
 
     private boolean color = true;
 
     @Override
     protected void defineSteps() {
     
-         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
+        SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
          color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
        //Preload Shot
        addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));
-       addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Start", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
-       
 
        // Wing Note 1
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-       group0.addStep(new intakeNoteStep(finishedPreviousStep, finished));
+       group0.addStep(new intakeNoteStep(true, false));
        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
-       addStep(new ShootNoteStep(true));
 
-       //Wing Note 2
-       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
+       // Rocket
        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
-       group1.addStep(new intakeNoteStep(finishedPreviousStep, finished));
-       group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
+       group1.addStep(new ShootNoteStep(true));
+       group1.addStep(new intakeNoteStep(true, false));
+       group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
 
-       //Wing Note 3
-       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),180, color))
-       AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-       group2.addStep(new intakeNoteStep(finishedPreviousStep, finished));
-       group2.addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 178.31533352936483539, color));
-       addStep(new ShootNoteStep(true));
+
+
+
+
+
+
+         
     }
 
     @Override
     public String toString() {
-        return "FullWingAuto";
+        return "RocketAuto";
     }
 }
