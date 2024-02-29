@@ -146,7 +146,7 @@ public Optional<Alliance> station;
      public double getDistanceFromSpeaker(){
         double xDifference = 0;
         Pose2d fieldPose = returnPose();
-        double yDifference = lc.SPEAKER_Y - fieldPose.getY();
+        double yDifference = lc.SPEAKER_Z - fieldPose.getY();
         if(DriverStation.getAlliance().equals(Alliance.Blue)){
             xDifference = lc.BLUE_SPEAKER_X - fieldPose.getX();
         }
@@ -157,7 +157,20 @@ public Optional<Alliance> station;
         return distance;
 
     }
+    public double getDistanceFromAmp(){
+        double xDiff = 0;
+        Pose2d fieldPose = returnPose();
+        double yDiff = lc.AMP_Z - fieldPose.getY();
+        if(DriverStation.getAlliance().equals(Alliance.Blue)){
+            xDiff = lc.BLUE_AMP_X - fieldPose.getX();
+        }
+        else if (DriverStation.getAlliance().equals(Alliance.Red)){
+            xDiff = lc.RED_SPEAKER_X - fieldPose.getX();
+        }
+        double distance = Math.sqrt(yDiff * yDiff + xDiff * xDiff);
+        return distance;
 
+    }
 
 
     // Get the distance the robot is from AMP within a 49 inch radius and return the angle and direction the robot needs to drive
@@ -168,9 +181,9 @@ public Optional<Alliance> station;
 
         // Red Alliance April Tag
         if(station.orElse(null).equals(Alliance.Blue)){
-                robotDistance = Math.sqrt((Math.pow((Math.pow((lc.AMP_X - poseEstimator.getEstimatedPosition().getX()),2)) + (-poseEstimator.getEstimatedPosition().getY()),2)));
+                robotDistance = Math.sqrt((Math.pow((Math.pow((lc.BLUE_AMP_X - poseEstimator.getEstimatedPosition().getX()),2)) + (-poseEstimator.getEstimatedPosition().getY()),2)));
             }else{
-                robotDistance = Math.sqrt((Math.pow(((lc.AMP_X+(lc.FIELD_WIDTH-(lc.AMP_X*2))) - poseEstimator.getEstimatedPosition().getX()),2))) + (Math.pow((-poseEstimator.getEstimatedPosition().getY()),2));
+                robotDistance = Math.sqrt((Math.pow(((lc.RED_AMP_X+(lc.FIELD_WIDTH-(lc.RED_AMP_X*2))) - poseEstimator.getEstimatedPosition().getX()),2))) + (Math.pow((-poseEstimator.getEstimatedPosition().getY()),2));
             }
             
             if(robotDistance <= lc.RADIUS_OF_AMP_TARGETING_ZONE){
