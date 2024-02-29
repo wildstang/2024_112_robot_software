@@ -28,7 +28,7 @@ public class scoreAmp extends AutoStep {
             shooter.setAngle(true, ampAngle);
             shooter.setRetract(false);
             robotAmpDistance = swerve.getDistanceFromAmp();
-            shooter.setShooterSpeed(true, robotAmpDistance);
+            shooter.setShooterSpeed(true);
             if(shooter.angleAtTarget() && shooter.velocityAtTarget()){
                 shooter.setNotepathSpeed(false, true);
             }

@@ -28,9 +28,9 @@ public enum WsOutputs implements Outputs {
     ANGLE4("Module 4 Angle Motor", new WsSparkConfig(CANConstants.ANGLE4, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
     SHOOTERANGLE("Left Shooter Angle Motor", new WsSparkConfig(CANConstants.SHOOTERANGLE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
     SHOOTERSPEED("Right Shooter Speed Motor", new WsSparkConfig(CANConstants.SHOOTERSPEED, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
-    SHOOTERFEEDMOTOR("Shooter Feed Motor", new WsSparkConfig(CANConstants.SHOOTERFEEDMOTOR, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+    SHOOTERFEEDMOTOR("Shooter Feed Motor", new WsSparkConfig(CANConstants.SHOOTERFEEDMOTOR, WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
     INTAKE("Intake motor", new WsSparkConfig(CANConstants.INTAKE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    AMPHOOD("Amp hood motor", new WsSparkConfig(CANConstants.AMPHOOD, WsMotorControllers.SPARK_MAX_BRUSHLESS))
+    AMPHOOD("Amp hood motor", new WsSparkConfig(CANConstants.AMPHOOD, WsMotorControllers.SPARK_MAX_BRUSHLESS, true))
 
     // ---------------------------------
     // Other Motors
