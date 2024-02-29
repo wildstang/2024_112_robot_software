@@ -173,7 +173,6 @@ public Optional<Alliance> station;
     }
 
 
-
     // Get the distance the robot is from AMP within a 49 inch radius and return the angle and direction the robot needs to drive
     public boolean isInAmpRadius(){
 

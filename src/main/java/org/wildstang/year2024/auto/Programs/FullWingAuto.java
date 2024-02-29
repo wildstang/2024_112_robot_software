@@ -48,12 +48,7 @@ public class FullWingAuto extends AutoProgram{
        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
        group2.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group2.addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 178.31533352936483539, color));
-       addStep(new ShootNoteStep(finished));
-
-
-
-
-         
+       addStep(new ShootNoteStep(finished));  
     }
 
     @Override
