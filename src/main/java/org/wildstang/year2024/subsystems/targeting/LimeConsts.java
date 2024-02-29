@@ -15,8 +15,9 @@ public class LimeConsts {
     public double AMP_Z = 323.00; //inches
     public double RED_AMP_X = 578.77; //inches
     public double BLUE_AMP_X = 72.5; //inches
+    public double ALLIANCE_LENGTH = 118.25; //inches
     public double RED_AMP_Y,BLUE_AMP_Y = 323.00; //inches
-    //public double CENTER_FIELD_LENGTH = FIELD_WIDTH-(ALLIANCE_LENGTH*2); // INCHES
+    public double CENTER_FIELD_LENGTH = FIELD_WIDTH-(ALLIANCE_LENGTH*2); // INCHES
     public int RADIUS_OF_AMP_TARGETING_ZONE = 49; //Inches
     
     public WsLL aprilTags;
