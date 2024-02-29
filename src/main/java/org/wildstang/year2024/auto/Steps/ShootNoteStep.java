@@ -10,7 +10,7 @@ import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 public class ShootNoteStep extends AutoStep {
     private boolean shootPossible;
     private ShooterSubsystem shooter;
-    private double robotDistance;
+    private double robotSpeakerDistance;
     private SwerveDrive drive;
 
     public ShootNoteStep(boolean shootPossible){
@@ -26,12 +26,13 @@ public class ShootNoteStep extends AutoStep {
     @Override
     public void update() {
         if(shootPossible){
-            robotDistance = drive.getDistanceFromSpeaker();
-            shooter.setShooterSpeed(true,robotDistance);
+            robotSpeakerDistance = drive.getDistanceFromSpeaker();
+            shooter.setShooterSpeed(true,robotSpeakerDistance);
             if (shooter.angleAtTarget() && shooter.velocityAtTarget()){
                 shooter.setNotepathSpeed(false, true);
             }
         }
+        
     }
 
     @Override

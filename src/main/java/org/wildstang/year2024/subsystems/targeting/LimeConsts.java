@@ -7,13 +7,17 @@ import org.wildstang.year2024.subsystems.swerve.DriveConstants;
 public class LimeConsts {
 
     public double FIELD_WIDTH = 323.25; //INCHES
-    public double BLUE_SPEAKER_X = 36.125; //Inches
-    public double RED_SPEAKER_X = FIELD_WIDTH-BLUE_SPEAKER_X; //Inches
-    public double SPEAKER_Y = 218.42;//inches
-    public double ALLIANCE_LENGTH = 118.25; // INCHES
-    public double CENTER_FIELD_LENGTH = FIELD_WIDTH-(ALLIANCE_LENGTH*2); // INCHES
+    public double BLUE_SPEAKER_X = -1.5; //Inches
+    public double RED_SPEAKER_X = 652.73; //Inches
+    public double RED_SPEAKER_Y = 218.42; //inches
+    public double BLUE_SPEAKER_Y = 218.42; // Inches
+    public double SPEAKER_Z = 218.42;//inches
+    public double AMP_Z = 323.00; //inches
+    public double RED_AMP_X = 578.77; //inches
+    public double BLUE_AMP_X = 72.5; //inches
+    public double RED_AMP_Y,BLUE_AMP_Y = 323.00; //inches
+    //public double CENTER_FIELD_LENGTH = FIELD_WIDTH-(ALLIANCE_LENGTH*2); // INCHES
     public int RADIUS_OF_AMP_TARGETING_ZONE = 49; //Inches
-    public double AMP_X = 61.5; //Inches
     
     public WsLL aprilTags;
     

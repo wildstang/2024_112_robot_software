@@ -86,6 +86,15 @@ public class  ShooterSubsystem implements Subsystem{
            motorAngle = 0;
         }
    }
+   public void setAngle(boolean angleAllowed, double ampAngle){
+    if (angleAllowed){
+        motorAngle = ampAngle;
+    }
+    else{
+        motorAngle = 0;
+    }
+   }
+   
    public boolean velocityAtTarget(){
     double currentVelocity = shooterMotor.getVelocity();
     robot_Distance = drive.getDistanceFromSpeaker();
@@ -96,6 +105,10 @@ public class  ShooterSubsystem implements Subsystem{
     else{
         return false;
     }
+   }
+   
+   public void setRetract(boolean retract){
+        this.retract = retract;
    }
    
    public boolean angleAtTarget(){
