@@ -182,26 +182,6 @@ public Optional<Alliance> station;
 
     }
 
-    /*public double getDistanceToCenterOfChainPlusOffset(){
-        double robotDriveDistance;
-            double xPos = poseEstimator.getEstimatedPosition().getX();
-            double yPos = poseEstimator.getEstimatedPosition().getY();
-            double aprilTagX = poseEstimator.getEstimatedPosition().getX();
-            double aprilTagY = poseEstimator.getEstimatedPosition().getY();
-            double robotDistance = Math.sqrt(Math.pow(xPos - aprilTagX,2) + Math.pow(yPos - aprilTagY,2));
-            double angleAtAprilTag = 0;
-            robotDriveDistance = 
-                Math.sqrt((
-                    (Math.pow(
-                        (lc.CORE_OF_STAGE_TO_CHAIN + lc.CLIMBER_OFFSET),2)
-                    ) + 
-                    (Math.pow(robotDistance,2)) - (2*((lc.CORE_OF_STAGE_TO_CHAIN + lc.CLIMBER_OFFSET)))) * Math.cos(Math.toRadians(angleAtAprilTag)))
-        
-        return robotDriveDistance;
-        
-
-    }*/
-
     public double[] FindThirdVertex(double sideA, double sideB, double sideC, double[] vertex1, double[] vertex2){
         double angleA = Math.toDegrees(Math.acos(((sideB*sideB)+(sideC*sideC) - (sideA*sideA)) / (2*sideB*sideC))); // Degrees
         
