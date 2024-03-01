@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class RocketAuto extends AutoProgram{
+public class FullAuto extends AutoProgram{
 
     private boolean color = true;
 
@@ -47,9 +47,27 @@ public class RocketAuto extends AutoProgram{
        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle1", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
 
+       //Middle 2
+       AutoParallelStepGroup group2 = new AutoParallelStepGroup();
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 199.093485079, color));
+       group2.addStep(new intakeNoteStep(true, false));
+       group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle2", new PathConstraints(4.0, 3.0)), swerve, color));
 
+       //Shoot Middle 2
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 133.71980388435017062, color));
+       addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle2", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(new ShootNoteStep(true));
 
+       // Middle 3
+       AutoParallelStepGroup group3 = new AutoParallelStepGroup();
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 169.69518559871849561, color));
+       group3.addStep(new intakeNoteStep(true, false));
+       group3.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle3", new PathConstraints(4.0, 3.0)), swerve, color));
 
+       //ShootMiddle 3
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 179.37728434205416761, color));
+       addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle3", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(new ShootNoteStep(true));
 
 
 
@@ -58,6 +76,6 @@ public class RocketAuto extends AutoProgram{
 
     @Override
     public String toString() {
-        return "RocketAuto";
+        return "FullAuto";
     }
 }
