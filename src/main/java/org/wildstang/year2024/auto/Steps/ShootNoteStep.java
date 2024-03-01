@@ -27,17 +27,19 @@ public class ShootNoteStep extends AutoStep {
     public void update() {
         if(shootPossible){
             robotSpeakerDistance = drive.getDistanceFromSpeaker();
-            shooter.setShooterSpeed(true,robotSpeakerDistance);
+            shooter.setShooterSpeed(true);
             if (shooter.angleAtTarget() && shooter.velocityAtTarget()){
                 shooter.setNotepathSpeed(false, true);
             }
+        }else{
+            shooter.setShooterSpeed(false);
         }
         
     }
 
     @Override
     public String toString() {
-        return "Shoot Note step";
+        return "ShootNoteStep";
     }
     
 }

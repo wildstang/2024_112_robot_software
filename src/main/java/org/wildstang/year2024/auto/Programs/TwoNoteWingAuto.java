@@ -28,6 +28,7 @@ public class TwoNoteWingAuto extends AutoProgram{
        addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));
        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
+       addStep(new ShootNoteStep(false));
        
 
        // Wing Note 1
@@ -36,6 +37,7 @@ public class TwoNoteWingAuto extends AutoProgram{
        group0.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
+       addStep(new ShootNoteStep(false));
 
        //Wing Note 2
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 90, color));
@@ -43,6 +45,7 @@ public class TwoNoteWingAuto extends AutoProgram{
        group1.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
+       addStep(new ShootNoteStep(false));
 
 
 

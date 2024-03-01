@@ -247,11 +247,11 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putBoolean("shooter at target", ampIsAtTarget());
         SmartDashboard.putNumber("shooter velocity", getVelocity());
         switch (feedState) {
-            case SPEAKER:
+            case feedType.SPEAKER:
             robot_Distance = drive.getDistanceFromSpeaker();
             goalVel = getTargetSpeed(robot_Distance);
             shooterEnable = true;
-            case AMP:
+            case feedType.AMP:
             robot_Distance = drive.getDistanceFromAmp();
             goalVel = getTargetSpeed(robot_Distance);
             if (ampIsAtTarget() && shooterisAtTarget() && ampHoodisAtTarget()) {
@@ -262,17 +262,17 @@ public class  ShooterSubsystem implements Subsystem{
             intakeMotorSpeed = 0.0;
             break;
 
-            case INTAKE:
+            case feedType.INTAKE:
                 feedMotorSpeed = -0.5;
                 intakeMotorSpeed = 0.0;
                 break;
 
-            case OUTTAKE:
+            case feedType.OUTTAKE:
                 feedMotorSpeed = -0.5;
                 intakeMotorSpeed = -0.5;
                 break;
 
-            case OFF:
+            case feedType.OFF:
             default:
                 feedMotorSpeed = 0.0;
                 intakeMotorSpeed = 0.0;
@@ -324,6 +324,7 @@ public class  ShooterSubsystem implements Subsystem{
         return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
     }
 
+    
 
     
     @Override
