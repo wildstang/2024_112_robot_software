@@ -26,33 +26,26 @@ public class  ShooterSubsystem implements Subsystem{
     private WsSpark intakeMotor;
     private WsSpark hoodMotor;
     
-    public DigitalInput leftTrigger;
-    private DigitalInput dpadRight;
-    private DigitalInput dpadLeft, dpadDown;
+    private DigitalInput leftBumper, rightBumper;
+    private DigitalInput dpadRight, dpadLeft, dpadUp, dpadDown;
+
     private DigitalInput beamBreakSensor;
-    private DigitalInput aButton;
-    private DigitalInput bButton;
-    private DigitalInput leftBumper, rightBumper, dpadUp;
-    
     public AbsoluteEncoder absEncoderAngle;
 
     public SwerveDrive swerve;
 
-    public double robot_Distance;
-    public double motorSpeed;
-    public double motorAngle;
-    private double velocityDifference;
-    private double angleDifference;
-    private double feedMotorOutput;
-    private double intakeMotorOutput;
+    private double feedMotorOutput, intakeMotorOutput;
+
     private boolean retract;
+    private double hoodOutput;
+
+    private boolean shooterEnable;
+    private double distance;
     private double goalVel, curVel, velErr;
     private double shooterOut;
-    private Boolean shooterEnable;
-    private double goalPos, curPos, curPosErr;
-    private double curVelErr;
+
+    private double goalPos, curPos, posErr;
     private double posOut;
-    private double hoodOutput;
 
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
@@ -68,12 +61,6 @@ public class  ShooterSubsystem implements Subsystem{
         absEncoderAngle = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         
         /**** Button Inputs ****/
-        leftTrigger = (DigitalInput) WsInputs.DRIVER_LEFT_TRIGGER.get();
-        leftTrigger.addInputListener(this);
-        aButton = (DigitalInput) WsInputs.OPERATOR_FACE_DOWN.get();
-        aButton.addInputListener(this);
-        bButton = (DigitalInput) WsInputs.OPERATOR_FACE_RIGHT.get();
-        bButton.addInputListener(this);
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
         rightBumper.addInputListener(this);
         dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
@@ -86,33 +73,29 @@ public class  ShooterSubsystem implements Subsystem{
         dpadDown.addInputListener(this);
        
         /**** Motors ****/
-        shooterMotor = (WsSpark) WsOutputs.SHOOTERSPEED.get();
-        shooterMotor.setCurrentLimit(50,50,0);
-        shooterMotor.setCoast(); 
-        angleMotor = (WsSpark) WsOutputs.SHOOTERANGLE.get();
-        angleMotor.setCurrentLimit(50,50,0);
-        feedMotor = (WsSpark) WsOutputs.SHOOTERFEEDMOTOR.get();
-        feedMotor.setCurrentLimit(50, 50, 0);
+        shooterMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERSPEED);
+        angleMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERANGLE);
+        feedMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERFEEDMOTOR);
         intakeMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.INTAKE);
         hoodMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
-        hoodMotor.setBrake();
 
         /**** Other ****/
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
-        beamBreakSensor = (DigitalInput) WsInputs.BEAMBREAK_SENSOR.get();
+
+        beamBreakSensor = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR);
         beamBreakSensor.addInputListener(this);
-        curPos = getPosition();
+
         resetState();
     }
 
     @Override
     public void inputUpdate(Input source) {
         if (leftBumper.getValue()){
-            shooterState = shooterType.SPEAKER;
+            shooterState = shooterType.INTAKE;
         } else if (dpadUp.getValue()) {
             shooterState = shooterType.AMP;
         } else if (rightBumper.getValue()){
-            shooterState = shooterType.INTAKE;
+            shooterState = shooterType.SPEAKER;
         } else if (dpadDown.getValue()){
             shooterState = shooterType.OUTTAKE;
         } else {
@@ -123,14 +106,14 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void update() {
-        robot_Distance = swerve.getDistanceFromAmp();
-
         switch (shooterState) {
             case SPEAKER:
-                goalVel = getTargetSpeed(robot_Distance);
+                distance = swerve.getDistanceFromSpeaker();
+                goalVel = getTargetSpeed(distance);
+                goalPos = getTargetAngle(distance);
                 shooterEnable = true;
                 retract = true;
-                if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget){
+                if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     feedMotorOutput = 0.5;
                 }else{
                     feedMotorOutput = 0.0;
@@ -185,8 +168,8 @@ public class  ShooterSubsystem implements Subsystem{
         // Pivot control system
         goalPos = Math.min(goalPos, ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0);  // don't command a position higher than the soft stop
         goalPos = Math.max(goalPos, ArmConstants.ZERO_OFFSET * Math.PI / 180.0);  // don't command a position lower than the soft stop
-        curPosErr = goalPos - curPos;
-        posOut = curPosErr * 0.8;
+        posErr = goalPos - curPos;
+        posOut = posErr * 0.8;
         if (curPos <= ArmConstants.ZERO_OFFSET * Math.PI / 180.0 ){
             posOut = Math.max(0, posOut);
         } else if (curPos >= ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0){
@@ -219,14 +202,14 @@ public class  ShooterSubsystem implements Subsystem{
         // Shooter values
         SmartDashboard.putNumber("shooter target", goalVel);
         SmartDashboard.putNumber("shooter output", shooterOut);
-        SmartDashboard.putNumber("shooter velocity error", curVelErr);
+        SmartDashboard.putNumber("shooter velocity error", velErr);
         SmartDashboard.putBoolean("shooter at target", shooterIsAtTarget());
         SmartDashboard.putNumber("shooter velocity", getVelocity());
 
         // Pivot values
         SmartDashboard.putNumber("goal position", goalPos);
         SmartDashboard.putNumber("shooter position", getPosition());
-        SmartDashboard.putNumber("shooter curPosError", curPosErr);
+        SmartDashboard.putNumber("shooter curPosError", posErr);
         SmartDashboard.putNumber("Output", posOut);
         SmartDashboard.putBoolean("pivot at target", pivotIsAtTarget());
     }
@@ -275,25 +258,13 @@ public class  ShooterSubsystem implements Subsystem{
    public void setRetract(boolean retract){
         this.retract = retract;
    }
-   
-   public boolean angleAtTarget(){
-        double currentAngle = angleMotor.getPosition();
-        robot_Distance = swerve.getDistanceFromSpeaker();
-        double angleNeeded = getTargetAngle(robot_Distance);
-        if (Math.abs(angleNeeded-currentAngle) < angleDifference){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
 
     public double getVelocity() {
         return shooterMotor.getVelocity() * ShooterConstants.RATIO * 2 * Math.PI / 60.0;
     }
 
     public boolean pivotIsAtTarget() {
-        return Math.abs(curPosErr) < ArmConstants.POS_DB && Math.abs(curVel) < ArmConstants.VEL_DB;
+        return Math.abs(posErr) < ArmConstants.POS_DB && Math.abs(curVel) < ArmConstants.VEL_DB;
     }
 
     public Boolean hoodIsAtTarget(){
@@ -317,9 +288,9 @@ public class  ShooterSubsystem implements Subsystem{
     public void selfTest() {
     }
 
-    public double getVelocityTarget(double curVel, double curPosErr){
-        if (curPosErr > 0){
-            if (curPosErr <= curVel * Math.abs(curVel / ArmConstants.MAX_ACC) * .5){
+    public double getVelocityTarget(double curVel, double posErr){
+        if (posErr > 0){
+            if (posErr <= curVel * Math.abs(curVel / ArmConstants.MAX_ACC) * .5){
                 return curVel - (ArmConstants.MAX_ACC * ArmConstants.DELTA_T);
             } else if (curVel < ArmConstants.MAX_VEL){
                 return Math.min(curVel + ArmConstants.MAX_ACC * ArmConstants.DELTA_T, ArmConstants.MAX_VEL);
@@ -327,7 +298,7 @@ public class  ShooterSubsystem implements Subsystem{
                 return ArmConstants.MAX_VEL;
             }
         } else {
-            if (curPosErr >= curVel * Math.abs(curVel / ArmConstants.MAX_ACC) * .5){
+            if (posErr >= curVel * Math.abs(curVel / ArmConstants.MAX_ACC) * .5){
                 return curVel + (ArmConstants.MAX_ACC * ArmConstants.DELTA_T);
             } else if (curVel > -ArmConstants.MAX_VEL){
                 return Math.max(curVel - ArmConstants.MAX_ACC * ArmConstants.DELTA_T, -ArmConstants.MAX_VEL);
