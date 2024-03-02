@@ -73,11 +73,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private SwerveDrivePoseEstimator poseEstimator;
     private Timer autoTimer = new Timer();
 public Optional<Alliance> station;
+    private WsVision cam1;
 
     private WsVision limelight;
     private LimeConsts lc;
 
-    public enum driveType {TELEOP, AUTO, CROSS, SPEAKER, AMP, STAGE};
+    public enum driveType {TELEOP, AUTO, CROSS, SPEAKER, AMP, STAGE, VISION};
     public driveType driveState;
 
 
@@ -195,6 +196,26 @@ public Optional<Alliance> station;
 
     }
 
+    /*public double getDistanceToCenterOfChainPlusOffset(){
+        double robotDriveDistance;
+            double xPos = poseEstimator.getEstimatedPosition().getX();
+            double yPos = poseEstimator.getEstimatedPosition().getY();
+            double aprilTagX = poseEstimator.getEstimatedPosition().getX();
+            double aprilTagY = poseEstimator.getEstimatedPosition().getY();
+            double robotDistance = Math.sqrt(Math.pow(xPos - aprilTagX,2) + Math.pow(yPos - aprilTagY,2));
+            double angleAtAprilTag = 0;
+            robotDriveDistance = 
+                Math.sqrt((
+                    (Math.pow(
+                        (lc.CORE_OF_STAGE_TO_CHAIN + lc.CLIMBER_OFFSET),2)
+                    ) + 
+                    (Math.pow(robotDistance,2)) - (2*((lc.CORE_OF_STAGE_TO_CHAIN + lc.CLIMBER_OFFSET)))) * Math.cos(Math.toRadians(angleAtAprilTag)))
+        
+        return robotDriveDistance;
+        
+
+    }*/
+
     public double[] FindThirdVertex(double sideA, double sideB, double sideC, double[] vertex1, double[] vertex2){
         double angleA = Math.toDegrees(Math.acos(((sideB*sideB)+(sideC*sideC) - (sideA*sideA)) / (2*sideB*sideC))); // Degrees
         
@@ -236,6 +257,12 @@ public Optional<Alliance> station;
         else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
             driveState = driveType.TELEOP;
         }
+        if(source == leftBumper ){
+            if(leftBumper.getValue()) driveState = driveType.VISION;
+            else driveState = driveType.TELEOP;
+
+        }
+
 
         //get x and y speeds
         xSpeed = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
@@ -302,6 +329,9 @@ public Optional<Alliance> station;
     public void initInputs() {
         limelight = (WsVision) Core.getSubsystemManager().getSubsystem("Ws Vision");
         lc = new LimeConsts();
+        cam1 = (WsVision) Core.getSubsystemManager().getSubsystem("Ws Vision");
+        lc = new LimeConsts();
+
 
         leftStickX = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_JOYSTICK_X);
         leftStickX.addInputListener(this);
@@ -333,6 +363,7 @@ public Optional<Alliance> station;
         dpadLeft.addInputListener(this);
         rightStickButton = (DigitalInput) WsInputs.DRIVER_RIGHT_JOYSTICK_BUTTON.get();
         rightStickButton.addInputListener(this);
+        
     }
 
     public void initOutputs() {
@@ -349,6 +380,7 @@ public Optional<Alliance> station;
         };
         //create default swerveSignal
         swerveSignal = new SwerveSignal(new double[]{0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0});
+        cam1 = (WsVision) Core.getSubsystemManager().getSubsystem(WsSubsystems.WS_VISION);
         limelight = (WsVision) Core.getSubsystemManager().getSubsystem(WsSubsystems.WS_VISION);
         poseEstimator = new SwerveDrivePoseEstimator(new SwerveDriveKinematics(new Translation2d(DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2),
             new Translation2d(-DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(-DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2)), odoAngle(), odoPosition(), new Pose2d());
@@ -448,7 +480,13 @@ public Optional<Alliance> station;
                    xSpeed = ((lc.Chain11Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                    rotSpeed = swerveHelper.getRotControl(-45, getGyroAngle());
                 }
-            }    
+            }  
+            if (driveState == driveType.VISION){
+                rotSpeed = cam1.getYaw() * .01;
+                this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
+                drive();
+    
+            } 
         }
         
         this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
