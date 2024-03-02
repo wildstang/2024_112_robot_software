@@ -37,7 +37,8 @@ public class FullAutoBottom extends AutoProgram{
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 169.83959554371344325, color));
        group1.addStep(new intakeNoteStep(true, false));
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle1", new PathConstraints(4.0, 3.0)), swerve, color));
-       
+       addStep(group1);
+
        // Shoot
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 169.83959554371344325, color));
        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle1", new PathConstraints(4.0, 3.0)), swerve, color));
@@ -50,6 +51,7 @@ public class FullAutoBottom extends AutoProgram{
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 147.07207857165727205, color));
        group2.addStep(new intakeNoteStep(true, false));
        group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle2", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(group2);
 
        //Shoot Middle 2
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 182.540434116, color));
@@ -63,6 +65,7 @@ public class FullAutoBottom extends AutoProgram{
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 166.1256132925804252, color));
        group3.addStep(new intakeNoteStep(true, false));
        group3.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle3", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(group3);
 
        //ShootMiddle 3
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 174.40468964350796455, color));

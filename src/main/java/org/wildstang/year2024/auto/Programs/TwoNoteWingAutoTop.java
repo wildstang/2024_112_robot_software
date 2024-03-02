@@ -38,6 +38,7 @@ public class TwoNoteWingAutoTop extends AutoProgram{
        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
        group0.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(group0);
        addStep(new ShootNoteStep(true));
        addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
@@ -47,6 +48,7 @@ public class TwoNoteWingAutoTop extends AutoProgram{
        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
        group1.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(group1);
        addStep(new ShootNoteStep(true));
        addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));

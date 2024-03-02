@@ -38,6 +38,7 @@ public class OneNoteWingAutoTop extends AutoProgram{
        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
        group0.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
+       addStep(group0);
        addStep(new ShootNoteStep(true));
        addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
