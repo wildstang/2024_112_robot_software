@@ -8,4 +8,5 @@ public class ShooterConstants {
 
     public static final double kP = 0.004;
     public static final double kF = 1.0 / MAX_VEL;
+    public static final double AMP_SPEED = 400 ;
 }

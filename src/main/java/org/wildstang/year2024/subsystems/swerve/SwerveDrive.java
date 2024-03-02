@@ -394,6 +394,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     @Override
     public void update() {
         poseEstimator.update(odoAngle(), odoPosition());
+        targetYaw = cam1.getYaw();
         limelight.odometryUpdate(poseEstimator);
 
         if (driveState == driveType.CROSS) {
@@ -427,8 +428,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
             this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
             SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
             drive();
-            
-
         }
 
         if(driveState == driveType.AMP && isInAmpRadius()){
@@ -467,7 +466,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                    xSpeed = ((lc.Chain14Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
                    rotSpeed = swerveHelper.getRotControl(0, getGyroAngle());
                 }
-            }else if(station.orElse(null).equals(Alliance.Red)){
+            } else if(station.orElse(null).equals(Alliance.Red)){
                 if(closestTag.equals("tag13")) {
                    ySpeed = (lc.Chain13Midpoint[1] - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
                    xSpeed = ((lc.Chain13Midpoint[0] - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P);
@@ -482,17 +481,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
                    rotSpeed = swerveHelper.getRotControl(-45, getGyroAngle());
                 }
             }  
-            if (driveState == driveType.VISION){
-                rotSpeed = cam1.getYaw() * .01;
+            this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
+            drive();
+        }
+        if (driveState == driveType.VISION){
+            if (!Double.isNaN(targetYaw)){
+                rotSpeed = cam1.getYaw() * .005;
                 this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
                 drive();
-    
-            } 
+            }
         }
-        
-        this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-        SmartDashboard.putNumber("FR signal", swerveSignal.getSpeed(0));
-        drive();
 
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
         SmartDashboard.putNumber("X speed", xSpeed);
@@ -503,6 +501,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
+        SmartDashboard.putNumber("target yaw", targetYaw);
 }
     
     @Override
