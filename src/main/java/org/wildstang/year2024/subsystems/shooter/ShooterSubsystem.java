@@ -27,7 +27,7 @@ public class  ShooterSubsystem implements Subsystem{
     //  private DigitalInput button;
     //  private WsSpark motor;
 
-    private enum shooterType {SPEAKER, AMP, INTAKE, OUTTAKE, OFF};
+    public enum shooterType {SPEAKER, AMP, INTAKE, OUTTAKE, OFF};
     public WsSpark angleMotor;
     public WsSpark shooterMotor;
     public WsSpark feedMotor;
@@ -91,9 +91,11 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public void setShooterState(shooterType currentState){
-        shooterState= currentState;
+        shooterState = currentState;
     }
-   
+    public void setShooterEnable(boolean shooterEnable){
+        this.shooterEnable = shooterEnable;
+    }   
    public boolean velocityAtTarget(){
     double currentVelocity = shooterMotor.getVelocity();
     robot_Distance = drive.getDistanceFromSpeaker();
@@ -256,11 +258,13 @@ public class  ShooterSubsystem implements Subsystem{
             case INTAKE:
                 feedMotorSpeed = 0.5;
                 intakeMotorSpeed = 0.5;
+                shooterEnable = false;
                 break;
 
             case OUTTAKE:
                 feedMotorSpeed = -0.5;
                 intakeMotorSpeed = -0.5;
+                shooterEnable = false;
                 break;
 
             case OFF:
