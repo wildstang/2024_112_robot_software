@@ -77,7 +77,7 @@ public class Shooter implements Subsystem {
     }
 
     public Boolean isAtTarget(){
-        return Math.abs(goalVel - getVelocity()) < 20;
+        return Math.abs(goalVel - getVelocity()) < 10;
     }
 
     public double getVelocity() {
