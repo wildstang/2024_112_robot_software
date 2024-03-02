@@ -278,17 +278,14 @@ public class  ShooterSubsystem implements Subsystem{
             robot_Distance = drive.getDistanceFromSpeaker();
             goalVel = getTargetSpeed(robot_Distance);
             shooterEnable = true;
-<<<<<<< HEAD
             retract = true;
             if(shooterisAtTarget() && ampHoodisAtTarget()){
                 feedMotorSpeed = 0.5;
             }else{
                 feedMotorSpeed = 0.0;
             }
-            case feedType.AMP:
-=======
+            break;
             case AMP:
->>>>>>> 6270c9b8fafd6cc61049346200eda78f1952ffaa
             robot_Distance = drive.getDistanceFromAmp();
             goalVel = getTargetSpeed(robot_Distance);
             if (ampIsAtTarget() && shooterisAtTarget() && ampHoodisAtTarget()) {
