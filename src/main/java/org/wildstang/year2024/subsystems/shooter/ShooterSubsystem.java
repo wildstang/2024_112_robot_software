@@ -36,7 +36,7 @@ public class  ShooterSubsystem implements Subsystem{
     public DigitalInput leftTrigger;
     public double motorAngle;
     private DigitalInput dpadRight;
-    private DigitalInput dpadLeft;
+    private DigitalInput dpadLeft, dpadDown;
     public AbsoluteEncoder absEncoderShooter;
     public AbsoluteEncoder absEncoderFeed;
     public AbsoluteEncoder absEncoderAngle;
@@ -58,6 +58,7 @@ public class  ShooterSubsystem implements Subsystem{
     double curVelErr;
     double curOut = 0;
     private WsSpark ampHoodMotor;
+    private feedType feedState;
     private double ampHoodSpeed;
 
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
@@ -189,6 +190,17 @@ public class  ShooterSubsystem implements Subsystem{
        } else {
         shooterEnable = false;
         }
+        if (leftBumper.getValue()){
+            feedState = feedType.SPEAKER;
+        } else if (dpadUp.getValue()) {
+            feedState = feedType.AMP;
+        } else if (rightBumper.getValue()){
+            feedState = feedType.INTAKE;
+        } else if (dpadDown.getValue()){
+            feedState = feedType.OUTTAKE;
+        } else {
+            feedState = feedType.OFF;
+        }
 
 
     }
@@ -215,6 +227,8 @@ public class  ShooterSubsystem implements Subsystem{
         dpadRight.addInputListener(this);
         dpadLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_LEFT);
         dpadLeft.addInputListener(this);
+        dpadDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_DOWN);
+        dpadDown.addInputListener(this);
        
 
         /**** Motors ****/
@@ -242,15 +256,29 @@ public class  ShooterSubsystem implements Subsystem{
         intakeMotor.setSpeed(intakeMotorSpeed);
         angleMotor.setPosition(motorAngle);
         feedMotor.setSpeed(feedMotorSpeed);
+        if (shooterEnable) {
+            goalVel = Math.min (goalVel, ShooterConstants.MAX_VEL);
+            goalVel = Math.max(goalVel, -ShooterConstants.MAX_VEL);
+
+            curVel = getVelocity();
+            velErr = goalVel - curVel;
+
+            out = goalVel * ShooterConstants.kF + velErr * ShooterConstants.kP;
+
+            shooterMotor.setSpeed(out);
+        } else {
+            shooterMotor.setSpeed(0);
+        }
         SmartDashboard.putNumber("shooter target", goalVel);
         SmartDashboard.putNumber("shooter speed", out);
         SmartDashboard.putBoolean("shooter at target", ampIsAtTarget());
         SmartDashboard.putNumber("shooter velocity", getVelocity());
         switch (feedState) {
-            case feedType.SPEAKER:
+            case SPEAKER:
             robot_Distance = drive.getDistanceFromSpeaker();
             goalVel = getTargetSpeed(robot_Distance);
             shooterEnable = true;
+<<<<<<< HEAD
             retract = true;
             if(shooterisAtTarget() && ampHoodisAtTarget()){
                 feedMotorSpeed = 0.5;
@@ -258,6 +286,9 @@ public class  ShooterSubsystem implements Subsystem{
                 feedMotorSpeed = 0.0;
             }
             case feedType.AMP:
+=======
+            case AMP:
+>>>>>>> 6270c9b8fafd6cc61049346200eda78f1952ffaa
             robot_Distance = drive.getDistanceFromAmp();
             goalVel = getTargetSpeed(robot_Distance);
             if (ampIsAtTarget() && shooterisAtTarget() && ampHoodisAtTarget()) {
@@ -268,17 +299,17 @@ public class  ShooterSubsystem implements Subsystem{
             intakeMotorSpeed = 0.0;
             break;
 
-            case feedType.INTAKE:
+            case INTAKE:
                 feedMotorSpeed = -0.5;
                 intakeMotorSpeed = 0.0;
                 break;
 
-            case feedType.OUTTAKE:
+            case OUTTAKE:
                 feedMotorSpeed = -0.5;
                 intakeMotorSpeed = -0.5;
                 break;
 
-            case feedType.OFF:
+            case OFF:
             default:
                 feedMotorSpeed = 0.0;
                 intakeMotorSpeed = 0.0;
@@ -292,12 +323,16 @@ public class  ShooterSubsystem implements Subsystem{
             curOut = Math.max(0, curOut);
         } else if (curPos >= ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0){
             curOut = Math.min(0, curOut);
-            SmartDashboard.putNumber("shooter curPosError", curPosErr);
-            SmartDashboard.putNumber("shooter goal velocity", goalVel);
-            SmartDashboard.putNumber("shooter velocity error", curVelErr);
-            SmartDashboard.putNumber("Output", curOut);
-            SmartDashboard.putBoolean("pivot at target", ampIsAtTarget());
         }
+
+        SmartDashboard.putNumber("goal position", goalPos);
+        SmartDashboard.putNumber("shooter position", getPosition());
+        SmartDashboard.putNumber("shooter curPosError", curPosErr);
+        SmartDashboard.putNumber("shooter goal velocity", goalVel);
+        SmartDashboard.putNumber("shooter velocity error", curVelErr);
+        SmartDashboard.putNumber("Output", curOut);
+        SmartDashboard.putBoolean("pivot at target", ampIsAtTarget());
+        angleMotor.setSpeed(curOut);
         if (!retract && ampHoodMotor.getPosition() < 1.75){
             ampHoodSpeed = 0.15;
         } else if (ampHoodMotor.getPosition() > 0.1){
@@ -309,6 +344,7 @@ public class  ShooterSubsystem implements Subsystem{
        SmartDashboard.putNumber("hood position", ampHoodMotor.getPosition());
        SmartDashboard.putNumber("amp speed", ampHoodSpeed);
        SmartDashboard.putBoolean("hood at target", ampHoodisAtTarget());
+       SmartDashboard.putNumber("feed speed", feedMotorSpeed);
 
     }
     
@@ -330,7 +366,6 @@ public class  ShooterSubsystem implements Subsystem{
         return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
     }
 
-    
 
     
     @Override
@@ -344,8 +379,38 @@ public class  ShooterSubsystem implements Subsystem{
         goalVel = 0.0;
         ampHoodSpeed = 0.0;
         retract = true;
+        curPos = getPosition();
+        curVel = absEncoderShooter.getVelocity();
+        goalPos = curPos;
+        goalVel = 0;
+        curOut = 0;
+        feedMotorSpeed = 0.0;
+        intakeMotorSpeed = 0.0;
+        feedState = feedType.OFF;
     }
+    
     @Override
     public void selfTest() {
+    }
+
+
+    public double getVelocityTarget(double curVel, double curPosErr){
+        if (curPosErr > 0){
+            if (curPosErr <= curVel * Math.abs(curVel / ArmConstants.MAX_ACC) * .5){
+                return curVel - (ArmConstants.MAX_ACC * ArmConstants.DELTA_T);
+            } else if (curVel < ArmConstants.MAX_VEL){
+                return Math.min(curVel + ArmConstants.MAX_ACC * ArmConstants.DELTA_T, ArmConstants.MAX_VEL);
+            } else{
+                return ArmConstants.MAX_VEL;
+            }
+        } else {
+            if (curPosErr >= curVel * Math.abs(curVel / ArmConstants.MAX_ACC) * .5){
+                return curVel + (ArmConstants.MAX_ACC * ArmConstants.DELTA_T);
+            } else if (curVel > -ArmConstants.MAX_VEL){
+                return Math.max(curVel - ArmConstants.MAX_ACC * ArmConstants.DELTA_T, -ArmConstants.MAX_VEL);
+            } else{
+                return -ArmConstants.MAX_VEL;
+            }
+        }
     }
 }
