@@ -28,10 +28,10 @@ public class AmpHood implements Subsystem{
 
     @Override
     public void update() {
-        if (!retract && ampHoodMotor.getPosition() < 1.75){
-            ampHoodSpeed = 0.15;
-        } else if (ampHoodMotor.getPosition() > 0.1){
-            ampHoodSpeed = -0.15;
+        if (!retract){ // && ampHoodMotor.getPosition() < 12
+            ampHoodSpeed = 0.4;
+        } else if (ampHoodMotor.getPosition() > 0.5){
+            ampHoodSpeed = -0.4;
         } else {
             ampHoodSpeed = 0.0;
         }
@@ -45,7 +45,7 @@ public class AmpHood implements Subsystem{
     @Override
     public void inputUpdate(Input source) {
        if (dpadUp.getValue()){
-        retract = true;
+        retract = false;
        }
        else{
         retract = true;

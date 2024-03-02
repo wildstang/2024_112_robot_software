@@ -19,7 +19,7 @@ public class Shooter implements Subsystem {
     @Override
     public void inputUpdate(Input source) {
         if (source == dpadUp && dpadUp.getValue()) {
-            goalVel = 150;
+            goalVel = 400;
             shooterEnable = true;
         } else if (source == leftBumper && leftBumper.getValue()){
             goalVel = 445;  // 445

@@ -38,12 +38,12 @@ public class ArmPivot implements Subsystem {
             } else {
                 goalPos = 35 * Math.PI / 180.0;  // TODO: verify podium angle
             }
-        } else if (source == rightBumper) {
-            if (rightBumper.getValue()) {
-                goalPos = 100 * Math.PI / 180.0;  // TODO: verify intake angle
-            } else {
-                goalPos = 35 * Math.PI / 180.0;  // TODO: verify podium angle
-            }
+        // } else if (source == rightBumper) {
+        //     if (rightBumper.getValue()) {
+        //         goalPos = 35 * Math.PI / 180.0;  // TODO: verify intake angle
+        //     } else {
+        //         goalPos = 35 * Math.PI / 180.0;  // TODO: verify podium angle
+        //     }
         } else if (source == dpadRight && dpadRight.getValue()){
             goalPos += 5 * Math.PI / 180.0;
         } else if (source == dpadLeft && dpadLeft.getValue()){
