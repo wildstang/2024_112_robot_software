@@ -59,7 +59,7 @@ public class AmpHood implements Subsystem{
     }
 
     public Boolean isAtTarget(){
-        return (retract && ampHoodMotor.getPosition() < 0.1) || (!retract && ampHoodMotor.getPosition() > 1.9);  // TODO: Check position travel limits
+        return (retract && ampHoodMotor.getPosition() < 0.5) || (!retract && ampHoodMotor.getPosition() > 10.0);  // TODO: Check position travel limits
     }
 
 
