@@ -34,7 +34,7 @@ public class ArmPivot implements Subsystem {
     public void inputUpdate(Input source) {
         if (source == dpadUp){
             if (dpadUp.getValue()) {
-                goalPos = 100 * Math.PI / 180.0;  // TODO: verify amp scoring angle
+                goalPos = 107 * Math.PI / 180.0;  // TODO: verify amp scoring angle
             } else {
                 goalPos = 35 * Math.PI / 180.0;  // TODO: verify podium angle
             }
