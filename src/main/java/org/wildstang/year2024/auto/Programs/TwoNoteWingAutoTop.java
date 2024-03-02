@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class FullWingAuto extends AutoProgram{
+public class TwoNoteWingAutoTop extends AutoProgram{
 
     private boolean color = true;
 
@@ -25,7 +25,7 @@ public class FullWingAuto extends AutoProgram{
          color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
        //Preload Shot
-       addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 0, color));
+       addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));
        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
        addStep(new ShootNoteStep(false));
@@ -40,24 +40,21 @@ public class FullWingAuto extends AutoProgram{
        addStep(new ShootNoteStep(false));
 
        //Wing Note 2
-       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 90, color));
        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
        group1.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
        addStep(new ShootNoteStep(false));
 
-       //Wing Note 3
-       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),180, color));
-       AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-       group2.addStep(new intakeNoteStep(finishedPreviousStep, finished));
-       group2.addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 178.31533352936483539, color));
-       addStep(new ShootNoteStep(true));
-       addStep(new ShootNoteStep(false));
+
+
+
+         
     }
 
     @Override
     public String toString() {
-        return "FullWingAuto";
+        return "Two Note Wing Auto Top";
     }
 }

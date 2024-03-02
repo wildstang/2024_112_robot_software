@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class FullAuto extends AutoProgram{
+public class FullAutoTop extends AutoProgram{
 
     private boolean color = true;
 
@@ -82,6 +82,6 @@ public class FullAuto extends AutoProgram{
 
     @Override
     public String toString() {
-        return "FullAuto";
+        return "Full Auto Top";
     }
 }

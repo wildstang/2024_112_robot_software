@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class RocketAuto extends AutoProgram{
+public class RocketAutoTop extends AutoProgram{
 
     private boolean color = true;
 
@@ -58,6 +58,6 @@ public class RocketAuto extends AutoProgram{
 
     @Override
     public String toString() {
-        return "RocketAuto";
+        return "Rocket Auto Top";
     }
 }

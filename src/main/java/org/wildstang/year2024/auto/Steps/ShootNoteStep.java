@@ -39,7 +39,7 @@ public class ShootNoteStep extends AutoStep {
 
     @Override
     public String toString() {
-        return "ShootNoteStep";
+        return "Shoot Note Step";
     }
     
 }

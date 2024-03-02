@@ -73,6 +73,6 @@ public class FullAutoBottom extends AutoProgram{
 
     @Override
     public String toString() {
-        return "FullAutoBottom";
+        return "Full Auto Bottom";
     }
 }
