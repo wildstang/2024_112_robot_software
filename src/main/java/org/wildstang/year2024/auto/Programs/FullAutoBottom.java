@@ -35,7 +35,7 @@ public class FullAutoBottom extends AutoProgram{
        // Rocket
        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 169.83959554371344325, color));
-       group1.addStep(new intakeNoteStep(true, false));
+       group1.addStep(new intakeNoteStep(true));
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle1", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(group1);
 
@@ -49,7 +49,7 @@ public class FullAutoBottom extends AutoProgram{
        //Middle 2
        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 147.07207857165727205, color));
-       group2.addStep(new intakeNoteStep(true, false));
+       group2.addStep(new intakeNoteStep(true));
        group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle2", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(group2);
 
@@ -63,7 +63,7 @@ public class FullAutoBottom extends AutoProgram{
        // Middle 3
        AutoParallelStepGroup group3 = new AutoParallelStepGroup();
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 166.1256132925804252, color));
-       group3.addStep(new intakeNoteStep(true, false));
+       group3.addStep(new intakeNoteStep(true));
        group3.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle3", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(group3);
 

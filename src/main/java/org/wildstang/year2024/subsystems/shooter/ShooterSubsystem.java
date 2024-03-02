@@ -27,7 +27,7 @@ public class  ShooterSubsystem implements Subsystem{
     //  private DigitalInput button;
     //  private WsSpark motor;
 
-    private enum feedType {SPEAKER, AMP, INTAKE, OUTTAKE, OFF};
+    public enum shooterType {SPEAKER, AMP, INTAKE, OUTTAKE, OFF};
     public WsSpark angleMotor;
     public WsSpark shooterMotor;
     public WsSpark feedMotor;
@@ -58,7 +58,7 @@ public class  ShooterSubsystem implements Subsystem{
     double curVelErr;
     double curOut = 0;
     private WsSpark ampHoodMotor;
-    private feedType feedState;
+    private shooterType shooterState;
     private double ampHoodSpeed;
 
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
@@ -90,18 +90,12 @@ public class  ShooterSubsystem implements Subsystem{
             * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
     }
 
-   public void setShooterSpeed(boolean enable){
-        shooterEnable = enable;
-   }
-   public void setAngle(boolean angleAllowed, double ampAngle){
-    if (angleAllowed){
-        motorAngle = ampAngle;
+    public void setShooterState(shooterType currentState){
+        shooterState = currentState;
     }
-    else{
-        motorAngle = 0;
-    }
-   }
-   
+    public void setShooterEnable(boolean shooterEnable){
+        this.shooterEnable = shooterEnable;
+    }   
    public boolean velocityAtTarget(){
     double currentVelocity = shooterMotor.getVelocity();
     robot_Distance = drive.getDistanceFromSpeaker();
@@ -129,45 +123,10 @@ public class  ShooterSubsystem implements Subsystem{
         return false;
     }
    }
-   public void setNotepathSpeed(boolean speedForward, boolean speedBackwards){
-    if (speedForward == true && speedBackwards == false){
-        feedMotorSpeed = 1;
-        intakeMotorSpeed = 1;
-    }
-    else if (speedForward == false && speedBackwards == false){
-        feedMotorSpeed = -1;
-        intakeMotorSpeed = -1;
-    }
-    else if (speedForward == false && speedBackwards == true){
-        feedMotorSpeed = 1;
-    }
-    else{
-        feedMotorSpeed = 0;
-        intakeMotorSpeed = 0;
-    }
-}
+
 
     @Override
     public void inputUpdate(Input source) {
-        robot_Distance = drive.getDistanceFromSpeaker();
-        if(leftTrigger.getValue()){
-            setShooterSpeed(true);
-           
-        }
-        else if(!leftTrigger.getValue()){
-            setShooterSpeed(false);
-        }
-        if (aButton.getValue() && beamBreakSensor.getValue() == false){
-            setNotepathSpeed(true, true);
-        }
-        //bButton reverses speed and sets both motor speeds to -1
-        else if (bButton.getValue()){
-            setNotepathSpeed(false,false);
-        }
-        //sets both motor speeds to 0
-        else{
-            setNotepathSpeed(true, false);
-        }
         if (source == dpadUp) {
             if (dpadUp.getValue()){
             goalVel = 150;
@@ -186,20 +145,20 @@ public class  ShooterSubsystem implements Subsystem{
         shooterEnable = true;
        } else if (source == rightBumper && rightBumper.getValue()) {
         goalVel = -300;
-        shooterEnable = true;
+        shooterEnable = false;
        } else {
         shooterEnable = false;
         }
         if (leftBumper.getValue()){
-            feedState = feedType.SPEAKER;
+            shooterState = shooterType.SPEAKER;
         } else if (dpadUp.getValue()) {
-            feedState = feedType.AMP;
+            shooterState = shooterType.AMP;
         } else if (rightBumper.getValue()){
-            feedState = feedType.INTAKE;
+            shooterState = shooterType.INTAKE;
         } else if (dpadDown.getValue()){
-            feedState = feedType.OUTTAKE;
+            shooterState = shooterType.OUTTAKE;
         } else {
-            feedState = feedType.OFF;
+            shooterState = shooterType.OFF;
         }
 
 
@@ -273,7 +232,7 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("shooter speed", out);
         SmartDashboard.putBoolean("shooter at target", ampIsAtTarget());
         SmartDashboard.putNumber("shooter velocity", getVelocity());
-        switch (feedState) {
+        switch (shooterState) {
             case SPEAKER:
             robot_Distance = drive.getDistanceFromSpeaker();
             goalVel = getTargetSpeed(robot_Distance);
@@ -297,13 +256,15 @@ public class  ShooterSubsystem implements Subsystem{
             break;
 
             case INTAKE:
-                feedMotorSpeed = -0.5;
-                intakeMotorSpeed = 0.0;
+                feedMotorSpeed = 0.5;
+                intakeMotorSpeed = 0.5;
+                shooterEnable = false;
                 break;
 
             case OUTTAKE:
                 feedMotorSpeed = -0.5;
                 intakeMotorSpeed = -0.5;
+                shooterEnable = false;
                 break;
 
             case OFF:
@@ -383,7 +344,7 @@ public class  ShooterSubsystem implements Subsystem{
         curOut = 0;
         feedMotorSpeed = 0.0;
         intakeMotorSpeed = 0.0;
-        feedState = feedType.OFF;
+        shooterState = shooterType.OFF;
     }
     
     @Override

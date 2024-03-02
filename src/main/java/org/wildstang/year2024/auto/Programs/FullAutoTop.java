@@ -36,7 +36,7 @@ public class FullAutoTop extends AutoProgram{
        // Wing Note 1
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 215.311216827, color));
        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-       group0.addStep(new intakeNoteStep(true, false));
+       group0.addStep(new intakeNoteStep(true));
        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Wing1", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(group0);
 
@@ -46,7 +46,7 @@ public class FullAutoTop extends AutoProgram{
        addStep(new ShootNoteStep(true));
        addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
-       group1.addStep(new intakeNoteStep(true, false));
+       group1.addStep(new intakeNoteStep(true);
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle1", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(group1);
 
@@ -60,7 +60,7 @@ public class FullAutoTop extends AutoProgram{
        //Middle 2
        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 199.093485079, color));
-       group2.addStep(new intakeNoteStep(true, false));
+       group2.addStep(new intakeNoteStep(true));
        group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle2", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(group2);
 
@@ -74,7 +74,7 @@ public class FullAutoTop extends AutoProgram{
        // Middle 3
        AutoParallelStepGroup group3 = new AutoParallelStepGroup();
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 169.69518559871849561, color));
-       group3.addStep(new intakeNoteStep(true, false));
+       group3.addStep(new intakeNoteStep(true));
        group3.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle3", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(group3);
 

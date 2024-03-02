@@ -4,7 +4,9 @@ import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
+import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem.shooterType;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
+
 public class scoreAmp extends AutoStep {
     private boolean scoreAmpPossible;
     private ShooterSubsystem shooter;
@@ -25,13 +27,7 @@ public class scoreAmp extends AutoStep {
     @Override
     public void update() {
        if (scoreAmpPossible){
-            shooter.setAngle(true, ampAngle);
-            shooter.setRetract(false);
-            robotAmpDistance = swerve.getDistanceFromAmp();
-            shooter.setShooterSpeed(true);
-            if(shooter.angleAtTarget() && shooter.velocityAtTarget()){
-                shooter.setNotepathSpeed(false, true);
-            }
+           shooter.setShooterState(shooterType.AMP);
        };
     }
 

@@ -1,3 +1,5 @@
+package org.wildstang.year2024.subsystems.shooter;
+
 public final class ArmConstants {
 
     public static final double ZERO_OFFSET = 29.0;
