@@ -3,6 +3,7 @@ package org.wildstang.year2024.auto.Programs;
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
+import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
 import org.wildstang.year2024.auto.Steps.StartOdometryStep;
@@ -28,6 +29,7 @@ public class FullAutoTop extends AutoProgram{
        addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 0, color));
        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Start", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
+       addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
        
 
