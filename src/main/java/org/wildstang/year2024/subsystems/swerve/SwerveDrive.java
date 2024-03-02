@@ -72,8 +72,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WsSwerveHelper swerveHelper = new WsSwerveHelper();
     private SwerveDrivePoseEstimator poseEstimator;
     private Timer autoTimer = new Timer();
-public Optional<Alliance> station;
+    public Optional<Alliance> station;
     private WsVision cam1;
+    private double targetYaw;
 
     private WsVision limelight;
     private LimeConsts lc;
@@ -612,5 +613,9 @@ public Optional<Alliance> station;
     }
     public Pose2d returnPose(){
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public Boolean isAtTarget(){
+        return (Math.abs(targetYaw) < 4 || Double.isNaN(targetYaw));
     }
 }

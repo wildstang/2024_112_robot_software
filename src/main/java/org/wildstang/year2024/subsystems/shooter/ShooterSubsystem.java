@@ -16,50 +16,43 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class  ShooterSubsystem implements Subsystem{
-    /* 1. rename this ^ to be whatever your file is called
-     * 2. go to getName() and change the string "template" to a string that describes this subsystem
-     * 3. add any variables you need under this comment block (inputs, outputs, doubles/booleans/ints)
-     * 4. Initialize any inputs and outputs under init()
-     * 5. add your code where it should be in inputUpdate() and update()
-     */
-
-     //example
-    //  private DigitalInput button;
-    //  private WsSpark motor;
 
     public enum shooterType {SPEAKER, AMP, INTAKE, OUTTAKE, OFF};
+    private shooterType shooterState;
+
     public WsSpark angleMotor;
     public WsSpark shooterMotor;
     public WsSpark feedMotor;
-    public double robot_Distance;
-    public double motorSpeed;
+    private WsSpark intakeMotor;
+    private WsSpark hoodMotor;
+    
     public DigitalInput leftTrigger;
-    public double motorAngle;
     private DigitalInput dpadRight;
     private DigitalInput dpadLeft, dpadDown;
-    public AbsoluteEncoder absEncoderShooter;
-    public AbsoluteEncoder absEncoderFeed;
-    public AbsoluteEncoder absEncoderAngle;
-    public SwerveDrive drive;
-    private double velocityDifference;
-    private double angleDifference;
     private DigitalInput beamBreakSensor;
-    private WsSpark intakeMotor;
-    private double feedMotorSpeed = 0;
-    private double intakeMotorSpeed;
     private DigitalInput aButton;
     private DigitalInput bButton;
+    private DigitalInput leftBumper, rightBumper, dpadUp;
+    
+    public AbsoluteEncoder absEncoderAngle;
+
+    public SwerveDrive swerve;
+
+    public double robot_Distance;
+    public double motorSpeed;
+    public double motorAngle;
+    private double velocityDifference;
+    private double angleDifference;
+    private double feedMotorOutput;
+    private double intakeMotorOutput;
     private boolean retract;
     private double goalVel, curVel, velErr;
-    private double out;
+    private double shooterOut;
     private Boolean shooterEnable;
-    private DigitalInput leftBumper, rightBumper, dpadUp;
-    double goalPos, curPos, curPosErr;
-    double curVelErr;
-    double curOut = 0;
-    private WsSpark ampHoodMotor;
-    private shooterType shooterState;
-    private double ampHoodSpeed;
+    private double goalPos, curPos, curPosErr;
+    private double curVelErr;
+    private double posOut;
+    private double hoodOutput;
 
     public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
@@ -69,106 +62,9 @@ public class  ShooterSubsystem implements Subsystem{
 
     public int[] indexes = new int[2];
 
-    public double getTargetSpeed(double distance){
-        for(int i = 0; i < distanceMarks.length; i++){
-            if((distance >= distanceMarks[i]) && (distance >= distanceMarks[i+1])){
-                indexes[0] = i;
-                indexes[1] = i+1;
-                
-                
-            }
-        }
-
-        return (double)((speeds[indexes[0]]+((speeds[indexes[1]] - speeds[indexes[0]]) * 
-                    ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])))));
-
-
-    }
-
-    public double getTargetAngle(double distance){
-        return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
-            * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
-    }
-
-    public void setShooterState(shooterType currentState){
-        shooterState = currentState;
-    }
-    public void setShooterEnable(boolean shooterEnable){
-        this.shooterEnable = shooterEnable;
-    }   
-   public boolean velocityAtTarget(){
-    double currentVelocity = shooterMotor.getVelocity();
-    robot_Distance = drive.getDistanceFromSpeaker();
-    double velocityNeeded1 = getTargetSpeed(robot_Distance);
-    if (Math.abs(velocityNeeded1 - currentVelocity) < velocityDifference){
-        return true;
-    }
-    else{
-        return false;
-    }
-   }
-   
-   public void setRetract(boolean retract){
-        this.retract = retract;
-   }
-   
-   public boolean angleAtTarget(){
-    double currentAngle = angleMotor.getPosition();
-    robot_Distance = drive.getDistanceFromSpeaker();
-    double angleNeeded = getTargetAngle(robot_Distance);
-    if (Math.abs(angleNeeded-currentAngle) < angleDifference){
-        return true;
-    }
-    else{
-        return false;
-    }
-   }
-
-
-    @Override
-    public void inputUpdate(Input source) {
-        if (source == dpadUp) {
-            if (dpadUp.getValue()){
-            goalVel = 150;
-            shooterEnable = true;
-            retract = false;
-            goalPos = 100 * Math.PI / 180.0;  // TODO: verify amp scoring angle
-            }
-            else {
-                goalPos = 35 * Math.PI / 180.0;  // TODO: verify podium angle
-                retract = true;
-            }
-        }
-        else if (source == leftBumper && leftBumper.getValue()){
-        goalVel = 445;  // 445
-        goalPos = 35 * Math.PI / 180.0;
-        shooterEnable = true;
-       } else if (source == rightBumper && rightBumper.getValue()) {
-        goalVel = -300;
-        shooterEnable = false;
-       } else {
-        shooterEnable = false;
-        }
-        if (leftBumper.getValue()){
-            shooterState = shooterType.SPEAKER;
-        } else if (dpadUp.getValue()) {
-            shooterState = shooterType.AMP;
-        } else if (rightBumper.getValue()){
-            shooterState = shooterType.INTAKE;
-        } else if (dpadDown.getValue()){
-            shooterState = shooterType.OUTTAKE;
-        } else {
-            shooterState = shooterType.OFF;
-        }
-
-
-    }
-
     @Override
     public void init() {
         /**** Abs Encoders ****/
-        absEncoderShooter = shooterMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
-        absEncoderFeed = feedMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         absEncoderAngle = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         
         /**** Button Inputs ****/
@@ -189,7 +85,6 @@ public class  ShooterSubsystem implements Subsystem{
         dpadDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_DOWN);
         dpadDown.addInputListener(this);
        
-
         /**** Motors ****/
         shooterMotor = (WsSpark) WsOutputs.SHOOTERSPEED.get();
         shooterMotor.setCurrentLimit(50,50,0);
@@ -199,11 +94,11 @@ public class  ShooterSubsystem implements Subsystem{
         feedMotor = (WsSpark) WsOutputs.SHOOTERFEEDMOTOR.get();
         feedMotor.setCurrentLimit(50, 50, 0);
         intakeMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.INTAKE);
-        ampHoodMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
-        ampHoodMotor.setBrake();
+        hoodMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
+        hoodMotor.setBrake();
 
         /**** Other ****/
-        drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
+        swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         beamBreakSensor = (DigitalInput) WsInputs.BEAMBREAK_SENSOR.get();
         beamBreakSensor.addInputListener(this);
         curPos = getPosition();
@@ -211,10 +106,68 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     @Override
+    public void inputUpdate(Input source) {
+        if (leftBumper.getValue()){
+            shooterState = shooterType.SPEAKER;
+        } else if (dpadUp.getValue()) {
+            shooterState = shooterType.AMP;
+        } else if (rightBumper.getValue()){
+            shooterState = shooterType.INTAKE;
+        } else if (dpadDown.getValue()){
+            shooterState = shooterType.OUTTAKE;
+        } else {
+            shooterState = shooterType.OFF;
+        }
+    }
+
+
+    @Override
     public void update() {
-        intakeMotor.setSpeed(intakeMotorSpeed);
-        angleMotor.setPosition(motorAngle);
-        feedMotor.setSpeed(feedMotorSpeed);
+        robot_Distance = swerve.getDistanceFromAmp();
+
+        switch (shooterState) {
+            case SPEAKER:
+                goalVel = getTargetSpeed(robot_Distance);
+                shooterEnable = true;
+                retract = true;
+                if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget){
+                    feedMotorOutput = 0.5;
+                }else{
+                    feedMotorOutput = 0.0;
+                }
+                intakeMotorOutput = 0.0;
+                break;
+            case AMP:
+                goalVel = ShooterConstants.AMP_SPEED;
+                if (pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget()) {
+                    feedMotorOutput = 0.5;
+                } else {
+                    feedMotorOutput = 0.0;
+                }
+                intakeMotorOutput = 0.0;
+                break;
+
+            case INTAKE:
+                feedMotorOutput = 0.5;
+                intakeMotorOutput = 0.5;
+                shooterEnable = false;
+                break;
+
+            case OUTTAKE:
+                feedMotorOutput = -0.5;
+                intakeMotorOutput = -0.5;
+                shooterEnable = false;
+                break;
+
+            case OFF:
+            default:
+                feedMotorOutput = 0.0;
+                intakeMotorOutput = 0.0;
+                shooterEnable = false;
+                break;
+        }
+
+        // Shooter control system
         if (shooterEnable) {
             goalVel = Math.min (goalVel, ShooterConstants.MAX_VEL);
             goalVel = Math.max(goalVel, -ShooterConstants.MAX_VEL);
@@ -222,135 +175,147 @@ public class  ShooterSubsystem implements Subsystem{
             curVel = getVelocity();
             velErr = goalVel - curVel;
 
-            out = goalVel * ShooterConstants.kF + velErr * ShooterConstants.kP;
+            shooterOut = goalVel * ShooterConstants.kF + velErr * ShooterConstants.kP;
 
-            shooterMotor.setSpeed(out);
+            shooterMotor.setSpeed(shooterOut);
         } else {
             shooterMotor.setSpeed(0);
         }
-        SmartDashboard.putNumber("shooter target", goalVel);
-        SmartDashboard.putNumber("shooter speed", out);
-        SmartDashboard.putBoolean("shooter at target", ampIsAtTarget());
-        SmartDashboard.putNumber("shooter velocity", getVelocity());
-        switch (shooterState) {
-            case SPEAKER:
-            robot_Distance = drive.getDistanceFromSpeaker();
-            goalVel = getTargetSpeed(robot_Distance);
-            shooterEnable = true;
-            retract = true;
-            if(shooterisAtTarget() && ampHoodisAtTarget()){
-                feedMotorSpeed = 0.5;
-            }else{
-                feedMotorSpeed = 0.0;
-            }
-            break;
-            case AMP:
-            robot_Distance = drive.getDistanceFromAmp();
-            goalVel = getTargetSpeed(robot_Distance);
-            if (ampIsAtTarget() && shooterisAtTarget() && ampHoodisAtTarget()) {
-                feedMotorSpeed = 0.5;
-            } else {
-                feedMotorSpeed = 0.0;
-            }
-            intakeMotorSpeed = 0.0;
-            break;
 
-            case INTAKE:
-                feedMotorSpeed = 0.5;
-                intakeMotorSpeed = 0.5;
-                shooterEnable = false;
-                break;
-
-            case OUTTAKE:
-                feedMotorSpeed = -0.5;
-                intakeMotorSpeed = -0.5;
-                shooterEnable = false;
-                break;
-
-            case OFF:
-            default:
-                feedMotorSpeed = 0.0;
-                intakeMotorSpeed = 0.0;
-                break;
-        }
+        // Pivot control system
         goalPos = Math.min(goalPos, ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0);  // don't command a position higher than the soft stop
         goalPos = Math.max(goalPos, ArmConstants.ZERO_OFFSET * Math.PI / 180.0);  // don't command a position lower than the soft stop
         curPosErr = goalPos - curPos;
-        curOut = curPosErr * 0.8;
+        posOut = curPosErr * 0.8;
         if (curPos <= ArmConstants.ZERO_OFFSET * Math.PI / 180.0 ){
-            curOut = Math.max(0, curOut);
+            posOut = Math.max(0, posOut);
         } else if (curPos >= ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0){
-            curOut = Math.min(0, curOut);
+            posOut = Math.min(0, posOut);
         }
 
+        // Hood control system
+        if (!retract && hoodMotor.getPosition() < 1.75){
+            hoodOutput = 0.15;
+        } else if (hoodMotor.getPosition() > 0.1){
+            hoodOutput = -0.15;
+        } else {
+            hoodOutput = 0.0;
+        }
+
+        hoodMotor.setSpeed(hoodOutput);
+        intakeMotor.setSpeed(intakeMotorOutput);
+        feedMotor.setSpeed(feedMotorOutput);
+        angleMotor.setSpeed(posOut);
+
+        // Hood values
+        SmartDashboard.putNumber("hood position", hoodMotor.getPosition());
+        SmartDashboard.putNumber("hood output", hoodOutput);
+        SmartDashboard.putBoolean("hood at target", hoodIsAtTarget());
+
+        // Feed values
+        SmartDashboard.putNumber("feed output", feedMotorOutput);
+        SmartDashboard.putNumber("intake output", intakeMotorOutput);
+
+        // Shooter values
+        SmartDashboard.putNumber("shooter target", goalVel);
+        SmartDashboard.putNumber("shooter output", shooterOut);
+        SmartDashboard.putNumber("shooter velocity error", curVelErr);
+        SmartDashboard.putBoolean("shooter at target", shooterIsAtTarget());
+        SmartDashboard.putNumber("shooter velocity", getVelocity());
+
+        // Pivot values
         SmartDashboard.putNumber("goal position", goalPos);
         SmartDashboard.putNumber("shooter position", getPosition());
         SmartDashboard.putNumber("shooter curPosError", curPosErr);
-        SmartDashboard.putNumber("shooter goal velocity", goalVel);
-        SmartDashboard.putNumber("shooter velocity error", curVelErr);
-        SmartDashboard.putNumber("Output", curOut);
-        SmartDashboard.putBoolean("pivot at target", ampIsAtTarget());
-        angleMotor.setSpeed(curOut);
-        if (!retract && ampHoodMotor.getPosition() < 1.75){
-            ampHoodSpeed = 0.15;
-        } else if (ampHoodMotor.getPosition() > 0.1){
-            ampHoodSpeed = -0.15;
-        } else {
-            ampHoodSpeed = 0.0;
-        }
-       ampHoodMotor.setSpeed(ampHoodSpeed);
-       SmartDashboard.putNumber("hood position", ampHoodMotor.getPosition());
-       SmartDashboard.putNumber("amp speed", ampHoodSpeed);
-       SmartDashboard.putBoolean("hood at target", ampHoodisAtTarget());
-       SmartDashboard.putNumber("feed speed", feedMotorSpeed);
-
+        SmartDashboard.putNumber("Output", posOut);
+        SmartDashboard.putBoolean("pivot at target", pivotIsAtTarget());
     }
     
-
-    public double getVelocity() {
-        return shooterMotor.getVelocity() * ShooterConstants.RATIO * 2 * Math.PI / 60.0;
-    }
-    public boolean ampIsAtTarget() {
-        return Math.abs(curPosErr) < ArmConstants.POS_DB && Math.abs(curVel) < ArmConstants.VEL_DB;
-    }
-    public Boolean ampHoodisAtTarget(){
-        return (retract && ampHoodMotor.getPosition() < 0.1) || (!retract && ampHoodMotor.getPosition() > 1.9);  // TODO: Check position travel limits
-    }
-
-    public Boolean shooterisAtTarget(){
-        return Math.abs(goalVel - getVelocity()) < 20;
-    }
-    public double getPosition(){
-        return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
-    }
-
-
-    
-    @Override
-    public String getName() {
-        //
-        return "Shooter";
-    }
     @Override
     public void resetState() {
         shooterEnable = false;
         goalVel = 0.0;
-        ampHoodSpeed = 0.0;
+        hoodOutput = 0.0;
         retract = true;
         curPos = getPosition();
-        curVel = absEncoderShooter.getVelocity();
+        curVel = shooterMotor.getVelocity();
         goalPos = curPos;
         goalVel = 0;
-        curOut = 0;
-        feedMotorSpeed = 0.0;
-        intakeMotorSpeed = 0.0;
+        posOut = 0;
+        feedMotorOutput = 0.0;
+        intakeMotorOutput = 0.0;
         shooterState = shooterType.OFF;
+    }
+
+    public double getTargetSpeed(double distance){
+        for(int i = 0; i < distanceMarks.length; i++){
+            if((distance >= distanceMarks[i]) && (distance >= distanceMarks[i+1])){
+                indexes[0] = i;
+                indexes[1] = i+1;
+            }
+        }
+
+        return (double)((speeds[indexes[0]]+((speeds[indexes[1]] - speeds[indexes[0]]) * 
+                    ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])))));
+    }
+
+    public double getTargetAngle(double distance){
+        return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
+            * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
+    }
+
+    public void setShooterState(shooterType currentState){
+        shooterState = currentState;
+    }
+
+    public void setShooterEnable(boolean shooterEnable){
+        this.shooterEnable = shooterEnable;
+    }
+   
+   public void setRetract(boolean retract){
+        this.retract = retract;
+   }
+   
+   public boolean angleAtTarget(){
+        double currentAngle = angleMotor.getPosition();
+        robot_Distance = swerve.getDistanceFromSpeaker();
+        double angleNeeded = getTargetAngle(robot_Distance);
+        if (Math.abs(angleNeeded-currentAngle) < angleDifference){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public double getVelocity() {
+        return shooterMotor.getVelocity() * ShooterConstants.RATIO * 2 * Math.PI / 60.0;
+    }
+
+    public boolean pivotIsAtTarget() {
+        return Math.abs(curPosErr) < ArmConstants.POS_DB && Math.abs(curVel) < ArmConstants.VEL_DB;
+    }
+
+    public Boolean hoodIsAtTarget(){
+        return (retract && hoodMotor.getPosition() < 0.1) || (!retract && hoodMotor.getPosition() > 1.9);  // TODO: Check position travel limits
+    }
+
+    public Boolean shooterIsAtTarget(){
+        return Math.abs(goalVel - getVelocity()) < 20;
+    }
+
+    public double getPosition(){
+        return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
+    }
+
+    @Override
+    public String getName() {
+        return "Shooter";
     }
     
     @Override
     public void selfTest() {
     }
-
 
     public double getVelocityTarget(double curVel, double curPosErr){
         if (curPosErr > 0){
