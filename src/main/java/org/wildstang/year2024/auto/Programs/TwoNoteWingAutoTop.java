@@ -3,6 +3,7 @@ package org.wildstang.year2024.auto.Programs;
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
+import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
 import org.wildstang.year2024.auto.Steps.StartOdometryStep;
@@ -28,6 +29,7 @@ public class TwoNoteWingAutoTop extends AutoProgram{
        addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));
        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
+       addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
        
 
@@ -37,6 +39,7 @@ public class TwoNoteWingAutoTop extends AutoProgram{
        group0.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
+       addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
 
        //Wing Note 2
@@ -45,6 +48,7 @@ public class TwoNoteWingAutoTop extends AutoProgram{
        group1.addStep(new intakeNoteStep(finishedPreviousStep, finished));
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
        addStep(new ShootNoteStep(true));
+       addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
 
 
