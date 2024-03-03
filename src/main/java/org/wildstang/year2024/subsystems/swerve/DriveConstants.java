@@ -37,30 +37,8 @@ public final class DriveConstants {
     /**Swerve Module Names */
     public static final String[] POD_NAMES = new String[]{"FL", "FR", "BL", "BR"};
 
-    public static double AMP_Y = 323.125; //Inches
-    public static double FIELD_WIDTH = 323.25; //INCHES
-    public static double FIELD_LENGTH = 651.25; //INCHES
-
-
-
     /*Blank for now. Offset of climber which will assist in alligning the robot climber to the chain
      * With correct offset.
      */
     public double CLIMBER_OFFSET = 0; 
-
-    public double CORE_OF_STAGE_TO_CHAIN = 16.625; //Inches
-
-    
-    /*Blue Alliance Stage AprilTag Positions  [x,y]*/
-    public static double[] tag16 = {182.73, 146.19};
-    public static double[] tag15 = {182.73, 177.10};
-    public static double[] tag14 = {209.48, 161.62};
-
-    /*Red Alliance Stage AprilTag Positions [x,y] */
-    public static double[] tag13 = {441.74, 161.62};
-    public static double[] tag12 = {468.69, 177.10};
-    public static double[] tag11 = {468.69, 146.19};
-
-
-
 }

@@ -30,13 +30,14 @@ public class  ShooterSubsystem implements Subsystem{
     private DigitalInput dpadRight, dpadLeft, dpadUp, dpadDown;
 
     private DigitalInput beamBreakSensor;
-    public AbsoluteEncoder absEncoderAngle;
+    public AbsoluteEncoder pivotEncoder;
 
     public SwerveDrive swerve;
 
     private double feedMotorOutput, intakeMotorOutput;
 
     private boolean retract;
+    private double hoodPos;
     private double hoodOutput;
 
     private boolean shooterEnable;
@@ -58,7 +59,7 @@ public class  ShooterSubsystem implements Subsystem{
     @Override
     public void init() {
         /**** Abs Encoders ****/
-        absEncoderAngle = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
+        pivotEncoder = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         
         /**** Button Inputs ****/
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
@@ -106,6 +107,10 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void update() {
+        curVel = getShooterVelocity();
+        curPos = getPivotPosition();
+        hoodPos = hoodMotor.getPosition();
+
         switch (shooterState) {
             case SPEAKER:
                 distance = swerve.getDistanceFromSpeaker();
@@ -114,7 +119,7 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterEnable = true;
                 retract = true;
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
-                    feedMotorOutput = 0.5;
+                    feedMotorOutput = FeedConstants.FEED_SPEED;
                 }else{
                     feedMotorOutput = 0.0;
                 }
@@ -122,8 +127,9 @@ public class  ShooterSubsystem implements Subsystem{
                 break;
             case AMP:
                 goalVel = ShooterConstants.AMP_SPEED;
-                if (pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget()) {
-                    feedMotorOutput = 0.5;
+                goalPos = ArmConstants.AMP_POS;
+                if (pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()) {
+                    feedMotorOutput = FeedConstants.FEED_SPEED;
                 } else {
                     feedMotorOutput = 0.0;
                 }
@@ -131,19 +137,23 @@ public class  ShooterSubsystem implements Subsystem{
                 break;
 
             case INTAKE:
-                feedMotorOutput = 0.5;
-                intakeMotorOutput = 0.5;
+                goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
+                goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
+                feedMotorOutput = FeedConstants.FEED_IN_SPEED;
+                intakeMotorOutput = FeedConstants.INTAKE_IN_SPEED;
                 shooterEnable = false;
                 break;
 
             case OUTTAKE:
-                feedMotorOutput = -0.5;
-                intakeMotorOutput = -0.5;
-                shooterEnable = false;
+                goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
+                goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
+                goalVel = ShooterConstants.OUTTAKE_SPEED;
+                feedMotorOutput = FeedConstants.FEED_OUT_SPEED;
+                intakeMotorOutput = FeedConstants.INTAKE_OUT_SPEED;
+                shooterEnable = true;
                 break;
 
             case OFF:
-            default:
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
                 shooterEnable = false;
@@ -151,15 +161,13 @@ public class  ShooterSubsystem implements Subsystem{
         }
 
         // Shooter control system
+        goalVel = Math.min(goalVel, ShooterConstants.MAX_VEL);
+        goalVel = Math.max(goalVel, -ShooterConstants.MAX_VEL);
+
+        velErr = goalVel - curVel;
+
+        shooterOut = goalVel * ShooterConstants.kF + velErr * ShooterConstants.kP;
         if (shooterEnable) {
-            goalVel = Math.min (goalVel, ShooterConstants.MAX_VEL);
-            goalVel = Math.max(goalVel, -ShooterConstants.MAX_VEL);
-
-            curVel = getVelocity();
-            velErr = goalVel - curVel;
-
-            shooterOut = goalVel * ShooterConstants.kF + velErr * ShooterConstants.kP;
-
             shooterMotor.setSpeed(shooterOut);
         } else {
             shooterMotor.setSpeed(0);
@@ -169,7 +177,7 @@ public class  ShooterSubsystem implements Subsystem{
         goalPos = Math.min(goalPos, ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0);  // don't command a position higher than the soft stop
         goalPos = Math.max(goalPos, ArmConstants.ZERO_OFFSET * Math.PI / 180.0);  // don't command a position lower than the soft stop
         posErr = goalPos - curPos;
-        posOut = posErr * 0.8;
+        posOut = posErr * ArmConstants.kP;
         if (curPos <= ArmConstants.ZERO_OFFSET * Math.PI / 180.0 ){
             posOut = Math.max(0, posOut);
         } else if (curPos >= ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0){
@@ -177,10 +185,10 @@ public class  ShooterSubsystem implements Subsystem{
         }
 
         // Hood control system
-        if (!retract && hoodMotor.getPosition() < 1.75){
-            hoodOutput = 0.15;
-        } else if (hoodMotor.getPosition() > 0.1){
-            hoodOutput = -0.15;
+        if (!retract){  //  && hoodPos < HoodConstants.EXTEND_POS  TODO: decide if we want to stall or brake the motor
+            hoodOutput = HoodConstants.EXTEND_SPEED;
+        } else if (hoodPos > HoodConstants.RETRACT_POS){
+            hoodOutput = HoodConstants.RETRACT_SPEED;
         } else {
             hoodOutput = 0.0;
         }
@@ -191,7 +199,7 @@ public class  ShooterSubsystem implements Subsystem{
         angleMotor.setSpeed(posOut);
 
         // Hood values
-        SmartDashboard.putNumber("hood position", hoodMotor.getPosition());
+        SmartDashboard.putNumber("hood position", hoodPos);
         SmartDashboard.putNumber("hood output", hoodOutput);
         SmartDashboard.putBoolean("hood at target", hoodIsAtTarget());
 
@@ -204,11 +212,11 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("shooter output", shooterOut);
         SmartDashboard.putNumber("shooter velocity error", velErr);
         SmartDashboard.putBoolean("shooter at target", shooterIsAtTarget());
-        SmartDashboard.putNumber("shooter velocity", getVelocity());
+        SmartDashboard.putNumber("shooter velocity", curVel);
 
         // Pivot values
         SmartDashboard.putNumber("goal position", goalPos);
-        SmartDashboard.putNumber("shooter position", getPosition());
+        SmartDashboard.putNumber("shooter position", curPos);
         SmartDashboard.putNumber("shooter curPosError", posErr);
         SmartDashboard.putNumber("Output", posOut);
         SmartDashboard.putBoolean("pivot at target", pivotIsAtTarget());
@@ -220,14 +228,19 @@ public class  ShooterSubsystem implements Subsystem{
         goalVel = 0.0;
         hoodOutput = 0.0;
         retract = true;
-        curPos = getPosition();
-        curVel = shooterMotor.getVelocity();
+        curPos = getPivotPosition();
+        curVel = getShooterVelocity();
         goalPos = curPos;
         goalVel = 0;
         posOut = 0;
         feedMotorOutput = 0.0;
         intakeMotorOutput = 0.0;
         shooterState = shooterType.OFF;
+    }
+
+    public double getPivotPosition(){
+        return ((pivotEncoder.getPosition() + ArmConstants.ZERO_OFFSET) % 360) * Math.PI / 180.0;
+        // return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
     }
 
     public double getTargetSpeed(double distance){
@@ -247,19 +260,11 @@ public class  ShooterSubsystem implements Subsystem{
             * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
     }
 
-    public void setShooterState(shooterType currentState){
-        shooterState = currentState;
+    public void setShooterState(shooterType newState){
+        shooterState = newState;
     }
 
-    public void setShooterEnable(boolean shooterEnable){
-        this.shooterEnable = shooterEnable;
-    }
-   
-   public void setRetract(boolean retract){
-        this.retract = retract;
-   }
-
-    public double getVelocity() {
+    public double getShooterVelocity() {
         return shooterMotor.getVelocity() * ShooterConstants.RATIO * 2 * Math.PI / 60.0;
     }
 
@@ -268,15 +273,11 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public Boolean hoodIsAtTarget(){
-        return (retract && hoodMotor.getPosition() < 0.1) || (!retract && hoodMotor.getPosition() > 1.9);  // TODO: Check position travel limits
+        return (retract && hoodPos < HoodConstants.RETRACT_POS) || (!retract && hoodPos > HoodConstants.EXTEND_POS);
     }
 
     public Boolean shooterIsAtTarget(){
-        return Math.abs(goalVel - getVelocity()) < 20;
-    }
-
-    public double getPosition(){
-        return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
+        return Math.abs(goalVel - getShooterVelocity()) < ShooterConstants.VEL_DB;
     }
 
     @Override
