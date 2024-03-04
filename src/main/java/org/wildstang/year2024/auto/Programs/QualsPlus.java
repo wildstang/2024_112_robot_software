@@ -7,8 +7,8 @@ import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
 import org.wildstang.year2024.auto.Steps.StartOdometryStep;
-import org.wildstang.year2024.auto.Steps.intakeNoteStep;
-import org.wildstang.year2024.auto.Steps.scoreAmp;
+import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
+import org.wildstang.year2024.auto.Steps.ScoreAmp;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
@@ -26,14 +26,11 @@ public class QualsPlus extends AutoProgram{
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
-       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),0, color));
-       addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScorePreloadAmp", new PathConstraints(4.0, 3.0)), swerve, color));
-       addStep(new scoreAmp(true));
-       addStep(new AutoStepDelay(500));
+        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),0, color));
+        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScorePreloadAmp", new PathConstraints(4.0, 3.0)), swerve, color));
+        addStep(new ScoreAmp());
+        addStep(new AutoStepDelay(500));
 
-
-
-         
     }
 
     @Override

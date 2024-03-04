@@ -5,14 +5,12 @@ public class FieldConstants {
     public static final double FIELD_LENGTH = 651.25; //INCHES
     public static final double BLUE_SPEAKER_X = -1.5; //Inches
     public static final double RED_SPEAKER_X = 652.73; //Inches
-    public static final double RED_SPEAKER_Y = 218.42; //inches
-    public static final double BLUE_SPEAKER_Y = 218.42; // Inches
+    public static final double SPEAKER_Y = 218.42; //inches
     // public static final double SPEAKER_Z = 218.42;//inches
     // public static final double AMP_Z = 323.00; //inches
     public static final double RED_AMP_X = 578.77; //inches
     public static final double BLUE_AMP_X = 72.5; //inches
-    public static final double RED_AMP_Y = 323.00; //inches
-    public static final double BLUE_AMP_Y = 323.00; //inches
+    public static final double AMP_Y = 323.00; //inches
     // public static final double ALLIANCE_LENGTH = 118.25; //inches
 
 

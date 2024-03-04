@@ -308,4 +308,8 @@ public class  ShooterSubsystem implements Subsystem{
             }
         }
     }
+
+    public boolean isOff() {
+        return shooterState == shooterType.OFF;
+    }
 }

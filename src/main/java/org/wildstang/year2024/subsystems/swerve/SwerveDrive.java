@@ -2,8 +2,6 @@ package org.wildstang.year2024.subsystems.swerve;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
-import java.util.Optional;
-
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.io.inputs.AnalogInput;
@@ -13,7 +11,6 @@ import org.wildstang.hardware.roborio.outputs.WsSpark;
 import org.wildstang.year2024.robot.CANConstants;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
-import org.wildstang.year2024.subsystems.targeting.LimeConsts;
 import org.wildstang.year2024.subsystems.targeting.WsVision;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -251,13 +248,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 break;
 
             case AMP:
+                ySpeed = (FieldConstants.AMP_Y - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
                 if (isBlueAlliance) {
                     xSpeed = (FieldConstants.BLUE_AMP_X - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P;
-                    ySpeed = (FieldConstants.BLUE_AMP_Y - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
                     rotSpeed = swerveHelper.getRotControl(270, getGyroAngle());
                 } else {
                     xSpeed = (FieldConstants.RED_AMP_X - poseEstimator.getEstimatedPosition().getX()) * DriveConstants.POS_P;
-                    ySpeed = (FieldConstants.RED_AMP_Y - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
                     rotSpeed = swerveHelper.getRotControl(270, getGyroAngle());
                 }
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
@@ -336,7 +332,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         isFieldCentric = true;
     }
 
-
     public String getClosestChain(){
         double robotX = getPosX();
         double robotY = getPosY();
@@ -400,21 +395,20 @@ public class SwerveDrive extends SwerveDriveTemplate {
      public double getDistanceFromSpeaker(){
         double xDifference = 0;
         Pose2d fieldPose = returnPose();
-        double yDifference = FieldConstants.SPEAKER_Z - fieldPose.getY();
+        double yDifference = FieldConstants.SPEAKER_Y - fieldPose.getY();
         if(isBlueAlliance){
             xDifference = FieldConstants.BLUE_SPEAKER_X - fieldPose.getX();
         }
         else {
             xDifference = FieldConstants.RED_SPEAKER_X - fieldPose.getX();
         }
-        double distance = Math.sqrt(yDifference * yDifference + xDifference * xDifference);
-        return distance;
+        return Math.sqrt(yDifference * yDifference + xDifference * xDifference);
 
     }
     public double getDistanceFromAmp(){
         double xDiff = 0;
         Pose2d fieldPose = returnPose();
-        double yDiff = FieldConstants.AMP_Z - fieldPose.getY();
+        double yDiff = FieldConstants.AMP_Y - fieldPose.getY();
         if(isBlueAlliance){
             xDiff = FieldConstants.BLUE_AMP_X - fieldPose.getX();
         }
