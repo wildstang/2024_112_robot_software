@@ -17,7 +17,7 @@ import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class  ShooterSubsystem implements Subsystem{
 
-    public enum shooterType {SPEAKER, AMP, INTAKE, OUTTAKE, OFF};
+    public enum shooterType {INIT_SHOOTER, AMP, OUTTAKE, WAIT, FIRST_SENSOR, STOW, SHOOT, SHOOTER_OFF};
     private shooterType shooterState;
 
     public WsSpark angleMotor;
@@ -25,11 +25,12 @@ public class  ShooterSubsystem implements Subsystem{
     public WsSpark feedMotor;
     private WsSpark intakeMotor;
     private WsSpark hoodMotor;
-    
+
+    private DigitalInput intakeBeamBreak;
+    private DigitalInput shooterBeamBreak;
     private DigitalInput leftBumper, rightBumper;
     private DigitalInput dpadRight, dpadLeft, dpadUp, dpadDown;
 
-    private DigitalInput beamBreakSensor;
     public AbsoluteEncoder pivotEncoder;
 
     public SwerveDrive swerve;
@@ -83,8 +84,10 @@ public class  ShooterSubsystem implements Subsystem{
         /**** Other ****/
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
 
-        beamBreakSensor = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR);
-        beamBreakSensor.addInputListener(this);
+        intakeBeamBreak = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR_INTAKE);
+        intakeBeamBreak.addInputListener(this);
+        shooterBeamBreak = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR_SHOOTER);
+        shooterBeamBreak.addInputListener(this);
 
         resetState();
     }
@@ -92,15 +95,15 @@ public class  ShooterSubsystem implements Subsystem{
     @Override
     public void inputUpdate(Input source) {
         if (leftBumper.getValue()){
-            shooterState = shooterType.INTAKE;
+            shooterState = shooterType.FIRST_SENSOR;
         } else if (dpadUp.getValue()) {
             shooterState = shooterType.AMP;
         } else if (rightBumper.getValue()){
-            shooterState = shooterType.SPEAKER;
+            shooterState = shooterType.INIT_SHOOTER;
         } else if (dpadDown.getValue()){
             shooterState = shooterType.OUTTAKE;
         } else {
-            shooterState = shooterType.OFF;
+            shooterState = shooterType.WAIT;
         }
     }
 
@@ -112,7 +115,7 @@ public class  ShooterSubsystem implements Subsystem{
         hoodPos = hoodMotor.getPosition();
 
         switch (shooterState) {
-            case SPEAKER:
+            case INIT_SHOOTER:
                 distance = swerve.getDistanceFromSpeaker();
                 goalVel = getTargetSpeed(distance);
                 goalPos = getTargetAngle(distance);
@@ -135,8 +138,10 @@ public class  ShooterSubsystem implements Subsystem{
                 }
                 intakeMotorOutput = 0.0;
                 break;
-
-            case INTAKE:
+            case SHOOT:
+                feedMotorOutput = 0.5;
+                break;
+            case FIRST_SENSOR:
                 goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
                 goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
                 feedMotorOutput = FeedConstants.FEED_IN_SPEED;
@@ -153,11 +158,16 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterEnable = true;
                 break;
 
-            case OFF:
+            case WAIT:
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
                 shooterEnable = false;
                 break;
+            case STOW:
+                break;
+            case SHOOTER_OFF:
+                break;
+            
         }
 
         // Shooter control system
@@ -235,7 +245,7 @@ public class  ShooterSubsystem implements Subsystem{
         posOut = 0;
         feedMotorOutput = 0.0;
         intakeMotorOutput = 0.0;
-        shooterState = shooterType.OFF;
+        shooterState = shooterType.WAIT;
     }
 
     public double getPivotPosition(){
@@ -310,6 +320,6 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public boolean isOff() {
-        return shooterState == shooterType.OFF;
+        return shooterState == shooterType.WAIT;
     }
 }
