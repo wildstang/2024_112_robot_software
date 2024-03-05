@@ -35,17 +35,15 @@ public class RocketAutoTop extends AutoProgram{
        // Wing Note 1
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 215.311216827, color));
        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-       group0.addStep(new intakeNoteStep(true, false));
+       group0.addStep(new intakeNoteStep(true));
        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Wing1", new PathConstraints(4.0, 3.0)), swerve, color));
-       addStep(group0);
 
        // Rocket
        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
        group1.addStep(new ShootNoteStep(true));
-       group1.addStep(new intakeNoteStep(true, false));
+       group1.addStep(new intakeNoteStep(true));
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle1", new PathConstraints(4.0, 3.0)), swerve, color));
-       addStep(group1);
        
        // Shoot
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 180, color));

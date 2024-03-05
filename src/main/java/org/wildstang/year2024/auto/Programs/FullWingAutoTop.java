@@ -36,20 +36,19 @@ public class FullWingAutoTop extends AutoProgram{
        // Wing Note 1
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-       group0.addStep(new intakeNoteStep(finishedPreviousStep, finished));
+       group0.addStep(new intakeNoteStep(true));
        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
-       addStep(group0);
+addStep(group0);
        addStep(new ShootNoteStep(true));
        addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
-       
 
        //Wing Note 2
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
-       group1.addStep(new intakeNoteStep(finishedPreviousStep, finished));
+       group1.addStep(new intakeNoteStep(true));
        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
-       addStep(group1);
+addStep(group1);
        addStep(new ShootNoteStep(true));
        addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
@@ -57,9 +56,9 @@ public class FullWingAutoTop extends AutoProgram{
        //Wing Note 3
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),180, color));
        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-       group2.addStep(new intakeNoteStep(finishedPreviousStep, finished));
+       group2.addStep(new intakeNoteStep(true));
        group2.addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 178.31533352936483539, color));
-       addStep(group2);
+addStep(group2);
        addStep(new ShootNoteStep(true));
        addStep(new AutoStepDelay(500));
        addStep(new ShootNoteStep(false));
