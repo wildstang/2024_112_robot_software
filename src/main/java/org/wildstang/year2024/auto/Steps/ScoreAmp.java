@@ -5,30 +5,24 @@ import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem.shooterType;
-import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
-public class scoreAmp extends AutoStep {
-    private boolean scoreAmpPossible;
+public class ScoreAmp extends AutoStep {
     private ShooterSubsystem shooter;
-    private double ampAngle;
-    private double robotAmpDistance;
-    private SwerveDrive swerve;
 
-    public scoreAmp(boolean scoreAmpPossible){
-        this.scoreAmpPossible = scoreAmpPossible; 
+    public ScoreAmp(){
     }
 
     @Override
     public void initialize() {
         shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
-        swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
     }
 
     @Override
     public void update() {
-       if (scoreAmpPossible){
-           shooter.setShooterState(shooterType.AMP);
-       };
+        shooter.setShooterState(shooterType.AMP);
+        if (shooter.isOff()){
+            setFinished();
+        }
     }
 
     @Override
