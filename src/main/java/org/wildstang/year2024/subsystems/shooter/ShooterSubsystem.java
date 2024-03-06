@@ -136,6 +136,7 @@ public class  ShooterSubsystem implements Subsystem{
                 goalPos = ArmConstants.AMP_POS;
                 if (pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()) {
                     feedMotorOutput = FeedConstants.FEED_SPEED;
+                    shooterState = shooterType.SHOOT;
                 } else {
                     feedMotorOutput = 0.0;
                 }
