@@ -13,6 +13,8 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.wildstang.year2024.subsystems.LED.LedSubsystem;
+import org.wildstang.year2024.subsystems.LED.LedSubsystem.LEDColor;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class  ShooterSubsystem implements Subsystem{
@@ -127,6 +129,7 @@ public class  ShooterSubsystem implements Subsystem{
                     feedMotorOutput = 0.0;
                 }
                 intakeMotorOutput = 0.0;
+                
                 break;
             case AMP:
                 goalVel = ShooterConstants.AMP_SPEED;
@@ -140,6 +143,10 @@ public class  ShooterSubsystem implements Subsystem{
                 break;
             case SHOOT:
                 feedMotorOutput = 0.5;
+                if(shooterBeamBreak.getValue() == false){
+                    shooterState = shooterType.SHOOTER_OFF;
+                    LedSubsystem.ledState = LEDColor.GREEN;
+                }
                 break;
             case FIRST_SENSOR:
                 goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
@@ -147,6 +154,9 @@ public class  ShooterSubsystem implements Subsystem{
                 feedMotorOutput = FeedConstants.FEED_IN_SPEED;
                 intakeMotorOutput = FeedConstants.INTAKE_IN_SPEED;
                 shooterEnable = false;
+                if(intakeBeamBreak.getValue()){
+                    shooterState = shooterType.STOW;
+                }
                 break;
 
             case OUTTAKE:
@@ -164,8 +174,14 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterEnable = false;
                 break;
             case STOW:
+                LedSubsystem.ledState = LEDColor.FLASH_ORANGE;
+                // RUMBLE CONTROLLER
+                if(intakeBeamBreak.getValue()){
+                    shooterState = shooterType.WAIT;
+                }
                 break;
             case SHOOTER_OFF:
+                shooterEnable = false;
                 break;
             
         }
@@ -289,7 +305,6 @@ public class  ShooterSubsystem implements Subsystem{
     public Boolean shooterIsAtTarget(){
         return Math.abs(goalVel - getShooterVelocity()) < ShooterConstants.VEL_DB;
     }
-
     @Override
     public String getName() {
         return "Shooter";

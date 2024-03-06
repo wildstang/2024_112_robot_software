@@ -133,8 +133,8 @@ public enum WsInputs implements Inputs {
     // ********************************
     // Digital IOs
     // ********************************
-    BEAMBREAK_SENSOR_INTAKE ("Beambreak sensor", new WsDigitalInputConfig(0, false))
-    BEAMBREAK_SENSOR_SHOOTER ("Beambreak sensor", new WsDigitalInputConfig(1, false))
+    BEAMBREAK_SENSOR_INTAKE ("Beambreak sensor", new WsDigitalInputConfig(0, false)),
+    BEAMBREAK_SENSOR_SHOOTER ("Beambreak sensor", new WsDigitalInputConfig(1, false));
     // -------------------------------
     // Networked sensors
     // -------------------------------

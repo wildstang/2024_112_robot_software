@@ -44,6 +44,7 @@ public enum WsOutputs implements Outputs {
     // Other
     // ---------------------------------
 
+    
     ; // end of enum
 
     /**
