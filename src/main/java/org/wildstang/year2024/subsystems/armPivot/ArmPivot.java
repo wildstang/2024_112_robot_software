@@ -106,6 +106,7 @@ public class ArmPivot implements Subsystem {
         SmartDashboard.putNumber("shooter velocity error", curVelErr);
         SmartDashboard.putNumber("Output", curOut);
         SmartDashboard.putBoolean("pivot at target", isAtTarget());
+        // SmartDashboard.putNumber("abs enc", absEncoder.getPosition());
     }
 
     public double getVelocityTarget(double curVel, double curPosErr){
@@ -129,7 +130,7 @@ public class ArmPivot implements Subsystem {
     }
 
     public boolean isAtTarget() {
-        return Math.abs(curPosErr) < ArmConstants.POS_DB && Math.abs(curVel) < ArmConstants.VEL_DB;
+        return Math.abs(curPosErr) < ArmConstants.POS_DB; // && Math.abs(curVel) < ArmConstants.VEL_DB;
     }
 
     @Override
@@ -140,7 +141,7 @@ public class ArmPivot implements Subsystem {
     @Override
     public void resetState() {
         curPos = getPosition();
-        curVel = absEncoder.getVelocity();
+        // curVel = absEncoder.getVelocity();
         goalPos = curPos;
         goalVel = 0;
         curOut = 0;
@@ -151,8 +152,8 @@ public class ArmPivot implements Subsystem {
     }
 
     public double getPosition(){
-        // return ((absEncoder.getPosition() + ArmConstants.ZERO_OFFSET) % 360) * Math.PI / 180.0;
-        return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
+        return ((absEncoder.getPosition() + ArmConstants.ZERO_OFFSET) % 360) * Math.PI / 180.0;
+        // return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
     }
     
     public void setPosition(double position){

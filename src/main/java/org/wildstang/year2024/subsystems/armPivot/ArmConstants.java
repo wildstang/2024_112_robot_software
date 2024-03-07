@@ -2,7 +2,7 @@ package org.wildstang.year2024.subsystems.armPivot;
 
 public final class ArmConstants {
 
-    public static final double ZERO_OFFSET = 29.0;
+    public static final double ZERO_OFFSET = -76.9;
     public static final double SOFT_STOP_HIGH = 107.0;
 
     public static final double RATIO = 187.5;

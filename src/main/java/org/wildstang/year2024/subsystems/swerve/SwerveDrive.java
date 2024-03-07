@@ -86,12 +86,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 modules[i].setDriveBrake(true);
             }
             this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
-        } else if (source == leftBumper){
-            if(leftBumper.getValue()){
-                driveState = driveType.VISION;
-            } else {
-                driveState = driveType.TELEOP;
-            }
+        // } else if (source == rightBumper){
+        //     if(leftBumper.getValue()){
+        //         driveState = driveType.VISION;
+        //     } else {
+        //         driveState = driveType.TELEOP;
+        //     }
         }
         else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
             driveState = driveType.TELEOP;
@@ -177,8 +177,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         leftTrigger.addInputListener(this);
         // rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
         // rightBumper.addInputListener(this);
-        leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
-        leftBumper.addInputListener(this);
+        // leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
+        // leftBumper.addInputListener(this);
         select = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_SELECT);
         select.addInputListener(this);
         start = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_START);

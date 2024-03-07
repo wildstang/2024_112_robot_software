@@ -31,11 +31,11 @@ public class Notepath implements Subsystem{
     @Override
     public void inputUpdate(Input source) {
         if (leftBumper.getValue()){
-            feedState = feedType.SPEAKER;
+            feedState = feedType.INTAKE;
         } else if (dpadUp.getValue()) {
             feedState = feedType.AMP;
         } else if (rightBumper.getValue()){
-            feedState = feedType.INTAKE;
+            feedState = feedType.SPEAKER;
         } else if (dpadDown.getValue()){
             feedState = feedType.OUTTAKE;
         } else {
@@ -86,7 +86,7 @@ public class Notepath implements Subsystem{
                 break;
 
             case INTAKE:
-                feedMotorSpeed = 0.15;
+                feedMotorSpeed = 0.2;
                 intakeMotorSpeed = 0.8;
                 break;
 

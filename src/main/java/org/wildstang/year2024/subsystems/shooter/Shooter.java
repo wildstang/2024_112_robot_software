@@ -21,10 +21,10 @@ public class Shooter implements Subsystem {
         if (source == dpadUp && dpadUp.getValue()) {
             goalVel = 400;
             shooterEnable = true;
-        } else if (source == leftBumper && leftBumper.getValue()){
+        } else if (source == rightBumper && rightBumper.getValue()){
             goalVel = 445;  // 445
             shooterEnable = true;
-        } else if (source == rightBumper && rightBumper.getValue()) {
+        } else if (source == leftBumper && leftBumper.getValue()) {
             goalVel = -300;
             shooterEnable = false;
         } else {
@@ -77,7 +77,7 @@ public class Shooter implements Subsystem {
     }
 
     public Boolean isAtTarget(){
-        return Math.abs(goalVel - getVelocity()) < 10;
+        return Math.abs(goalVel - getVelocity()) < 30;
     }
 
     public double getVelocity() {
