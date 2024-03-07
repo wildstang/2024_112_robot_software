@@ -66,6 +66,18 @@ public class WsSpark extends WsMotorController {
         isUsingController = false;
         isChanged = true;
         controlType = ControlType.kDutyCycle;
+
+        warnFollower();
+    }
+
+    /**
+     * WsSpark should never be a follower. It is possible that follower state can get burned into the flash, this warns in that case.
+     */
+    public void warnFollower() {
+        if (motor.isFollower()) {
+            // NOTE: this may also display if the motor cannot be found.
+            Log.error("WsSpark (" + this.getName() + ") is set as a follower!");
+        }
     }
 
     /**
@@ -209,18 +221,20 @@ public class WsSpark extends WsMotorController {
     }
 
     /**
-     * Wraps setValue().
+     * Wraps CANSparkBase.setSpeed().
      * @param value New motor percent speed, from -1.0 to 1.0.
      */
     @Override
     public void setSpeed(double value){
-        if (controlType == ControlType.kDutyCycle && super.getValue()==value){
+        if (controlType == ControlType.kDutyCycle && super.getValue() == value){
             isChanged = false;
         } else {
             isChanged = true;
         }
         controlType = ControlType.kDutyCycle;
         super.setSpeed(value);
+
+        warnFollower();
     }
 
     /**
@@ -284,6 +298,10 @@ public class WsSpark extends WsMotorController {
         slotID = 0;
     }
 
+    /**
+     * Returns the motor controller's PID controller.
+     * @return PID Controller object
+     */
     public SparkPIDController getPIDController(){
         return motor.getPIDController();
     }
