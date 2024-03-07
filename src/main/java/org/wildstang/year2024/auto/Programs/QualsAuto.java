@@ -8,7 +8,6 @@ import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
 import org.wildstang.year2024.auto.Steps.StartOdometryStep;
-import org.wildstang.year2024.auto.Steps.intakeNoteStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 

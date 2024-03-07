@@ -2,10 +2,11 @@ package org.wildstang.year2024.subsystems.LED;
 
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.subsystems.Subsystem;
-import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
+
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 
 public class LedSubsystem implements Subsystem{
 
@@ -16,6 +17,8 @@ public class LedSubsystem implements Subsystem{
 
     private int port = 0;
     private int length = 15;
+
+    Timer clock = new Timer();
 
     @Override
     public void inputUpdate(Input source) {
@@ -43,6 +46,7 @@ public class LedSubsystem implements Subsystem{
     @Override
     public void update() {
 
+        clock.start();
         switch(ledState){
             case SOLID_ORANGE:
                 for (int i = 0; i < length; i++){
@@ -50,13 +54,17 @@ public class LedSubsystem implements Subsystem{
                 }
                 break;
             case FLASH_ORANGE:
-                for (int i = 0; i < length; i++){
-                    ledBuffer.setRGB(i, 255, 140, 0);
+                if(clock.hasElapsed(0.25)){
+                    for (int i = 0; i < length; i++){
+                        ledBuffer.setRGB(i, 255, 140, 0);
+                    }
+                    
                 }
-                // WAIT
-
-                for (int i = 0; i < length; i++){
-                    ledBuffer.setRGB(i, 255, 255, 255);
+                if(clock.hasElapsed(0.5)){
+                    for (int i = 0; i < length; i++){
+                        ledBuffer.setRGB(i, 255, 255, 255);
+                    }
+                    clock.reset();
                 }
                 break;
             case GREEN:
@@ -66,7 +74,7 @@ public class LedSubsystem implements Subsystem{
                 break;
         }   
 
-
+        clock.reset();
         led.setData(ledBuffer);
         led.start();
     }

@@ -178,7 +178,7 @@ public class  ShooterSubsystem implements Subsystem{
             case STOW:
                 LedSubsystem.ledState = LEDColor.FLASH_ORANGE;
                 // RUMBLE CONTROLLER
-                if(intakeBeamBreak.getValue()){
+                if(intakeBeamBreak.getValue() == false){
                     shooterState = shooterType.WAIT;
                 }
                 break;
