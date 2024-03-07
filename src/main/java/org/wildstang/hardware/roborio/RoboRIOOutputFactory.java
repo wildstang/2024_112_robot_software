@@ -25,6 +25,7 @@ import org.wildstang.hardware.roborio.outputs.config.WsServoConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsSolenoidConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsSparkConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsSparkFollowerConfig;
+import org.wildstang.hardware.roborio.outputs.config.XboxConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsRemoteAnalogOutputConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsRemoteDigitalOutputConfig;
 
@@ -65,6 +66,10 @@ public class RoboRIOOutputFactory implements OutputFactory {
         else if (config instanceof WsRelayConfig) {
             WsRelayConfig c = (WsRelayConfig) config;
             out = new WsRelay(p_output.getName(), c.getChannel());
+        }
+        else if(config instanceof XboxConfig){
+            XboxConfig c = (XboxConfig) config;
+            out = new XboxConfig(c.getChannel());
         }
         else if (config instanceof WsPhoenixConfig) {
             WsPhoenixConfig c = (WsPhoenixConfig) config;
