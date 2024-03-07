@@ -32,37 +32,31 @@ public class FullAutoBottom extends AutoProgram{
         
         // Rocket
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 169.83959554371344325, color));
         group1.addStep(new IntakeNoteStep());
         group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle1", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(group1);
 
         // Shoot
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 169.83959554371344325, color));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle1", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(new ShootNoteStep());
 
         //Middle 2
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 147.07207857165727205, color));
         group2.addStep(new IntakeNoteStep());
         group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle2", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(group2);
 
         //Shoot Middle 2
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 182.540434116, color));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle2", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(new ShootNoteStep());
 
         // Middle 3
         AutoParallelStepGroup group3 = new AutoParallelStepGroup();
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 166.1256132925804252, color));
         group3.addStep(new IntakeNoteStep());
         group3.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle3", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(group3);
 
         //ShootMiddle 3
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 174.40468964350796455, color));
         addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle3", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(new ShootNoteStep());
 
