@@ -49,7 +49,7 @@ public class FullWingAutoTop extends AutoProgram{
        //Wing Note 3
        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),180, color));
        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-       group2.addStep(new intakeNoteStep(true));
+       group2.addStep(new IntakeNoteStep());
        group2.addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 178.31533352936483539, color));
 addStep(group2);
        addStep(new ShootNoteStep());;

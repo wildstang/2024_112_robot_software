@@ -158,7 +158,7 @@ public class  ShooterSubsystem implements Subsystem{
                 intakeMotorOutput = FeedConstants.INTAKE_IN_SPEED;
                 shooterEnable = false;
                 if(intakeBeamBreak.getValue()){
-                    shooterState = shooterType.STOW;
+                    shooterState = shooterType.STOW;//signifies that note is stowed
                 }
                 break;
 
@@ -185,6 +185,7 @@ public class  ShooterSubsystem implements Subsystem{
             case SHOOTER_OFF:
                 shooterEnable = false;
                 feedMotorOutput = 0.0;
+                shooterState = shooterType.WAIT;
                 break;
             
         }

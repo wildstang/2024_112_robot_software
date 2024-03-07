@@ -25,19 +25,19 @@ public class OneNoteWingAutoTop extends AutoProgram{
          SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
          color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
-        //Preload Shot
-        addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
-        addStep(new ShootNoteStep());
-        
+       //Preload Shot
+       addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));//defines position and angle the robot is currently in (used to estimate)
+       addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));//gets values to drive toward
+       addStep(new ShootNoteStep());
 
-        // Wing Note 1
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
-        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-        group0.addStep(new IntakeNoteStep());
-        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
-        addStep(group0);
-        addStep(new ShootNoteStep());
+
+       // Wing Note 1
+       addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 210.120823901, color));
+       AutoParallelStepGroup group0 = new AutoParallelStepGroup();
+       group0.addStep(new IntakeNoteStep());
+       group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
+addStep(group0);
+       addStep(new ShootNoteStep());
 
     }
 

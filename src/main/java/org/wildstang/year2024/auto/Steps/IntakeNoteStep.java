@@ -9,9 +9,6 @@ import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem.shooterType;
 public class IntakeNoteStep extends AutoStep{
     private ShooterSubsystem shooter;
 
-    public IntakeNoteStep() {
-    }
-
     @Override
     public void initialize() {
         shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
@@ -20,9 +17,7 @@ public class IntakeNoteStep extends AutoStep{
     @Override
     public void update() {
         shooter.setShooterState(shooterType.FIRST_SENSOR);
-        if (shooter.isOff()){
-            setFinished();
-        }
+        setFinished();
     }
 
     @Override
