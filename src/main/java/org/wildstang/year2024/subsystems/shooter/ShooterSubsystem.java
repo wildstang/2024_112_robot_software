@@ -125,6 +125,7 @@ public class  ShooterSubsystem implements Subsystem{
                 retract = true;
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     feedMotorOutput = FeedConstants.FEED_SPEED;
+                    shooterState = shooterType.SHOOT;
                 }else{
                     feedMotorOutput = 0.0;
                 }
@@ -147,6 +148,7 @@ public class  ShooterSubsystem implements Subsystem{
                 if(shooterBeamBreak.getValue() == false){
                     shooterState = shooterType.SHOOTER_OFF;
                     LedSubsystem.ledState = LEDColor.GREEN;
+                    shooterEnable = false;
                 }
                 break;
             case FIRST_SENSOR:
@@ -172,7 +174,6 @@ public class  ShooterSubsystem implements Subsystem{
             case WAIT:
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
-                shooterEnable = false;
                 break;
             case STOW:
                 LedSubsystem.ledState = LEDColor.FLASH_ORANGE;
@@ -183,6 +184,7 @@ public class  ShooterSubsystem implements Subsystem{
                 break;
             case SHOOTER_OFF:
                 shooterEnable = false;
+                feedMotorOutput = 0.0;
                 break;
             
         }
