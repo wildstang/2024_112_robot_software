@@ -33,15 +33,19 @@ public class QualsAuto extends AutoProgram{
     group0.addStep(new intakeNoteStep(true));
     group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("GetWingA", new PathConstaints(4.0,3.0)), swerve, color));
     addStep(group0);
-    addStep(new shootNoteStep(true));
+
+    //Shoot Wing A
+     addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 144.36749890047809686, color));
+    addStep(new ShootNoteStep(true));
     addStep(new AutoStepDelay(500));
-    addStep(new shootNoteStep(false));
+    addStep(new ShootNoteStep(false));
 
-
-    
-
-
-
+    //Get Wing B
+    addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 89.9999999999427, color));
+    AutoParallelStepGroup group1 = new AutoParallelStepGroup();
+    group1.addStep(new intakeNoteStep(true));
+    group1.addStepaddStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScoreSpeakerWingB", new PathConstraints(4.0,3.0)), swerve, finished));
+    addStep(group1);
     }
 
     @Override
