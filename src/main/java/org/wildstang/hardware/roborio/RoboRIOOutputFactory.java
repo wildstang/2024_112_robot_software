@@ -67,10 +67,6 @@ public class RoboRIOOutputFactory implements OutputFactory {
             WsRelayConfig c = (WsRelayConfig) config;
             out = new WsRelay(p_output.getName(), c.getChannel());
         }
-        else if(config instanceof XboxConfig){
-            XboxConfig c = (XboxConfig) config;
-            out = new XboxConfig(c.getChannel());
-        }
         else if (config instanceof WsPhoenixConfig) {
             WsPhoenixConfig c = (WsPhoenixConfig) config;
             out = new WsPhoenix(p_output.getName(), c.getChannel(), c.getDefault(),

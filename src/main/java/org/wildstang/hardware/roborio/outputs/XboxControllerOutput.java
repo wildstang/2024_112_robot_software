@@ -4,12 +4,16 @@ import org.wildstang.framework.io.outputs.AnalogOutput;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 /**
  * Controls a servo.
  */
 public class XboxControllerOutput extends AnalogOutput {
     XboxController joystick;
+    RumbleType curRumbleType;
+    int channel;
+    
     /**
      * Constructs the servo from config.
      * @param name Descriptive name of the servo.
@@ -17,9 +21,11 @@ public class XboxControllerOutput extends AnalogOutput {
      * @param p_default Default position.
      */
 
-    public XboxControllerOutput(String p_name) {
+    public XboxControllerOutput(String p_name, int channel, RumbleType rumble) {
         super(p_name);
-        this.joystick = new XboxController(0);
+        curRumbleType = rumble;
+        this.channel = channel;
+        this.joystick = new XboxController(channel);
         
     }
 
@@ -28,7 +34,7 @@ public class XboxControllerOutput extends AnalogOutput {
      */
     @Override
     public void sendDataToOutput() {
-        joystick.setRumble(GenericHID.RumbleType.kBothRumble, 1); // or kLeftRumble/kRightRumble
+        joystick.setRumble(curRumbleType, getValue()); // or kLeftRumble/kRightRumble
     }
 
     /**
