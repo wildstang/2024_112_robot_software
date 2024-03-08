@@ -5,7 +5,7 @@ public class ModuleConstants {
     /**drive motor gear ratio */
     public static final double DRIVE_RATIO = (45.0*22.0)/(15.0*14.0);
     /**diameter of drive wheel, in inches */
-    public static final double WHEEL_DIAMETER = 3.0;
+    public static final double WHEEL_DIAMETER = 2.73;//3.0; updated from 111 testing
     /**PID values for drive P */
     public static final double DRIVE_P = 0;//-0.02;//0.02
     /**PID values for drive I */
