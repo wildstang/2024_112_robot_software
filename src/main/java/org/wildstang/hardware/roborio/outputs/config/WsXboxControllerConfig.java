@@ -10,17 +10,16 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 public class WsXboxControllerConfig implements OutputConfig {
 
     private int m_channel = 0;
-    private final RumbleType m_bothMotor;
+    private final RumbleType m_bothMotors;
 
     /**
      * Construct the servo config.
      * @param channel Hardware port number.
      * @param p_default Default position.
      */
-    public WsXboxControllerConfig(int channel, RumbleType bothMotor) {
+    public WsXboxControllerConfig(int channel, RumbleType bothMotors) {
         m_channel = channel;
-        m_bothMotor = bothMotor;
-        
+        m_bothMotors = bothMotors;
     }
 
     /**
@@ -31,8 +30,8 @@ public class WsXboxControllerConfig implements OutputConfig {
         return m_channel;
     }
 
-    public RumbleType getbothMotor() {
-        return m_bothMotor;
+    public RumbleType getbothMotors() {
+        return m_bothMotors;
     }
 
 

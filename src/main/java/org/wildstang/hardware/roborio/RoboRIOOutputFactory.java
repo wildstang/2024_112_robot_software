@@ -28,6 +28,7 @@ import org.wildstang.hardware.roborio.outputs.config.WsSparkFollowerConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsXboxControllerConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsRemoteAnalogOutputConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsRemoteDigitalOutputConfig;
+import org.wildstang.hardware.roborio.outputs.XboxControllerOutput;
 
 /**
  * Builds outputs from WsOutputs enumerations.
@@ -61,7 +62,7 @@ public class RoboRIOOutputFactory implements OutputFactory {
 
         if(config instanceof WsXboxControllerConfig){
             WsXboxControllerConfig c = (WsXboxControllerConfig) config;
-            out = new WsXboxControllerOutput();
+            out = new XboxControllerOutput(p_output.getName(), c.getChannel(), c.getbothMotors());
 
         }
         else if (config instanceof WsServoConfig) {
