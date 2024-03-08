@@ -5,12 +5,15 @@ import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.outputs.WsSpark;
+import org.wildstang.hardware.roborio.outputs.XboxControllerOutput;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
 import org.wildstang.year2024.robot.WsSubsystems;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.wildstang.year2024.subsystems.LED.LedSubsystem;
@@ -32,6 +35,8 @@ public class  ShooterSubsystem implements Subsystem{
     private DigitalInput shooterBeamBreak;
     private DigitalInput leftBumper, rightBumper;
     private DigitalInput dpadRight, dpadLeft, dpadUp, dpadDown;
+
+    private XboxControllerOutput xboxController;
 
     public AbsoluteEncoder pivotEncoder;
 
@@ -59,9 +64,13 @@ public class  ShooterSubsystem implements Subsystem{
 
     public int[] indexes = new int[2];
 
+    Timer timer;
+
     @Override
     public void init() {
         /**** Abs Encoders ****/
+
+
         pivotEncoder = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         
         /**** Button Inputs ****/
@@ -91,6 +100,11 @@ public class  ShooterSubsystem implements Subsystem{
         shooterBeamBreak = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR_SHOOTER);
         shooterBeamBreak.addInputListener(this);
 
+        xboxController = (XboxControllerOutput) Core.getOutputManager().getOutput(WsOutputs.XBOXCONTROLLER);
+        timer = new Timer();
+
+
+
         resetState();
     }
 
@@ -112,6 +126,8 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void update() {
+
+
         curVel = getShooterVelocity();
         curPos = getPivotPosition();
         hoodPos = hoodMotor.getPosition();
@@ -174,18 +190,37 @@ public class  ShooterSubsystem implements Subsystem{
             case WAIT:
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
+                if(timer.hasElapsed(1.5)){
+                    xboxController.getValue();
+                }
                 break;
             case STOW:
+                timer.start();
+
                 LedSubsystem.ledState = LEDColor.FLASH_ORANGE;
-                // RUMBLE CONTROLLER
+
+                if(timer.hasElapsed(0)){
+                    xboxController.getValue();
+                }
+                
+
+                if(timer.hasElapsed(1.5)){
+                    xboxController.getValue();
+                }
+                
                 if(intakeBeamBreak.getValue() == false){
                     shooterState = shooterType.WAIT;
                 }
                 break;
             case SHOOTER_OFF:
+                
+                xboxController.getValue();
                 shooterEnable = false;
                 feedMotorOutput = 0.0;
                 shooterState = shooterType.WAIT;
+                timer.reset();
+
+
                 break;
             
         }
