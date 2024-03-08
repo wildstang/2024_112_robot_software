@@ -36,6 +36,13 @@ public class XboxControllerOutput extends AnalogOutput {
     public void sendDataToOutput() {
         joystick.setRumble(curRumbleType, getValue()); // or kLeftRumble/kRightRumble
     }
+    public int getChannel(){
+        return channel;
+    }
+    
+    public RumbleType getRumbleType(){
+        return curRumbleType;
+    }
 
     /**
      * Does nothing, config values only affects start state.
