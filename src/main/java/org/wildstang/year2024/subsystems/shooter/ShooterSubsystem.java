@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.wildstang.year2024.subsystems.LED.LedSubsystem;
 import org.wildstang.year2024.subsystems.LED.LedSubsystem.LEDColor;
+import org.wildstang.year2024.subsystems.swerve.FieldConstants;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class  ShooterSubsystem implements Subsystem{
@@ -94,6 +95,7 @@ public class  ShooterSubsystem implements Subsystem{
 
         /**** Abs Encoders ****/
         pivotEncoder = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
+        pivotEncoder.setPositionConversionFactor(2 * Math.PI / 60.0);
 
         /**** Other ****/
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
@@ -113,7 +115,7 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void inputUpdate(Input source) {
-        if (source == leftBumper && leftBumper.getValue()){
+        if (source == leftBumper){
             shooterState = shooterType.INIT_SHOOTER;
             Log.warn("INIT_SHOOTER");
         } else if (source == dpadUp && dpadUp.getValue()) {
@@ -148,11 +150,10 @@ public class  ShooterSubsystem implements Subsystem{
             case INIT_SHOOTER:
                 distance = swerve.getDistanceFromSpeaker();
                 goalVel = getTargetSpeed(distance);
-                goalPos = getTargetAngle(distance);
+                // goalPos = getTargetAngle(distance);
+                goalPos = 35.0 * Math.PI/ 180.0;
                 shooterEnable = true;
-                retract = true;
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
-                    feedMotorOutput = FeedConstants.FEED_SPEED;
                     shooterState = shooterType.SHOOT;
                     Log.warn("SHOOT");
                     timer.reset();
@@ -166,6 +167,8 @@ public class  ShooterSubsystem implements Subsystem{
             case AMP:
                 goalVel = ShooterConstants.AMP_SPEED;
                 goalPos = ArmConstants.AMP_POS;
+                shooterEnable = true;
+                retract = false;
                 if (pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()) {
                     shooterState = shooterType.SHOOT;
                     Log.warn("SHOOT");
@@ -179,7 +182,7 @@ public class  ShooterSubsystem implements Subsystem{
             case SHOOT:
                 feedMotorOutput = FeedConstants.FEED_SPEED;
                 // if(shooterBeamBreak.getValue() == false){
-                if (timer.hasElapsed(1)){
+                if (timer.hasElapsed(5)){
                     shooterState = shooterType.SHOOTER_OFF;
                     Log.warn("SHOOTER_OFF");
                     LedSubsystem.ledState = LEDColor.GREEN;
@@ -216,6 +219,8 @@ public class  ShooterSubsystem implements Subsystem{
                 }
                 LedSubsystem.ledState = LEDColor.BLUE;
                 shooterEnable = false;
+                retract = true;
+                goalPos = 35.0 * Math.PI/ 180.0;
                 break;
             case STOW:
                 timer.reset();
@@ -257,13 +262,13 @@ public class  ShooterSubsystem implements Subsystem{
         }
 
         // Pivot control system
-        goalPos = Math.min(goalPos, ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0);  // don't command a position higher than the soft stop
-        goalPos = Math.max(goalPos, ArmConstants.SOFT_STOP_LOW * Math.PI / 180.0);  // don't command a position lower than the soft stop
+        goalPos = Math.min(goalPos, ArmConstants.SOFT_STOP_HIGH);  // don't command a position higher than the soft stop
+        goalPos = Math.max(goalPos, ArmConstants.SOFT_STOP_LOW);  // don't command a position lower than the soft stop
         posErr = goalPos - curPos;
         posOut = posErr * ArmConstants.kP;
-        if (curPos <= ArmConstants.SOFT_STOP_LOW * Math.PI / 180.0 ){
+        if (curPos <= ArmConstants.SOFT_STOP_LOW){
             posOut = Math.max(0, posOut);
-        } else if (curPos >= ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0){
+        } else if (curPos >= ArmConstants.SOFT_STOP_HIGH){
             posOut = Math.min(0, posOut);
         }
 
@@ -328,7 +333,7 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getPivotPosition(){
-        return ((pivotEncoder.getPosition() + ArmConstants.ZERO_OFFSET) % 360) * Math.PI / 180.0;
+        return (pivotEncoder.getPosition() + ArmConstants.ZERO_OFFSET) % (2 * Math.PI);
         // return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
     }
 
@@ -342,14 +347,14 @@ public class  ShooterSubsystem implements Subsystem{
 
         // return (double)((speeds[indexes[0]]+((speeds[indexes[1]] - speeds[indexes[0]]) * 
         //             ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])))));
-        return 400.0;
+        // return 400.0;
+        return 792.0;
     }
 
     public double getTargetAngle(double distance){
         // return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
         //     * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
-
-        return 35.0;
+        return Math.atan(FieldConstants.SPEAKER_Z/distance);
     }
 
     public void setShooterState(shooterType newState){
@@ -361,7 +366,7 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public boolean pivotIsAtTarget() {
-        return Math.abs(posErr) < ArmConstants.POS_DB && Math.abs(curVel) < ArmConstants.VEL_DB;
+        return Math.abs(posErr) < ArmConstants.POS_DB;
     }
 
     public Boolean hoodIsAtTarget(){
