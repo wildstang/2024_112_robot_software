@@ -122,13 +122,19 @@ public class  ShooterSubsystem implements Subsystem{
         } else if (source == rightBumper && rightBumper.getValue()){
             shooterState = shooterType.FIRST_SENSOR;
             Log.warn("FIRST_SENSOR");
-        } else if (source == dpadDown && dpadDown.getValue()){
-            shooterState = shooterType.OUTTAKE;
-            Log.warn("OUTTAKE");
-        } else {
-            shooterState = shooterType.WAIT;
-            Log.warn("WAIT");
+        } else if (source == dpadDown){
+            if(dpadDown.getValue()){
+                shooterState = shooterType.OUTTAKE;
+                Log.warn("OUTTAKE");
+            } else {
+                shooterState = shooterType.WAIT;
+                Log.warn("WAIT");
+            }
         }
+        // else {
+        //     shooterState = shooterType.WAIT;
+        //     Log.warn("WAIT");
+        // }
     }
 
 
@@ -218,7 +224,7 @@ public class  ShooterSubsystem implements Subsystem{
 
                 LedSubsystem.ledState = LEDColor.FLASH_ORANGE;
                 
-                if(!intakeBeamBreak.getValue() && timer.hasElapsed(0.5)){
+                if(!intakeBeamBreak.getValue()){
                     shooterState = shooterType.WAIT;
                     Log.warn("WAIT");
                 }

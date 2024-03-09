@@ -66,7 +66,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private Timer autoTimer = new Timer();
 
     private WsVision pvCam;
-    private double targetYaw;
+    // private double targetYaw;
 
     public enum driveType {TELEOP, AUTO, CROSS, SPEAKER, AMP, STAGE, VISION};
     public driveType driveState;
@@ -315,7 +315,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
         SmartDashboard.putBoolean("drive at target", isAtTarget());
-        SmartDashboard.putNumber("target yaw", targetYaw);
+        // SmartDashboard.putNumber("target yaw", targetYaw);
     }
     
     @Override
@@ -547,6 +547,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public Boolean isAtTarget(){
-        return (Math.abs(targetYaw) < 4 || Double.isNaN(targetYaw));
+        // return (Math.abs(targetYaw) < 4 || Double.isNaN(targetYaw));
+        return true;
     }
 }
