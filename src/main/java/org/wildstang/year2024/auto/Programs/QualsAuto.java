@@ -22,14 +22,14 @@ public class QualsAuto extends AutoProgram{
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
     //Preload shot
     addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 0, color));
-    addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScorePreloadAmp", new PathConstraints(4.0, 3.0)), swerve, color));
+    // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScorePreloadAmp", new PathConstraints(4.0, 3.0)), swerve, color));
     addStep(new ShootNoteStep());
 
     //Get Wing A
     addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 89.999999999942702, color));
     AutoParallelStepGroup group0 = new AutoParallelStepGroup();
     group0.addStep(new IntakeNoteStep());
-    group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("GetWingA", new PathConstaints(4.0,3.0)), swerve, color));
+    // group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("GetWingA", new PathConstaints(4.0,3.0)), swerve, color));
     addStep(group0);
 
     //Shoot Wing A
@@ -40,7 +40,7 @@ public class QualsAuto extends AutoProgram{
     addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 89.9999999999427, color));
     AutoParallelStepGroup group1 = new AutoParallelStepGroup();
     group1.addStep(new IntakeNoteStep());
-    group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScoreSpeakerWingB", new PathConstraints(4.0,3.0)), swerve, finished));
+    // group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScoreSpeakerWingB", new PathConstraints(4.0,3.0)), swerve, finished));
     addStep(group1);
     }
     //Score wing B

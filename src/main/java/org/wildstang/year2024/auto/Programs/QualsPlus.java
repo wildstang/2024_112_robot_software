@@ -27,7 +27,7 @@ public class QualsPlus extends AutoProgram{
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
         addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),0, color));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScorePreloadAmp", new PathConstraints(4.0, 3.0)), swerve, color));
+        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScorePreloadAmp", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(new ScoreAmp());
         addStep(new AutoStepDelay(500));
 

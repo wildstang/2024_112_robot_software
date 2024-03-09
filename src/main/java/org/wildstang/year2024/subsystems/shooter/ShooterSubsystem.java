@@ -279,6 +279,10 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("shooter curPosError", posErr);
         SmartDashboard.putNumber("Output", posOut);
         SmartDashboard.putBoolean("pivot at target", pivotIsAtTarget());
+
+        // Beam Break Sensors
+        SmartDashboard.putBoolean("intake bb", intakeBeamBreak.getValue());
+        SmartDashboard.putBoolean("shooter bb", shooterBeamBreak.getValue());
     }
     
     @Override
