@@ -12,6 +12,8 @@ import org.wildstang.year2024.auto.Steps.ScoreAmp;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
+import com.choreo.lib.Choreo;
+
 import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -27,9 +29,22 @@ public class QualsPlus extends AutoProgram{
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
         addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),0, color));
-        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScorePreloadAmp", new PathConstraints(4.0, 3.0)), swerve, color));
-        addStep(new ScoreAmp());
-        addStep(new AutoStepDelay(500));
+        addStep(new SwervePathFollowerStep(Choreo.getTrajectory("QualsPlus_Preload"), swerve, color));
+        addStep(new ShootNoteStep());
+        
+        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
+        group0.addStep(new IntakeNoteStep());
+        group0.addStep(new SwervePathFollowerStep(Choreo.getTrajectory("QualsPlus_WingA"), swerve, finished));
+        addStep(group0);
+        addStep(new ShootNoteStep());
+
+        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
+        group1.addStep(new IntakeNoteStep());
+        group1.addStep(new SwervePathFollowerStep(Choreo.getTrajectory("QualsPlus_GetCenterA"), swerve, finished));
+        addStep(group1);
+
+        addStep(new SwervePathFollowerStep(null, swerve, finished));
+
 
     }
 

@@ -11,6 +11,8 @@ import org.wildstang.year2024.auto.Steps.StartOdometryStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
+import com.choreo.lib.Choreo;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -22,7 +24,7 @@ public class QualsAuto extends AutoProgram{
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
     //Preload shot
     addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 0, color));
-    // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("ScorePreloadAmp", new PathConstraints(4.0, 3.0)), swerve, color));
+    addStep(new SwervePathFollowerStep(Choreo.getTrajectory(null), swerve, color));
     addStep(new ShootNoteStep());
 
     //Get Wing A
