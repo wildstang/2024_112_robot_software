@@ -141,6 +141,8 @@ public class  ShooterSubsystem implements Subsystem{
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     feedMotorOutput = FeedConstants.FEED_SPEED;
                     shooterState = shooterType.SHOOT;
+                    timer.reset();
+                    timer.start();
                 }else{
                     feedMotorOutput = 0.0;
                 }
@@ -153,6 +155,8 @@ public class  ShooterSubsystem implements Subsystem{
                 if (pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()) {
                     feedMotorOutput = FeedConstants.FEED_SPEED;
                     shooterState = shooterType.SHOOT;
+                    timer.reset();
+                    timer.start();
                 } else {
                     feedMotorOutput = 0.0;
                 }
@@ -160,7 +164,8 @@ public class  ShooterSubsystem implements Subsystem{
                 break;
             case SHOOT:
                 feedMotorOutput = 0.5;
-                if(shooterBeamBreak.getValue() == false){
+                // if(shooterBeamBreak.getValue() == false){
+                if (timer.hasElapsed(1)){
                     shooterState = shooterType.SHOOTER_OFF;
                     LedSubsystem.ledState = LEDColor.GREEN;
                     shooterEnable = false;
