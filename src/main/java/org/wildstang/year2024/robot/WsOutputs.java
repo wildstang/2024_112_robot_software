@@ -7,6 +7,7 @@ import org.wildstang.framework.hardware.OutputConfig;
 import org.wildstang.framework.io.outputs.Output;
 import org.wildstang.hardware.roborio.outputs.config.WsMotorControllers;
 import org.wildstang.hardware.roborio.outputs.config.WsSparkConfig;
+import org.wildstang.hardware.roborio.outputs.config.WsSparkFollowerConfig;
 import org.wildstang.hardware.roborio.outputs.config.WsXboxControllerConfig;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -29,15 +30,20 @@ public enum WsOutputs implements Outputs {
     ANGLE3("Module 3 Angle Motor", new WsSparkConfig(CANConstants.ANGLE3, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
     DRIVE4("Module 4 Drive Motor", new WsSparkConfig(CANConstants.DRIVE4, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
     ANGLE4("Module 4 Angle Motor", new WsSparkConfig(CANConstants.ANGLE4, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    SHOOTERANGLE("Left Shooter Angle Motor", new WsSparkConfig(CANConstants.SHOOTERANGLE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    SHOOTERSPEED("Right Shooter Speed Motor", new WsSparkConfig(CANConstants.SHOOTERSPEED, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
-    SHOOTERFEEDMOTOR("Shooter Feed Motor", new WsSparkConfig(CANConstants.SHOOTERFEEDMOTOR, WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
-    INTAKE("Intake motor", new WsSparkConfig(CANConstants.INTAKE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-    AMPHOOD("Amp hood motor", new WsSparkConfig(CANConstants.AMPHOOD, WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
 
     // ---------------------------------
     // Other Motors
     // ---------------------------------
+    
+    INTAKE("Intake motor", new WsSparkConfig(CANConstants.INTAKE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+    FEED("Feed Motor", new WsSparkConfig(CANConstants.FEED, WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
+
+    SHOOTER1("First shooter motor", new WsSparkConfig(CANConstants.SHOOTER1, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
+    SHOOTER2("Second shooter motor", new WsSparkFollowerConfig(SHOOTER1, CANConstants.SHOOTER2, WsMotorControllers.SPARK_FLEX_BRUSHLESS, true)),
+    AMPHOOD("Amp hood motor", new WsSparkConfig(CANConstants.AMPHOOD, WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
+
+    SHOOTER_ANGLE1("Shooter elevation motor", new WsSparkConfig(CANConstants.SHOOTER_ANGLE1, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
+    SHOOTER_ANGLE2("Shooter elevation follower", new WsSparkFollowerConfig(SHOOTER_ANGLE1, CANConstants.SHOOTER_ANGLE2,WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
 
     // ---------------------------------
     // Solenoids
