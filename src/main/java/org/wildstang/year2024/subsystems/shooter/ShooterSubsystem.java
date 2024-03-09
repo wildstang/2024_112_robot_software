@@ -67,10 +67,6 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void init() {
-        /**** Abs Encoders ****/
-
-
-        pivotEncoder = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
         
         /**** Button Inputs ****/
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
@@ -85,13 +81,16 @@ public class  ShooterSubsystem implements Subsystem{
         dpadDown.addInputListener(this);
        
         /**** Motors ****/
-        shooterMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERSPEED);
-        angleMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERANGLE);
+        shooterMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER1);
+        angleMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE1);
         angleMotor.setBrake();
-        feedMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERFEEDMOTOR);
+        feedMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.FEED);
         intakeMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.INTAKE);
         hoodMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
         hoodMotor.setBrake();
+
+        /**** Abs Encoders ****/
+        pivotEncoder = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
 
         /**** Other ****/
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
