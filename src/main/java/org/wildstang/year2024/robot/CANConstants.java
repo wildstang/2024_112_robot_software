@@ -9,15 +9,10 @@ package org.wildstang.year2024.robot;
  */
 public final class CANConstants {
 
-    // Replace these examples.
-    // While not independently dangerous if implemented these could have unintended effects.
-    //public static final int[] EXAMPLE_PAIRED_CONTROLLERS    = {1,2};
-    //public static final int   EXAMPLE_MOTOR_CONTROLLER      = 3;
-
     //Gyro and CAN sensor values
     public static final int GYRO = 31;
 
-    //swerve constants
+    // swerve constants
     public static final int DRIVE1 = 11;
     public static final int ANGLE1 = 12;
     public static final int DRIVE2 = 13;
@@ -26,11 +21,16 @@ public final class CANConstants {
     public static final int ANGLE3 = 16;
     public static final int DRIVE4 = 17;
     public static final int ANGLE4 = 18;
-    
-    public static final int SHOOTERANGLE = 21; 
-    public static final int SHOOTERSPEED = 24;
-    public static final int SHOOTERFEEDMOTOR = 22;
-    public static final int INTAKE= 25;
-    public static final int AMPHOOD = 27;
+
+    // notepath motors
+    public static final int INTAKE = 19;
+    public static final int FEED = 22;
+
+    // shooter constants
+    public static final int SHOOTER_ANGLE1 = 21;
+    public static final int SHOOTER_ANGLE2 = 20;
+    public static final int SHOOTER1 = 23;
+    public static final int SHOOTER2 = 24;
+    public static final int AMPHOOD = 25;
     
 }
