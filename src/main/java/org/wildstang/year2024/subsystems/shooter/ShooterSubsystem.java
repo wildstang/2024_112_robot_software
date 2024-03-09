@@ -112,14 +112,18 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void inputUpdate(Input source) {
-        if (leftBumper.getValue()){
-            shooterState = shooterType.FIRST_SENSOR;
-        } else if (dpadUp.getValue()) {
-            shooterState = shooterType.AMP;
-        } else if (rightBumper.getValue()){
+        if (source == leftBumper && leftBumper.getValue()){
             shooterState = shooterType.INIT_SHOOTER;
-        } else if (dpadDown.getValue()){
-            shooterState = shooterType.OUTTAKE;
+        } else if (source == dpadUp && dpadUp.getValue()) {
+            shooterState = shooterType.AMP;
+        } else if (source == rightBumper && rightBumper.getValue()){
+            shooterState = shooterType.FIRST_SENSOR;
+        } else if (source == dpadDown){
+            if(dpadDown.getValue()){
+                shooterState = shooterType.OUTTAKE;
+            } else {
+                shooterState = shooterType.WAIT;
+            }
         } else {
             shooterState = shooterType.WAIT;
         }
@@ -199,6 +203,7 @@ public class  ShooterSubsystem implements Subsystem{
                     xboxController.setValue(0);
                     timer.stop();
                 }
+                shooterEnable = false;
                 break;
             case STOW:
                 timer.reset();
@@ -207,7 +212,7 @@ public class  ShooterSubsystem implements Subsystem{
 
                 LedSubsystem.ledState = LEDColor.FLASH_ORANGE;
                 
-                if(intakeBeamBreak.getValue() == false){
+                if(!intakeBeamBreak.getValue() && timer.hasElapsed(0.5)){
                     shooterState = shooterType.WAIT;
                 }
                 break;
