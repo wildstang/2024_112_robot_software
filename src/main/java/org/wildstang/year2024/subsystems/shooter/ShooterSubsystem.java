@@ -240,10 +240,10 @@ public class  ShooterSubsystem implements Subsystem{
 
         // Pivot control system
         goalPos = Math.min(goalPos, ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0);  // don't command a position higher than the soft stop
-        goalPos = Math.max(goalPos, ArmConstants.ZERO_OFFSET * Math.PI / 180.0);  // don't command a position lower than the soft stop
+        goalPos = Math.max(goalPos, ArmConstants.SOFT_STOP_LOW * Math.PI / 180.0);  // don't command a position lower than the soft stop
         posErr = goalPos - curPos;
         posOut = posErr * ArmConstants.kP;
-        if (curPos <= ArmConstants.ZERO_OFFSET * Math.PI / 180.0 ){
+        if (curPos <= ArmConstants.SOFT_STOP_LOW * Math.PI / 180.0 ){
             posOut = Math.max(0, posOut);
         } else if (curPos >= ArmConstants.SOFT_STOP_HIGH * Math.PI / 180.0){
             posOut = Math.min(0, posOut);
@@ -289,6 +289,8 @@ public class  ShooterSubsystem implements Subsystem{
         // Beam Break Sensors
         SmartDashboard.putBoolean("intake bb", intakeBeamBreak.getValue());
         SmartDashboard.putBoolean("shooter bb", shooterBeamBreak.getValue());
+
+        SmartDashboard.putString("shooter state", shooterState.name());
     }
     
     @Override
@@ -313,20 +315,23 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getTargetSpeed(double distance){
-        for(int i = 0; i < distanceMarks.length; i++){
-            if((distance >= distanceMarks[i]) && (distance >= distanceMarks[i+1])){
-                indexes[0] = i;
-                indexes[1] = i+1;
-            }
-        }
+        // for(int i = 0; i < distanceMarks.length; i++){
+        //     if((distance >= distanceMarks[i]) && (distance >= distanceMarks[i+1])){
+        //         indexes[0] = i;
+        //         indexes[1] = i+1;
+        //     }
+        // }
 
-        return (double)((speeds[indexes[0]]+((speeds[indexes[1]] - speeds[indexes[0]]) * 
-                    ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])))));
+        // return (double)((speeds[indexes[0]]+((speeds[indexes[1]] - speeds[indexes[0]]) * 
+        //             ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])))));
+        return 400.0;
     }
 
     public double getTargetAngle(double distance){
-        return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
-            * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
+        // return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
+        //     * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
+
+        return 35.0;
     }
 
     public void setShooterState(shooterType newState){
