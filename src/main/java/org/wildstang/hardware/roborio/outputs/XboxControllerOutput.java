@@ -2,7 +2,6 @@ package org.wildstang.hardware.roborio.outputs;
 
 import org.wildstang.framework.io.outputs.AnalogOutput;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 

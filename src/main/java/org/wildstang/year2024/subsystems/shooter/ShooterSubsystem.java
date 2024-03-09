@@ -13,7 +13,6 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.wildstang.year2024.subsystems.LED.LedSubsystem;
@@ -191,22 +190,16 @@ public class  ShooterSubsystem implements Subsystem{
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
                 if(timer.hasElapsed(1.5)){
-                    xboxController.getValue();
+                    xboxController.setValue(0);
+                    timer.stop();
                 }
                 break;
             case STOW:
+                timer.reset();
                 timer.start();
+                xboxController.setValue(1);
 
                 LedSubsystem.ledState = LEDColor.FLASH_ORANGE;
-
-                if(timer.hasElapsed(0)){
-                    xboxController.getValue();
-                }
-                
-
-                if(timer.hasElapsed(1.5)){
-                    xboxController.getValue();
-                }
                 
                 if(intakeBeamBreak.getValue() == false){
                     shooterState = shooterType.WAIT;
@@ -214,11 +207,12 @@ public class  ShooterSubsystem implements Subsystem{
                 break;
             case SHOOTER_OFF:
                 
-                xboxController.getValue();
+                xboxController.setValue(1);
                 shooterEnable = false;
                 feedMotorOutput = 0.0;
                 shooterState = shooterType.WAIT;
                 timer.reset();
+                timer.start();
 
 
                 break;
