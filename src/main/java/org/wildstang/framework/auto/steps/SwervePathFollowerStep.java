@@ -1,23 +1,29 @@
 package org.wildstang.framework.auto.steps;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.choreo.lib.*;
+import com.google.gson.Gson;
 
 public class SwervePathFollowerStep extends AutoStep {
 
-    private static final double M_TO_IN = 39.3701;
-    private static final double FIELD_WIDTH = 8.016; // field width in meters
+    private static final double mToIn = 39.3701;
     private SwerveDriveTemplate m_drive;
     private ChoreoTrajectory pathtraj;
     private boolean isBlue;
 
-    private double xOffset, yOffset, prevVelocity, prevTime;
+    private double xOffset, yOffset, prevVelocity, prevTime, prevHeading;
     private Pose2d localAutoPose, localRobotPose;
 
     private Timer timer;
@@ -28,10 +34,11 @@ public class SwervePathFollowerStep extends AutoStep {
      * @param drive the swerveDrive subsystem
      * @param isBlue whether the robot is on the blue alliance
      */
-    public SwervePathFollowerStep(ChoreoTrajectory pathData, SwerveDriveTemplate drive, boolean isBlue) {
-        this.pathtraj = pathData;
+    public SwervePathFollowerStep(String pathData, SwerveDriveTemplate drive, boolean isBlue) {
+        
+        
+        this.pathtraj = getTraj(pathData);
         m_drive = drive;
-        pathtraj = new ChoreoTrajectory();
         
         this.isBlue = isBlue;
         timer = new Timer();
@@ -44,6 +51,7 @@ public class SwervePathFollowerStep extends AutoStep {
         timer.start();
         prevTime = 0.0;
         prevVelocity = 0.0;
+        prevHeading = 0.0;
     }
 
     @Override
@@ -59,12 +67,16 @@ public class SwervePathFollowerStep extends AutoStep {
             if (isBlue){
                 xOffset = localRobotPose.getY() - localAutoPose.getY();
             } else {
-                xOffset = localRobotPose.getY() - (FIELD_WIDTH - localAutoPose.getY());
+                xOffset = localRobotPose.getY() - (8.016 - localAutoPose.getY());
             }
             //update values the robot is tracking to
-            m_drive.setAutoValues( getVelocity(),getHeading(), getAccel(), xOffset, yOffset );
+            m_drive.setAutoValues( getVelocity(),getHeading(), getAccel(), 2.0*xOffset,0.0*yOffset );
+            m_drive.setAutoHeading(getRotation());
             prevVelocity = getVelocity();
+            prevHeading = getHeading();
             prevTime = timer.get();
+            SmartDashboard.putNumber("PF localX", localRobotPose.getX());
+            SmartDashboard.putNumber("PF path X", localAutoPose.getX());
             }
     }
 
@@ -74,13 +86,36 @@ public class SwervePathFollowerStep extends AutoStep {
     }
 
     public double getVelocity(){
-        return M_TO_IN * Math.hypot(pathtraj.sample(timer.get()).velocityX, pathtraj.sample(timer.get()).velocityY);
+        return mToIn * Math.hypot(pathtraj.sample(timer.get()).velocityX, pathtraj.sample(timer.get()).velocityY);
     }
     public double getHeading(){
-        if (isBlue) return ((-pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360; 
-        else return ((pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360;
+        if (isBlue) return ((-Math.atan2(pathtraj.sample(timer.get()).velocityY, 
+            pathtraj.sample(timer.get()).velocityX)*180/Math.PI)+360)%360;
+        else return ((-Math.atan2(-pathtraj.sample(timer.get()).velocityY, 
+            pathtraj.sample(timer.get()).velocityX)*180/Math.PI)+360)%360;
+        // if (isBlue) return ((-pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360; 
+        // else return ((pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360;
     }
     public double getAccel(){
         return (getVelocity() - prevVelocity) / (timer.get() - prevTime);
+    }
+    public double getRotation(){
+        if (isBlue) return ((-pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360;
+        else return ((pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360;
+    }
+    public ChoreoTrajectory getTraj(String fileName){
+        Gson gson = new Gson();
+        var tempfile = Filesystem.getDeployDirectory();
+        var traj_dir = new File(tempfile, "choreo");
+
+        var traj_file = new File(traj_dir, fileName + ".traj");
+        try {
+      var reader = new BufferedReader(new FileReader(traj_file));
+    //var reader = (new FileReader(traj_file));
+      return  gson.fromJson(reader, ChoreoTrajectory.class);
+    //   return traj;
+    } catch (Exception ex) {
+      DriverStation.reportError("Shit is fucked", ex.getStackTrace());
+    }return new ChoreoTrajectory();
     }
 }
