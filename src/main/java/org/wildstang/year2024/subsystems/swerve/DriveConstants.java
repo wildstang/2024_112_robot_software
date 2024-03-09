@@ -23,9 +23,9 @@ public final class DriveConstants {
     /**factor of derate for the drive trigger */
     public static final double DRIVE_DERATE = 2;
     /**second order correction for rotation plus driving */
-    public static final double ROT_CORRECTION_FACTOR = 0.2;
+    public static final double ROT_CORRECTION_FACTOR = -0.5;//0.2; update from 111 testing
     /**PID values for driveF coefficient of momentum */
-    public static final double DRIVE_F_V = 0.00536;//0.00558*1.2325;//0.00581 on old treads
+    public static final double DRIVE_F_V = 0.00453;//0.00536; updated from 111 testing, almost certainly wrong for 112
     /**PID values for drive F coefficient of kinetic friction */
     public static final double DRIVE_F_K = 0.016;
     /**PID values for drive F coefficient of inertia */
