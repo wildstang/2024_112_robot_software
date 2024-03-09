@@ -69,6 +69,8 @@ public class  ShooterSubsystem implements Subsystem{
     public void init() {
         
         /**** Button Inputs ****/
+        leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
+        leftBumper.addInputListener(this);
         rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
         rightBumper.addInputListener(this);
         dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
@@ -126,8 +128,6 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void update() {
-
-
         curVel = getShooterVelocity();
         curPos = getPivotPosition();
         hoodPos = hoodMotor.getPosition();

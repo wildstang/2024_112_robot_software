@@ -10,8 +10,6 @@ import org.wildstang.year2024.auto.Steps.StartOdometryStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
-import com.choreo.lib.Choreo;
-
 
 public class TestProgram extends AutoProgram{
     
@@ -22,7 +20,7 @@ public class TestProgram extends AutoProgram{
         group1.addStep(new PathHeadingStep(180.0, swerve));
         addStep(group1);
         addStep(new StartOdometryStep(3.0, 5.0, 180.0, true));
-        addStep(new SwervePathFollowerStep(Choreo.getTrajectory("ChoreoTest"), swerve, true));
+        addStep(new SwervePathFollowerStep("ChoreoTest", swerve, true));
     }
 
     public String toString(){

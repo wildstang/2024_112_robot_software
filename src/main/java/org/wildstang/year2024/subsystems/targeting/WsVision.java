@@ -57,11 +57,15 @@ public class WsVision implements Subsystem {
     @Override
     public void update() {
         frontPose = frontPoseEstimator.update().orElse(null);
-        double[] fpose = {frontPose.estimatedPose.getX(),frontPose.estimatedPose.getY(),frontPose.estimatedPose.getZ()};
-        SmartDashboard.putNumberArray("front pose", fpose);
+        if (frontPose != null){
+            double[] fpose = {frontPose.estimatedPose.getX(),frontPose.estimatedPose.getY(),frontPose.estimatedPose.getZ()};
+            SmartDashboard.putNumberArray("front pose", fpose);
+        }
         rearPose = frontPoseEstimator.update().orElse(null);
-        double[] rpose = {rearPose.estimatedPose.getX(),rearPose.estimatedPose.getY(),rearPose.estimatedPose.getZ()};
-        SmartDashboard.putNumberArray("rear pose", rpose);
+        if (rearPose != null){
+            double[] rpose = {rearPose.estimatedPose.getX(),rearPose.estimatedPose.getY(),rearPose.estimatedPose.getZ()};
+            SmartDashboard.putNumberArray("rear pose", rpose);
+        }
     }
 
     public void odometryUpdate(SwerveDrivePoseEstimator estimator) {
