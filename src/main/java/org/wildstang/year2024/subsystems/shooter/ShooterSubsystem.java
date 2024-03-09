@@ -87,9 +87,11 @@ public class  ShooterSubsystem implements Subsystem{
         /**** Motors ****/
         shooterMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERSPEED);
         angleMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERANGLE);
+        angleMotor.setBrake();
         feedMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTERFEEDMOTOR);
         intakeMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.INTAKE);
         hoodMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.AMPHOOD);
+        hoodMotor.setBrake();
 
         /**** Other ****/
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
