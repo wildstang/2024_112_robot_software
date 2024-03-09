@@ -198,8 +198,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         xSpeed *= thrustValue/derateValue;
         ySpeed *= thrustValue/derateValue;
         rotSpeed *= thrustValue;
-    }
 
+    }
     @Override
     public void update() {
         if (isBlueAlliance == null){
@@ -209,7 +209,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         
         poseEstimator.update(odoAngle(), odoPosition());
-        targetYaw = pvCam.getYaw();
+        // targetYaw = pvCam.getYaw();
         pvCam.odometryUpdate(poseEstimator);
 
         switch (driveState) {
@@ -297,12 +297,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 break;
 
             case VISION:
-                if (!Double.isNaN(targetYaw)){
-                    rotSpeed = pvCam.getYaw() * .005;
-                    this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
-                    drive();
-                }
-                break;
+                // if (!Double.isNaN(targetYaw)){
+                //     rotSpeed = pvCam.getYaw() * .005;
+                //     this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
+                //     drive();
+                // }
+                // break;
         }
 
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
@@ -314,6 +314,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto velocity", pathVel);
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
+        SmartDashboard.putBoolean("drive at target", isAtTarget());
         SmartDashboard.putNumber("target yaw", targetYaw);
     }
     
