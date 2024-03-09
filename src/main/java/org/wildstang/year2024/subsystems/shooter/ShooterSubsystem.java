@@ -2,6 +2,7 @@ package org.wildstang.year2024.subsystems.shooter;
 
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
+import org.wildstang.framework.logger.Log;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.subsystems.Subsystem;
 import org.wildstang.hardware.roborio.outputs.WsSpark;
@@ -114,18 +115,19 @@ public class  ShooterSubsystem implements Subsystem{
     public void inputUpdate(Input source) {
         if (source == leftBumper && leftBumper.getValue()){
             shooterState = shooterType.INIT_SHOOTER;
+            Log.warn("INIT_SHOOTER");
         } else if (source == dpadUp && dpadUp.getValue()) {
             shooterState = shooterType.AMP;
+            Log.warn("AMP");
         } else if (source == rightBumper && rightBumper.getValue()){
             shooterState = shooterType.FIRST_SENSOR;
-        } else if (source == dpadDown){
-            if(dpadDown.getValue()){
-                shooterState = shooterType.OUTTAKE;
-            } else {
-                shooterState = shooterType.WAIT;
-            }
+            Log.warn("FIRST_SENSOR");
+        } else if (source == dpadDown && dpadDown.getValue()){
+            shooterState = shooterType.OUTTAKE;
+            Log.warn("OUTTAKE");
         } else {
             shooterState = shooterType.WAIT;
+            Log.warn("WAIT");
         }
     }
 
@@ -146,6 +148,7 @@ public class  ShooterSubsystem implements Subsystem{
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     feedMotorOutput = FeedConstants.FEED_SPEED;
                     shooterState = shooterType.SHOOT;
+                    Log.warn("SHOOT");
                     timer.reset();
                     timer.start();
                 }else{
@@ -158,8 +161,8 @@ public class  ShooterSubsystem implements Subsystem{
                 goalVel = ShooterConstants.AMP_SPEED;
                 goalPos = ArmConstants.AMP_POS;
                 if (pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()) {
-                    feedMotorOutput = FeedConstants.FEED_SPEED;
                     shooterState = shooterType.SHOOT;
+                    Log.warn("SHOOT");
                     timer.reset();
                     timer.start();
                 } else {
@@ -168,10 +171,11 @@ public class  ShooterSubsystem implements Subsystem{
                 intakeMotorOutput = 0.0;
                 break;
             case SHOOT:
-                feedMotorOutput = 0.5;
+                feedMotorOutput = FeedConstants.FEED_SPEED;
                 // if(shooterBeamBreak.getValue() == false){
                 if (timer.hasElapsed(1)){
                     shooterState = shooterType.SHOOTER_OFF;
+                    Log.warn("SHOOTER_OFF");
                     LedSubsystem.ledState = LEDColor.GREEN;
                     shooterEnable = false;
                 }
@@ -184,6 +188,7 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterEnable = false;
                 if(intakeBeamBreak.getValue()){
                     shooterState = shooterType.STOW;//signifies that note is stowed
+                    Log.warn("STOW");
                 }
                 break;
 
@@ -203,6 +208,7 @@ public class  ShooterSubsystem implements Subsystem{
                     xboxController.setValue(0);
                     timer.stop();
                 }
+                LedSubsystem.ledState = LEDColor.BLUE;
                 shooterEnable = false;
                 break;
             case STOW:
@@ -214,14 +220,15 @@ public class  ShooterSubsystem implements Subsystem{
                 
                 if(!intakeBeamBreak.getValue() && timer.hasElapsed(0.5)){
                     shooterState = shooterType.WAIT;
+                    Log.warn("WAIT");
                 }
                 break;
             case SHOOTER_OFF:
-                
                 xboxController.setValue(1);
                 shooterEnable = false;
                 feedMotorOutput = 0.0;
                 shooterState = shooterType.WAIT;
+                Log.warn("WAIT");
                 timer.reset();
                 timer.start();
 
