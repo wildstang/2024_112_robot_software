@@ -3,8 +3,6 @@ package org.wildstang.year2024.subsystems.targeting;
 // ton of imports
 import org.wildstang.framework.subsystems.Subsystem;
 
-import java.util.Optional;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -19,20 +17,13 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.wildstang.framework.io.inputs.Input;
 
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
 public class WsVision implements Subsystem {
 
     public PhotonCamera frontCam, rearCam;
     AprilTagFieldLayout aprilTagFieldLayout;
     PhotonPoseEstimator frontPoseEstimator,rearPoseEstimator;
     public EstimatedRobotPose frontPose, rearPose;
-    boolean hasTargets;
 
-    public Optional<Alliance> station;
-
-   
-    
     @Override
     public void inputUpdate(Input source) {
     }
@@ -43,14 +34,14 @@ public class WsVision implements Subsystem {
         aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
         //Forward Camera
-        frontCam = new PhotonCamera("photonvision");
+        frontCam = new PhotonCamera("FrontCam");
         Transform3d robotToFrontCam = new Transform3d(new Translation3d(0.2823972, -0.2571242, 0.6094984), new Rotation3d(0,-0.488692,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
         // Construct PhotonPoseEstimator
         frontPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, frontCam, robotToFrontCam);
 
         //Forward Camera
-        rearCam = new PhotonCamera("photonvision");
+        rearCam = new PhotonCamera("RearCam");
         Transform3d robotToRearCam = new Transform3d(new Translation3d(0.2827528, 0.256921, 0.6094984), new Rotation3d(0,0.488692,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
         // Construct PhotonPoseEstimator
@@ -65,50 +56,13 @@ public class WsVision implements Subsystem {
 
     @Override
     public void update() {
-        var result = frontCam.getLatestResult();
-        hasTargets = result.hasTargets();
-        SmartDashboard.putBoolean("hasTargets", hasTargets);
-
-        if(hasTargets) {
-            // target = null;
-            // targets = result.targets;
-            // for(int i=0;i<targets.size();i++){
-            //     target = targets.get(i);
-            //     if (target.getFiducialId() == 4 || target.getFiducialId() == 7) break;
-            // }
-            // if (target.getFiducialId() == 4 || target.getFiducialId() == 7){
-            //     yaw = target.getYaw();
-            //     SmartDashboard.putBoolean("has AprilTag target", true);
-            // } else {
-            //     yaw = Double.NaN;
-            //     SmartDashboard.putBoolean("has AprilTag target", false);
-            // }
-            // SmartDashboard.putNumber("yaw", yaw);
-            frontPose = frontPoseEstimator.update().orElse(null);
-            if(frontPose != null){
-                double[] pose = {frontPose.estimatedPose.getX(),frontPose.estimatedPose.getY(),frontPose.estimatedPose.getZ()};
-                SmartDashboard.putNumberArray("front pose", pose);
-            } else {
-                double[] pose = {-1,-1,-1};
-                SmartDashboard.putNumberArray("front pose", pose);
-            }
-            rearPose = frontPoseEstimator.update().orElse(null);
-            if(rearPose != null){
-                double[] pose = {rearPose.estimatedPose.getX(),rearPose.estimatedPose.getY(),rearPose.estimatedPose.getZ()};
-                SmartDashboard.putNumberArray("rear pose", pose);
-            } else {
-                double[] pose = {-1,-1,-1};
-                SmartDashboard.putNumberArray("rear pose", pose);
-            }
-        } 
-        // else {
-        //     SmartDashboard.putNumber("pose", 0);
-        // }
+        frontPose = frontPoseEstimator.update().orElse(null);
+        double[] fpose = {frontPose.estimatedPose.getX(),frontPose.estimatedPose.getY(),frontPose.estimatedPose.getZ()};
+        SmartDashboard.putNumberArray("front pose", fpose);
+        rearPose = frontPoseEstimator.update().orElse(null);
+        double[] rpose = {rearPose.estimatedPose.getX(),rearPose.estimatedPose.getY(),rearPose.estimatedPose.getZ()};
+        SmartDashboard.putNumberArray("rear pose", rpose);
     }
-
-    // public double getYaw(){
-    //     return yaw;
-    // }
 
     public void odometryUpdate(SwerveDrivePoseEstimator estimator) {
         if(frontPose != null){
@@ -119,13 +73,8 @@ public class WsVision implements Subsystem {
         }
     }
 
-    // public double getYaw(){
-    //     return yaw;
-    // }
-
     @Override
     public void resetState() {
-        hasTargets = false;
     }
 
     @Override
