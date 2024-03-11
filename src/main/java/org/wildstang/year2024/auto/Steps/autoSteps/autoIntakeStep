@@ -1,0 +1,27 @@
+package org.wildstang.year2024.auto.steps;
+package org.wildstang.year2024.subsystem.intake;
+
+import org.wildstang.framework.auto.AutoStep;
+import org.wildstang.framework.core.Core;
+import org.wildstang.year2024.robot.WsSubsystems;
+import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
+import org.wildstang.year2024.subsystems.intake.intake;
+
+public class autoIntakeStep extends AutoStep {
+    private SwerveDrive swerve;
+    private intake intakeSub;
+
+    public void update() {
+        swerve.driveStae = driveType.SwerveDrive;
+        intakeSub.intakeOn();
+        this.setFinished();
+    }
+
+    public void initialize() {
+        intakeSub = whateverValueThisWouldBe;
+    }
+
+    public String toString() {
+        return "Intake";
+    }
+}

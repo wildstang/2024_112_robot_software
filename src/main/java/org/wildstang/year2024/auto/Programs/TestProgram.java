@@ -10,8 +10,6 @@ import org.wildstang.year2024.auto.Steps.StartOdometryStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
-import com.choreo.lib.Choreo;
-
 
 public class TestProgram extends AutoProgram{
     

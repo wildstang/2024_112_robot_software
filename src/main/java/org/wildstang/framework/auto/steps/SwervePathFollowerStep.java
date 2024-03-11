@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import com.google.gson.Gson;
-
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
 
@@ -35,6 +34,7 @@ public class SwervePathFollowerStep extends AutoStep {
      * @param isBlue whether the robot is on the blue alliance
      */
     public SwervePathFollowerStep(String pathData, SwerveDriveTemplate drive, boolean isBlue) {
+        
         this.pathtraj = getTraj(pathData);
         m_drive = drive;
         
@@ -70,8 +70,8 @@ public class SwervePathFollowerStep extends AutoStep {
             //update values the robot is tracking to
             m_drive.setAutoValues( getVelocity(),getHeading(), getAccel(), 2.0*xOffset,0.0*yOffset );
             m_drive.setAutoHeading(getRotation());
-            prevHeading = getHeading();
             prevVelocity = getVelocity();
+            prevHeading = getHeading();
             prevTime = timer.get();
             SmartDashboard.putNumber("PF localX", localRobotPose.getX());
             SmartDashboard.putNumber("PF path X", localAutoPose.getX());
@@ -88,14 +88,16 @@ public class SwervePathFollowerStep extends AutoStep {
     }
     public double getHeading(){
         if (isBlue) return ((-Math.atan2(pathtraj.sample(timer.get()).velocityY, 
-        pathtraj.sample(timer.get()).velocityX)*180/Math.PI)+360)%360;
-    else return ((-Math.atan2(-pathtraj.sample(timer.get()).velocityY, 
-        pathtraj.sample(timer.get()).velocityX)*180/Math.PI)+360)%360;
+            pathtraj.sample(timer.get()).velocityX)*180/Math.PI)+360)%360;
+        else return ((-Math.atan2(-pathtraj.sample(timer.get()).velocityY, 
+            pathtraj.sample(timer.get()).velocityX)*180/Math.PI)+360)%360;
+        // if (isBlue) return ((-pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360; 
+        // else return ((pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360;
     }
     public double getAccel(){
         return (getVelocity() - prevVelocity) / (timer.get() - prevTime);
     }
-     public double getRotation(){
+    public double getRotation(){
         if (isBlue) return ((-pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360;
         else return ((pathtraj.sample(timer.get()).heading*180/Math.PI)+360)%360;
     }

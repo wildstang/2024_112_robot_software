@@ -6,7 +6,7 @@ public class FieldConstants {
     public static final double BLUE_SPEAKER_X = -1.5; //Inches
     public static final double RED_SPEAKER_X = 652.73; //Inches
     public static final double SPEAKER_Y = 218.42; //inches
-    // public static final double SPEAKER_Z = 218.42;//inches
+    public static final double SPEAKER_Z = 2.10566;  // meters
     // public static final double AMP_Z = 323.00; //inches
     public static final double RED_AMP_X = 578.77; //inches
     public static final double BLUE_AMP_X = 72.5; //inches

@@ -11,6 +11,8 @@ import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
+import com.choreo.lib.Choreo;
+
 import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -27,20 +29,20 @@ public class FullWingAutoTop extends AutoProgram{
 
         //Preload Shot
         addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 0, color));
-        addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
+        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(new ShootNoteStep());
         
         // Wing Note 1
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         group0.addStep(new IntakeNoteStep());
-        group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-FirstNote", new PathConstraints(4.0, 3.0)), swerve, color));
+        // group0.addStep(new SwervePathFollowerStep(Choreo.getTrajectory("OneNote_CE.1"), swerve, color));
         addStep(group0);
         addStep(new ShootNoteStep());
         
         //Wing Note 2
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
         group1.addStep(new IntakeNoteStep());
-        group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
+        // group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(group1);
         addStep(new ShootNoteStep());
 
