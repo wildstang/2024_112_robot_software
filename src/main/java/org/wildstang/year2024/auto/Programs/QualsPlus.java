@@ -43,7 +43,15 @@ public class QualsPlus extends AutoProgram{
         group1.addStep(new SwervePathFollowerStep(Choreo.getTrajectory("QualsPlus_GetCenterA"), swerve, finished));
         addStep(group1);
 
-        addStep(new SwervePathFollowerStep(null, swerve, finished));
+        addStep(new SwervePathFollowerStep(Choreo.getTrajectory("QualsPlus_ShootCenterA"), swerve, finished));
+        addStep(new ShootNoteStep());
+
+        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
+        group2.addStep(new IntakeNoteStep());
+        group2.addStep(SwervePathFollowerStep(Choreo.getTrajectory("")));
+
+
+
 
 
     }

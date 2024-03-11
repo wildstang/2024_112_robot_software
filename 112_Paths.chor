@@ -13,7 +13,7 @@
         "wheelRadius": 0.03809997942601111
     },
     "paths": {
-        "QualsPlus_Preload": {
+        "QualsPlus": {
             "waypoints": [
                 {
                     "x": 1.4408824443817139,
@@ -28,6 +28,33 @@
                     "x": 1.885074496269226,
                     "y": 6.858833862304688,
                     "heading": -2.510865629584285,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
+                    "controlIntervalCount": 40
+                },
+                {
+                    "x": 2.219346046447754,
+                    "y": 6.756906509399414,
+                    "heading": -2.59304316980591,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
+                    "controlIntervalCount": 40
+                },
+                {
+                    "x": 8.2720308303833,
+                    "y": 7.470975399017334,
+                    "heading": -3.122726869477236,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
+                    "controlIntervalCount": 40
+                },
+                {
+                    "x": 5.240601539611816,
+                    "y": 7.116567134857178,
+                    "heading": -2.8397859276942112,
                     "isInitialGuess": false,
                     "translationConstrained": true,
                     "headingConstrained": true,
