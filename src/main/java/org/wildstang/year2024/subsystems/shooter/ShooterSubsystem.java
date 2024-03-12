@@ -95,7 +95,7 @@ public class  ShooterSubsystem implements Subsystem{
 
         /**** Abs Encoders ****/
         pivotEncoder = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
-        pivotEncoder.setPositionConversionFactor(2 * Math.PI / 60.0);
+        pivotEncoder.setPositionConversionFactor(2 * Math.PI);
 
         /**** Other ****/
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
@@ -181,23 +181,24 @@ public class  ShooterSubsystem implements Subsystem{
                 break;
             case SHOOT:
                 feedMotorOutput = FeedConstants.FEED_SPEED;
-                // if(shooterBeamBreak.getValue() == false){
-                if (timer.hasElapsed(5)){
+                if(shooterBeamBreak.getValue() == false){
+                // if (timer.hasElapsed(5)){
                     shooterState = shooterType.SHOOTER_OFF;
                     Log.warn("SHOOTER_OFF");
-                    LedSubsystem.ledState = LEDColor.GREEN;
-                    shooterEnable = false;
                 }
                 break;
             case FIRST_SENSOR:
                 goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
                 goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
-                feedMotorOutput = FeedConstants.FEED_IN_SPEED;
+                // feedMotorOutput = FeedConstants.FEED_IN_SPEED;
                 intakeMotorOutput = FeedConstants.INTAKE_IN_SPEED;
                 shooterEnable = false;
                 if(intakeBeamBreak.getValue()){
                     shooterState = shooterType.STOW;//signifies that note is stowed
                     Log.warn("STOW");
+                    timer.reset();
+                    timer.start();
+                    xboxController.setValue(1);
                 }
                 break;
 
@@ -220,30 +221,26 @@ public class  ShooterSubsystem implements Subsystem{
                 LedSubsystem.ledState = LEDColor.BLUE;
                 shooterEnable = false;
                 retract = true;
-                goalPos = 35.0 * Math.PI/ 180.0;
-                break;
+                goalPos = ArmConstants.SOFT_STOP_LOW;
             case STOW:
-                timer.reset();
-                timer.start();
-                xboxController.setValue(1);
-
+                intakeMotorOutput = FeedConstants.INTAKE_STOW_SPEED;
+                feedMotorOutput = FeedConstants.FEED_IN_SPEED;
                 LedSubsystem.ledState = LEDColor.FLASH_ORANGE;
-                
-                if(!intakeBeamBreak.getValue()){
+                if(shooterBeamBreak.getValue()){
                     shooterState = shooterType.WAIT;
                     Log.warn("WAIT");
                 }
                 break;
             case SHOOTER_OFF:
                 xboxController.setValue(1);
+                LedSubsystem.ledState = LEDColor.GREEN;
                 shooterEnable = false;
                 feedMotorOutput = 0.0;
                 shooterState = shooterType.WAIT;
+                goalPos = ArmConstants.SOFT_STOP_LOW;
                 Log.warn("WAIT");
                 timer.reset();
                 timer.start();
-
-
                 break;
             
         }
@@ -333,7 +330,7 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getPivotPosition(){
-        return (pivotEncoder.getPosition() + ArmConstants.ZERO_OFFSET) % (2 * Math.PI);
+        return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW) % (2 * Math.PI);
         // return (angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.ZERO_OFFSET * Math.PI / 180.0;
     }
 
@@ -348,7 +345,7 @@ public class  ShooterSubsystem implements Subsystem{
         // return (double)((speeds[indexes[0]]+((speeds[indexes[1]] - speeds[indexes[0]]) * 
         //             ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])))));
         // return 400.0;
-        return 792.0;
+        return 500.0;
     }
 
     public double getTargetAngle(double distance){
@@ -374,7 +371,7 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public Boolean shooterIsAtTarget(){
-        return Math.abs(goalVel - getShooterVelocity()) < ShooterConstants.VEL_DB;
+        return Math.abs(goalVel - getShooterVelocity()) < goalVel * 0.1;
     }
     @Override
     public String getName() {

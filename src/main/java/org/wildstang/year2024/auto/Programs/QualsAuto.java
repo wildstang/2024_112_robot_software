@@ -24,7 +24,7 @@ public class QualsAuto extends AutoProgram{
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
     //Preload shot
     addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 0, color));
-    addStep(new SwervePathFollowerStep(Choreo.getTrajectory(null), swerve, color));
+    // addStep(new SwervePathFollowerStep(Choreo.getTrajectory(null), swerve, color));
     addStep(new ShootNoteStep());
 
     //Get Wing A
