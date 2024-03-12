@@ -30,11 +30,10 @@ public enum WsOutputs implements Outputs {
     ANGLE3("Module 3 Angle Motor", new WsSparkConfig(CANConstants.ANGLE3, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
     DRIVE4("Module 4 Drive Motor", new WsSparkConfig(CANConstants.DRIVE4, WsMotorControllers.SPARK_FLEX_BRUSHLESS)),
     ANGLE4("Module 4 Angle Motor", new WsSparkConfig(CANConstants.ANGLE4, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
-
     // ---------------------------------
     // Other Motors
     // ---------------------------------
-    
+
     INTAKE("Intake motor", new WsSparkConfig(CANConstants.INTAKE, WsMotorControllers.SPARK_MAX_BRUSHLESS)),
     FEED("Feed Motor", new WsSparkConfig(CANConstants.FEED, WsMotorControllers.SPARK_MAX_BRUSHLESS, true)),
 
@@ -55,7 +54,7 @@ public enum WsOutputs implements Outputs {
 
     XBOXCONTROLLER("Xbox Controller", new WsXboxControllerConfig(0,RumbleType.kBothRumble));
 
-    
+
     ; // end of enum
 
     /**

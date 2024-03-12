@@ -3,7 +3,7 @@ package org.wildstang.framework.auto.steps;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-
+import com.google.gson.Gson;
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
 
@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.choreo.lib.*;
-import com.google.gson.Gson;
 
 public class SwervePathFollowerStep extends AutoStep {
 
@@ -35,7 +34,6 @@ public class SwervePathFollowerStep extends AutoStep {
      * @param isBlue whether the robot is on the blue alliance
      */
     public SwervePathFollowerStep(String pathData, SwerveDriveTemplate drive, boolean isBlue) {
-        
         
         this.pathtraj = getTraj(pathData);
         m_drive = drive;
@@ -119,3 +117,4 @@ public class SwervePathFollowerStep extends AutoStep {
     }return new ChoreoTrajectory();
     }
 }
+
