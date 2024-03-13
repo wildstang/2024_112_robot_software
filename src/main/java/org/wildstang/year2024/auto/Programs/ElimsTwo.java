@@ -29,12 +29,25 @@ public class ElimsTwo extends AutoProgram{
 
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         group0.addStep(new IntakeNoteStep());
+        group0.addStep(new SwervePathFollowerStep("ElimsTwo.1", swerve, color));
+        addStep(group0);
+        addStep(new ShootNoteStep());
 
-       
+        AutoParallelStepGroup group1 = new AutoParallelStepGroup();
+        group1.addStep(new IntakeNoteStep());
+        group1.addStep(new SwervePathFollowerStep("ElimsTwo.2", swerve, color));
+        addStep(group1);
 
+        addStep(new SwervePathFollowerStep("ElimsTwo.3", swerve,color));
+        addStep(new ShootNoteStep());
 
+        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
+        group2.addStep(new IntakeNoteStep());
+        group2.addStep(new SwervePathFollowerStep("ElimsTwo.4", swerve, color));
+        addStep(group2);
+        addStep(new SwervePathFollowerStep("ElimsTwo.5", swerve, color));
 
-
+        addStep(new ShootNoteStep());
 
 
     }
