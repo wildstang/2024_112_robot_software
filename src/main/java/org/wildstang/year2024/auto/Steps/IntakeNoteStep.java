@@ -16,7 +16,7 @@ public class IntakeNoteStep extends AutoStep{
 
     @Override
     public void update() {
-        shooter.setShooterState(shooterType.FIRST_SENSOR);
+        shooter.setShooterState(shooterType.FLOOR_INTAKE);
         setFinished();
     }
 

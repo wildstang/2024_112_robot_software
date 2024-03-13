@@ -19,7 +19,7 @@ public class ScoreAmp extends AutoStep {
 
     @Override
     public void update() {
-        shooter.setShooterState(shooterType.AMP);
+        shooter.setShooterState(shooterType.INIT_AMP);
         if (shooter.isOff()){
             setFinished();
         }

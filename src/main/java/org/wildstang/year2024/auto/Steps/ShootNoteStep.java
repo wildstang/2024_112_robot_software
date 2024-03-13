@@ -19,7 +19,7 @@ public class ShootNoteStep extends AutoStep {
 
     @Override
     public void update() {
-        shooter.setShooterState(shooterType.INIT_SHOOTER);
+        shooter.setShooterState(shooterType.INIT_SPEAKER);
         if (shooter.isOff()){
             setFinished();
         }

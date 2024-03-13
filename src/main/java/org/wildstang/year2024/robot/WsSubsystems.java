@@ -1,7 +1,7 @@
 package org.wildstang.year2024.robot;
 
 import org.wildstang.framework.core.Subsystems;
-import org.wildstang.year2024.subsystems.led.LedSubsystem;
+import org.wildstang.year2024.subsystems.LED.LedSubsystem;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 import org.wildstang.year2024.subsystems.targeting.WsVision;

@@ -37,7 +37,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private AnalogInput leftTrigger, rightTrigger;  //speed derate, thrust 
     private DigitalInput leftBumper, rightBumper;  // intake, shoot
     private DigitalInput select;  // gyro reset
-    private DigitalInput start;  // defense mode
+    private DigitalInput start;  // 
     private DigitalInput faceUp;  // rotation lock 0 degrees
     private DigitalInput faceRight;  // rotation lock 90 degrees
     private DigitalInput faceLeft;  // rotation lock 270 degrees
@@ -132,14 +132,15 @@ public class SwerveDrive extends SwerveDriveTemplate {
     @Override
     public void inputUpdate(Input source) {
         //determine if we are in cross or teleop
-        if (driveState != driveType.AUTO && start.getValue()) {
-            driveState = driveType.CROSS;
-            for (int i = 0; i < modules.length; i++) {
-                modules[i].setDriveBrake(true);
-            }
-            this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
-        }
-        else if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
+        // if (driveState != driveType.AUTO && start.getValue()) {
+        //     driveState = driveType.CROSS;
+        //     for (int i = 0; i < modules.length; i++) {
+        //         modules[i].setDriveBrake(true);
+        //     }
+        //     this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
+        // }
+        // else 
+        if (driveState == driveType.CROSS || driveState == driveType.AUTO) {
             driveState = driveType.TELEOP;
         }
         if(source == leftBumper){
@@ -218,7 +219,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 this.swerveSignal = swerveHelper.setCross();
                 drive();
                 break;
-
+            case VISION:
+                // if (!Double.isNaN(targetYaw)){
+                //     rotSpeed = pvCam.getYaw() * .005;
+                //     this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
+                //     drive();
+                // }
+                // break;
             case TELEOP:
                 if (rotLocked){
                     //if rotation tracking, replace rotational joystick value with controller generated one
@@ -227,18 +234,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
                 drive();
                 break;
-
             case AUTO:
-                //get controller generated rotation value
-                // rotSpeed = Math.max(-0.2, Math.min(0.2, swerveHelper.getRotControl(pathTarget, getGyroAngle())));
-                rotSpeed = swerveHelper.getRotControl(pathTarget, getGyroAngle());
-                //ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
+                rotSpeed = swerveHelper.getRotControl(pathTarget, getGyroAngle());  // get controller generated rotation value
+                // rotSpeed = Math.max(-0.2, Math.min(0.2, swerveHelper.getRotControl(pathTarget, getGyroAngle())));  // ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
                 
                 //update where the robot is, to determine error in path
-                this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel, pathAccel), pathHeading, rotSpeed,getGyroAngle(),pathXOffset, pathYOffset);
+                this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel, pathAccel), pathHeading, rotSpeed, getGyroAngle(), pathXOffset, pathYOffset);
                 drive();  
                 break;
-
             case SPEAKER:
                 //Turn Robot Toward Speaker
                 rotTarget = getAngleToSpeaker();
@@ -246,7 +249,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
                 drive();
                 break;
-
             case AMP:
                 ySpeed = (FieldConstants.AMP_Y - poseEstimator.getEstimatedPosition().getY()) * DriveConstants.POS_P;
                 if (isBlueAlliance) {
@@ -259,7 +261,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
                 drive();
                 break;
-
             case STAGE:
                 String closestTag = getClosestChain();
 
@@ -295,14 +296,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
                 drive();
                 break;
-
-            case VISION:
-                // if (!Double.isNaN(targetYaw)){
-                //     rotSpeed = pvCam.getYaw() * .005;
-                //     this.swerveSignal = swerveHelper.setDrive(0, 0, rotSpeed, getGyroAngle());
-                //     drive();
-                // }
-                // break;
         }
 
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
