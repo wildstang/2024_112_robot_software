@@ -115,7 +115,7 @@ public class WsSwerveHelper {
     }
     
     public double scaleDeadband(double input, double deadband){
-        if (Math.abs(input) < Math.abs(deadband)) return 0.0;
+        if (Math.abs(input) < deadband) return 0.0;
         return Math.signum(input)*((Math.abs(input) - deadband) / (1.0 - deadband));
     }
     

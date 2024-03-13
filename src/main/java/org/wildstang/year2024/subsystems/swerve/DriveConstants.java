@@ -36,9 +36,6 @@ public final class DriveConstants {
     public static final double ROT_P = 0.5;
     /**Swerve Module Names */
     public static final String[] POD_NAMES = new String[]{"FL", "FR", "BL", "BR"};
-
-    /*Blank for now. Offset of climber which will assist in alligning the robot climber to the chain
-     * With correct offset.
-     */
-    public double CLIMBER_OFFSET = 0; 
+    /**Deadband for deciding if drive is at position target, meters */
+    public static final double POS_DB = 0.10;
 }
