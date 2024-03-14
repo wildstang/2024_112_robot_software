@@ -25,10 +25,12 @@ public class WingA_Amp extends AutoProgram{
          SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
          color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
+         // Preload
         addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
         addStep(new SetGyroStep(-2.245537422197309, swerve));
         addStep(new ShootNoteStep());
 
+        // Get and Shoot wing A
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         group0.addStep(new IntakeNoteStep());
         group0.addStep(new SwervePathFollowerStep("WingA_Amp", swerve, color));
@@ -41,6 +43,6 @@ public class WingA_Amp extends AutoProgram{
     }
 
     public String toString(){
-        return "WingAB Program";
+        return "WingA From Amp Program";
     }
 }

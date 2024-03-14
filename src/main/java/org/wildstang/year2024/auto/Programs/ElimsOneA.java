@@ -85,6 +85,6 @@ public class ElimsOneA extends AutoProgram{
 
     @Override
     public String toString() {
-        return "Quals Plus";
+        return "ElimsOne 1a";
     }
 }

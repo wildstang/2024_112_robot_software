@@ -29,29 +29,35 @@ public class QualsPlus extends AutoProgram{
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
+        // Preload
         addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
         addStep(new SetGyroStep(-2.245537422197309, swerve));
         addStep(new ShootNoteStep());
         
+        // Get Wing A and Shoot
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         group0.addStep(new IntakeNoteStep());
         group0.addStep(new SwervePathFollowerStep("QualsPlus.1", swerve, color));
         addStep(group0);
         addStep(new ShootNoteStep());
 
+        //Get Center A
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
         group1.addStep(new IntakeNoteStep());
         group1.addStep(new SwervePathFollowerStep("QualsPlus.2", swerve, color));
         addStep(group1);
 
+        // Shoot center A
         addStep(new SwervePathFollowerStep("QualsPlus.3", swerve, color));
         addStep(new ShootNoteStep());
 
+        // Get center B
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();
         group2.addStep(new IntakeNoteStep());
         group2.addStep(new SwervePathFollowerStep("QualsPlus.4", swerve, color));
         addStep(group2);
 
+        // Shoot center B
         addStep(new SwervePathFollowerStep("QualsPlus.5", swerve, color));
         addStep(new ShootNoteStep());
 

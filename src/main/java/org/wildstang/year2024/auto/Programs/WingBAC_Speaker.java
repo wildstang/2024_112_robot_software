@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 
-public class WingABC_Amp extends AutoProgram{
+public class WingBAC_Speaker extends AutoProgram{
     
     private boolean color = true;
 
@@ -25,39 +25,37 @@ public class WingABC_Amp extends AutoProgram{
          SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
          color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
-
-         //Preload
-        addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
-        addStep(new SetGyroStep(-2.245537422197309, swerve));
-        addStep(new ShootNoteStep());
-
-        // Get and Shoot Wing A
-        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-        group0.addStep(new IntakeNoteStep());
-        group0.addStep(new SwervePathFollowerStep("WingAB_Amp.1", swerve, color));
-        addStep(group0);
+         // Preload From Subwoofer
+        addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),180, color));
+        addStep(new SetGyroStep(Math.PI, swerve));
         addStep(new ShootNoteStep());
 
         // Get and Shoot Wing B
+        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
+        group0.addStep(new IntakeNoteStep());
+        group0.addStep(new SwervePathFollowerStep("WingBAC_Speaker.1", swerve, color));
+        addStep(group0);
+        addStep(new ShootNoteStep());
+
+        // Get And Shoot Wing A
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
         group1.addStep(new IntakeNoteStep());
-        group1.addStep(new SwervePathFollowerStep("WingAB_Amp.2", swerve, color));
+        group1.addStep(new SwervePathFollowerStep("WingBAC_Speaker.2", swerve, color));
         addStep(group1);
         addStep(new ShootNoteStep());
 
         // Get and Shoot Wing C
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();
         group2.addStep(new IntakeNoteStep());
-        group2.addStep(new SwervePathFollowerStep("WingABC_Amp.3", swerve, color));
+        group2.addStep(new SwervePathFollowerStep("WingBAC_Speaker.3", swerve, color));
         addStep(group2);
         addStep(new ShootNoteStep());
-
 
 
 
     }
 
     public String toString(){
-        return "WingABC From Amp Program";
+        return "WingBAC From Speaker Program";
     }
 }

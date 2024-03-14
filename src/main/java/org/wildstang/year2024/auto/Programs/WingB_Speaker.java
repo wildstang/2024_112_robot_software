@@ -25,10 +25,12 @@ public class WingB_Speaker extends AutoProgram{
          SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
          color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
+         // Preload From Subwoofer
         addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),180, color));
         addStep(new SetGyroStep(Math.PI, swerve));
         addStep(new ShootNoteStep());
 
+        // Get and Shoot Wing B
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         group0.addStep(new IntakeNoteStep());
         group0.addStep(new SwervePathFollowerStep("WingB_Speaker", swerve, color));
