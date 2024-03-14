@@ -96,12 +96,14 @@ public class WsSpark extends WsMotorController {
             case SPARK_FLEX_BRUSHED:
             case SPARK_FLEX_BRUSHLESS:
                 follower = new CANSparkFlex(canConstant, brushless ? MotorType.kBrushless : MotorType.kBrushed);
+                Log.warn("foo");
                 break;
             default:
                 Log.error("Invalid follower motor controller for WsSpark!");
                 return;
         }
         follower.follow(motor, oppose);
+        Log.warn("bar");
     }
 
     /**

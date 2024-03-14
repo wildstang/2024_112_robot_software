@@ -25,7 +25,7 @@ public final class ArmConstants {
     // public static final double kI = 0.01;
     // public static final double kD = 0.4;
     // public static final double kF = MASS * COM / (RATIO * STALL_TORQUE);
-    public static final double AMP_POS = 107.0 * Math.PI/180.0;  // rad
+    public static final double AMP_POS = 105.0 * Math.PI/180.0;  // rad
     public static final double MIN_INTAKE_POS = SOFT_STOP_LOW;  // rad
     public static final double MAX_INTAKE_POS = 75.0 * Math.PI/180.0; // rad TODO: check value
     public static final double SOURCE_INTAKE_POS = SOFT_STOP_HIGH;  // rad

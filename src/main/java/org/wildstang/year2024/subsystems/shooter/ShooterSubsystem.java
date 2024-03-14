@@ -25,11 +25,11 @@ import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class  ShooterSubsystem implements Subsystem{
 
-    public enum shooterType {INIT_SPEAKER, INIT_AMP, OUTTAKE, WAIT, FLOOR_INTAKE, STOW, SHOOT, SHOOTER_OFF, SHOOTER_EXIT_DELAY_1, SHOOTER_EXIT_DELAY_2, OVERRIDE, IDLE, HANG, SOURCE_INTAKE, SOURCE_STOW_1, SOURCE_STOW_2};
+    public enum shooterType {INIT_SPEAKER, INIT_AMP, OUTTAKE, WAIT, FLOOR_INTAKE, STOW, SHOOT, SHOOTER_OFF, SHOOTER_EXIT_DELAY_1, SHOOTER_EXIT_DELAY_2, OVERRIDE, IDLE, HANG, SOURCE_INTAKE, SOURCE_STOW_1, SOURCE_STOW_2, STOW_REVERSE, SHOOTER_OFF_2};
     private shooterType shooterState;
 
     public WsSpark angleMotor;
-    public WsSpark shooterMotor;
+    public WsSpark shooterMotor1, shooterMotor2;
     public WsSpark feedMotor;
     private WsSpark intakeMotor;
     private WsSpark hoodMotor;
@@ -60,6 +60,8 @@ public class  ShooterSubsystem implements Subsystem{
     private double posOut;
     
     private double feedMotorOutput, intakeMotorOutput;
+
+    private int iterCount;
 
     // public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
@@ -94,8 +96,10 @@ public class  ShooterSubsystem implements Subsystem{
         start.addInputListener(this);
        
         /**** Motors ****/
-        shooterMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER1);
-        shooterMotor.setCoast();
+        shooterMotor1 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER1);
+        shooterMotor1.setCoast();
+        shooterMotor2 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER2);
+        shooterMotor2.setCoast();
 
         angleMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE1);
         angleMotor.setBrake();
@@ -147,7 +151,7 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterState = shooterType.INIT_AMP;
                 Log.warn("INIT_AMP");
             } else if (source == rightBumper){
-                if (rightBumper.getValue() && !shooterBeamBreak.getValue() && !intakeBeamBreak.getValue()) {
+                if (rightBumper.getValue()) {
                     if (sourceMode) {
                         shooterState = shooterType.SOURCE_INTAKE;
                         Log.warn("SOURCE_INTAKE");
@@ -273,9 +277,11 @@ public class  ShooterSubsystem implements Subsystem{
                 break;
             case SHOOTER_EXIT_DELAY_1:
                 intakeMotorOutput = 0.0;
-                if(shooterBeamBreak.getValue()){
-                    shooterState = shooterType.SHOOTER_EXIT_DELAY_2;
-                    Log.warn("SHOOTER_EXIT_DELAY_2");
+                iterCount += 1;
+                if(iterCount > 30 && !shooterBeamBreak.getValue()){
+                    iterCount = 0;
+                    shooterState = shooterType.SHOOTER_OFF;
+                    Log.warn("SHOOTER_OFF");
                 }
                 break;
             case SHOOTER_EXIT_DELAY_2:
@@ -292,6 +298,15 @@ public class  ShooterSubsystem implements Subsystem{
                 feedMotorOutput = 0.0;
                 goalPos = ArmConstants.SOFT_STOP_LOW;
                 LedSubsystem.ledState = LedColor.GREEN;
+                if (pivotIsAtTarget()){
+                    shooterState = shooterType.WAIT;
+                    Log.warn("WAIT");
+                }
+                break;
+            case SHOOTER_OFF_2:
+                hood_deploy = false;
+                shooterEnable = false;
+                feedMotorOutput = 0.0;
                 shooterState = shooterType.WAIT;
                 Log.warn("WAIT");
                 break;
@@ -335,6 +350,16 @@ public class  ShooterSubsystem implements Subsystem{
                 intakeMotorOutput = FeedConstants.INTAKE_STOW_OUTPUT;
                 feedMotorOutput = FeedConstants.FEED_IN_OUTPUT;
                 if(shooterBeamBreak.getValue()){
+                    shooterState = shooterType.STOW_REVERSE;
+                    iterCount = 0;
+                    Log.warn("STOW_REVERSE");
+                }
+                break;
+            case STOW_REVERSE:
+                feedMotorOutput = -FeedConstants.FEED_IN_OUTPUT;
+                iterCount += 1;
+                if (iterCount > 10) {
+                    iterCount = 0;
                     shooterState = shooterType.IDLE;
                     Log.warn("IDLE");
                 }
@@ -355,6 +380,7 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterEnable = true;
                 break;
             case WAIT:
+                hood_deploy = false;
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
                 goalVel = 0.0;
@@ -413,7 +439,8 @@ public class  ShooterSubsystem implements Subsystem{
         feedMotor.setSpeed(feedMotorOutput);
         hoodMotor.setSpeed(hoodOutput);
         angleMotor.setSpeed(posOut);
-        shooterMotor.setSpeed(shooterOutput);
+        shooterMotor1.setSpeed(shooterOutput);
+        shooterMotor2.setSpeed(-shooterOutput);
 
         if(timer.hasElapsed(1.5)){
             xboxController.setValue(0);
@@ -451,10 +478,12 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putString("Shooter state", shooterState.name());
         SmartDashboard.putBoolean("Sensor Override", sensorOverride);
         SmartDashboard.putBoolean("Source Mode", sourceMode);
+        SmartDashboard.putNumber("iterCount", iterCount);
     }
     
     @Override
     public void resetState() {
+        iterCount = 0;
         sensorOverride = false;
         sourceMode = false;
         shooterEnable = false;
@@ -506,11 +535,11 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getShooterVelocity() {
-        return shooterMotor.getVelocity() * ShooterConstants.RATIO * 2 * Math.PI / 60.0;
+        return shooterMotor1.getVelocity() * ShooterConstants.RATIO * 2 * Math.PI / 60.0;
     }
 
     public boolean pivotIsAtTarget() {
-        return Math.abs(posErr) < ArmConstants.POS_DB;
+        return Math.abs(curPos - goalPos) < ArmConstants.POS_DB;
     }
 
     public Boolean hoodIsAtTarget(){
@@ -519,7 +548,7 @@ public class  ShooterSubsystem implements Subsystem{
 
     public Boolean shooterIsAtTarget(){
         // return curVel >= goalVel;
-        return Math.abs(velErr) < goalVel * 0.1;
+        return Math.abs(curVel) >= goalVel * 0.9;
     }
     @Override
     public String getName() {

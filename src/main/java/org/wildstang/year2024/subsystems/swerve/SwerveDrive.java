@@ -96,10 +96,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         rightTrigger.addInputListener(this);
         leftTrigger = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_TRIGGER);
         leftTrigger.addInputListener(this);
-        rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
-        rightBumper.addInputListener(this);
-        leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
-        leftBumper.addInputListener(this);
+        // rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
+        // rightBumper.addInputListener(this);
+        // leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
+        // leftBumper.addInputListener(this);
         select = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_SELECT);
         select.addInputListener(this);
         start = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_START);
@@ -112,8 +112,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         faceRight.addInputListener(this);
         faceDown = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_DOWN);
         faceDown.addInputListener(this);
-        dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
-        dpadUp.addInputListener(this);
+        // dpadUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_DPAD_UP);
+        // dpadUp.addInputListener(this);
     }
 
     public void initOutputs() {
@@ -191,11 +191,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
         rotSpeed *= Math.abs(rotSpeed);
         rotSpeed *= DriveConstants.ROTATION_SPEED;
         //if the rotational joystick is being used, the robot should not be auto tracking heading
-        if (rotSpeed == 0) {
+        if (rotSpeed != 0) {
+            rotLocked = false;
+        } else if (rotLocked == false) {
             rotTarget = getGyroAngle();
             rotLocked = true;
-        } else {
-            rotLocked = false;
         }
         
         //assign thrust
@@ -274,6 +274,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Auto translate direction", pathHeading);
         SmartDashboard.putNumber("Auto rotation target", pathTarget);
         SmartDashboard.putBoolean("drive at target", isAtTarget());
+        SmartDashboard.putNumber("pose x", poseEstimator.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("pose y", poseEstimator.getEstimatedPosition().getY());
         // SmartDashboard.putNumber("target yaw", targetYaw);
     }
     
@@ -426,6 +428,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
     public Pose2d returnPose(){
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public double getPosX(){
+        return poseEstimator.getEstimatedPosition().getX();
+    }
+
+    public double getPosY(){
+        return poseEstimator.getEstimatedPosition().getY();
     }
 
     public Boolean isAtTarget(){
