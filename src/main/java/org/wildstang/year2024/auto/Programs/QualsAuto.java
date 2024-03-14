@@ -27,7 +27,7 @@ public class QualsAuto extends AutoProgram{
     //Preload 
     addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(), 0, color));
     addStep(new SetGyroStep(currentStep, swerve));
-    addStep(new SwervePathFollowerStep("Quals1", swerve, color));
+    addStep(new SwervePathFollowerStep("Quals.1", swerve, color));
     addStep(new ShootNoteStep());
 
     //Get Wing A
