@@ -25,7 +25,7 @@ public class QualsAuto extends AutoProgram{
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
     //Preload 
-    addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 0, color));
+    addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(), 0, color));
     addStep(new SetGyroStep(currentStep, swerve));
     addStep(new SwervePathFollowerStep("Quals1", swerve, color));
     addStep(new ShootNoteStep());

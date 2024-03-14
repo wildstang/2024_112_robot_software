@@ -23,7 +23,7 @@ public class ElimsTwo extends AutoProgram{
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),225, color));
+        addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
         addStep(new SetGyroStep(Math.PI, swerve));
         addStep(new ShootNoteStep());
 

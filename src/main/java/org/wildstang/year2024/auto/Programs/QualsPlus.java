@@ -29,7 +29,7 @@ public class QualsPlus extends AutoProgram{
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),225, color));
+        addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
         addStep(new SetGyroStep(-2.245537422197309, swerve));
        //addStep(new SwervePathFollowerStep("QualsPlus", swerve, color));
         addStep(new ShootNoteStep());
