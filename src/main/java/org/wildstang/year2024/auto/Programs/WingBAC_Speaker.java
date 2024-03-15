@@ -2,60 +2,60 @@ package org.wildstang.year2024.auto.Programs;
 
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
+import org.wildstang.framework.auto.steps.PathHeadingStep;
+import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
-import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
+import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
 import org.wildstang.year2024.auto.Steps.StartOdometryStep;
-import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
-import com.choreo.lib.Choreo;
-
-import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class FullWingAutoTop extends AutoProgram{
 
+public class WingBAC_Speaker extends AutoProgram{
+    
     private boolean color = true;
 
     @Override
-    protected void defineSteps() {
-    
+    protected void defineSteps(){
          SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
          color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
-        //Preload Shot
-        addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 0, color));
-        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-PreLoad", new PathConstraints(4.0, 3.0)), swerve, color));
+         // Preload From Subwoofer
+        addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),180, color));
+        addStep(new SetGyroStep(Math.PI, swerve));
         addStep(new ShootNoteStep());
-        
-        // Wing Note 1
+
+        // Get and Shoot Wing B
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         group0.addStep(new IntakeNoteStep());
-        // group0.addStep(new SwervePathFollowerStep(Choreo.getTrajectory("OneNote_CE.1"), swerve, color));
+        group0.addStep(new SwervePathFollowerStep("WingBAC_Speaker.1", swerve, color));
         addStep(group0);
         addStep(new ShootNoteStep());
-        
-        //Wing Note 2
+
+        // Get And Shoot Wing A
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
         group1.addStep(new IntakeNoteStep());
-        // group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("FullWing-SecondNote", new PathConstraints(4.0, 3.0)), swerve, color));
+        group1.addStep(new SwervePathFollowerStep("WingBAC_Speaker.2", swerve, color));
         addStep(group1);
         addStep(new ShootNoteStep());
 
-       //Wing Note 3
-       AutoParallelStepGroup group2 = new AutoParallelStepGroup();
-       group2.addStep(new IntakeNoteStep());
-       group2.addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 178.31533352936483539, color));
-addStep(group2);
-       addStep(new ShootNoteStep());;
+        // Get and Shoot Wing C
+        AutoParallelStepGroup group2 = new AutoParallelStepGroup();
+        group2.addStep(new IntakeNoteStep());
+        group2.addStep(new SwervePathFollowerStep("WingBAC_Speaker.3", swerve, color));
+        addStep(group2);
+        addStep(new ShootNoteStep());
+
+
+
     }
 
-    @Override
-    public String toString() {
-        return "Full Wing Auto Top";
+    public String toString(){
+        return "WingBAC From Speaker Program";
     }
 }

@@ -53,14 +53,14 @@ public class QualsAuto extends AutoProgram{
         //shoot wing c
         addStep(new ShootNoteStep());
 
-        //get center e
-        AutoParallelStepGroup group3 = new AutoParallelStepGroup();
-        group3.addStep(new IntakeNoteStep());
-        group3.addStep(new SwervePathFollowerStep("Quals.6", swerve, color));
+    //get center D
+    AutoParallelStepGroup group3 = new AutoParallelStepGroup();
+    group3.addStep(new IntakeNoteStep());
+    group3.addStep(new SwervePathFollowerStep("Quals.6", swerve, color));
 
-        //go shoot center e
-        addStep(new SwervePathFollowerStep("Quals.7", swerve, finished));
-        addStep(new ShootNoteStep());
+    //go shoot center D
+    addStep(new SwervePathFollowerStep("Quals.7", swerve, finished));
+    addStep(new ShootNoteStep());
     }
     @Override
     public String toString() {

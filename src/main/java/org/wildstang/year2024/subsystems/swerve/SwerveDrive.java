@@ -156,6 +156,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         xSpeed = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
         ySpeed = swerveHelper.scaleDeadband(leftStickY.getValue(), DriveConstants.DEADBAND);
         
+
         //reset gyro
         if (source == select && select.getValue()) {
             gyro.setYaw(0.0);

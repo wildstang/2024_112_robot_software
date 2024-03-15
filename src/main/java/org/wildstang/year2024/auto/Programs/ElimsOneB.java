@@ -2,20 +2,24 @@ package org.wildstang.year2024.auto.Programs;
 
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
+import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
-import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
 import org.wildstang.year2024.auto.Steps.StartOdometryStep;
+import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
+import org.wildstang.year2024.auto.Steps.ScoreAmp;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
+
+import com.choreo.lib.Choreo;
 
 import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-public class FullAutoTop extends AutoProgram{
+public class ElimsOneB extends AutoProgram{
 
     private boolean color = true;
 
@@ -25,52 +29,49 @@ public class FullAutoTop extends AutoProgram{
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
-        //Preload Shot
-        addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 0, color));
-        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Start", new PathConstraints(4.0, 3.0)), swerve, color));
+        // Init and Shoot Preload
+        addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
+        addStep(new SetGyroStep(-2.245537422197309, swerve));
         addStep(new ShootNoteStep());
         
-        // Wing Note 1
+        // Get and Shoot Center A
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         group0.addStep(new IntakeNoteStep());
-        // group0.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Wing1", new PathConstraints(4.0, 3.0)), swerve, color));
+        group0.addStep(new SwervePathFollowerStep("ElimsOneB.1", swerve, color));
         addStep(group0);
+        addStep(new ShootNoteStep());
 
-        // Rocket
+        // Get and Shoot Center B
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
-        addStep(new ShootNoteStep());
         group1.addStep(new IntakeNoteStep());
-        // group1.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle1", new PathConstraints(4.0, 3.0)), swerve, color));
+        group1.addStep(new SwervePathFollowerStep("ElimsOneB.2", swerve, color));
         addStep(group1);
-
-        // Shoot
-        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle1", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(new ShootNoteStep());
 
-        //Middle 2
+        // Get and Shoot Center C
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();
         group2.addStep(new IntakeNoteStep());
-        // group2.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle2", new PathConstraints(4.0, 3.0)), swerve, color));
+        group2.addStep(new SwervePathFollowerStep("ElimsOneB.3", swerve, color));
         addStep(group2);
-
-        //Shoot Middle 2
-        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle2", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(new ShootNoteStep());
 
-        // Middle 3
+        // Get and Shoot Center D
         AutoParallelStepGroup group3 = new AutoParallelStepGroup();
         group3.addStep(new IntakeNoteStep());
-        // group3.addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - Middle3", new PathConstraints(4.0, 3.0)), swerve, color));
+        group3.addStep(new SwervePathFollowerStep("ElimsOneA.4", swerve, color));
         addStep(group3);
-
-        //ShootMiddle 3
-        // addStep(new SwervePathFollowerStep(PathPlanner.loadPath("Rocket - ShootMiddle3", new PathConstraints(4.0, 3.0)), swerve, color));
         addStep(new ShootNoteStep());
+
+
+    
+
+
+
 
     }
 
     @Override
     public String toString() {
-        return "Full Auto Top";
+        return "ElimsOne 1b";
     }
 }
