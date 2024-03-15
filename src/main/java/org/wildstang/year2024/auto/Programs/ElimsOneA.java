@@ -31,7 +31,12 @@ public class ElimsOneA extends AutoProgram{
 
         // Init and Shoot Preload
         addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
-        addStep(new SetGyroStep(-2.245537422197309, swerve));
+        if(color){
+            addStep(new SetGyroStep(-2.245537422197309, swerve));
+        }else{
+            addStep(new SetGyroStep(-2.245537422197309+Math.PI, swerve));
+        }
+        
         addStep(new ShootNoteStep());
         
         // Get and Shoot wing A
