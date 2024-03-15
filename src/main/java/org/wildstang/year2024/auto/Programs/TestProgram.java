@@ -15,7 +15,7 @@ public class TestProgram extends AutoProgram{
     
     protected void defineSteps(){
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
-        addStep(new SetGyroStep(180.0, swerve));
+        // addStep(new SetGyroStep(180.0, swerve, color));
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
         group1.addStep(new PathHeadingStep(180.0, swerve));
         addStep(group1);

@@ -24,7 +24,7 @@ public class ElimsTwo extends AutoProgram{
         color = (DriverStation.getAlliance().equals(Alliance.Blue));
 
         addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(),225, color));
-        addStep(new SetGyroStep(Math.PI, swerve));
+        addStep(new SetGyroStep(Math.PI, swerve, color));
         addStep(new ShootNoteStep());
 
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
@@ -54,6 +54,6 @@ public class ElimsTwo extends AutoProgram{
 
     @Override
     public String toString() {
-        return "Quals Plus";
+        return "ElimsTwo";
     }
 }

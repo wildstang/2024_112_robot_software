@@ -33,7 +33,7 @@ public final class DriveConstants {
     /**PID values for path tracking position error */
     public static final double POS_P = 1;
     /**PID values for path tracking rotation error */
-    public static final double ROT_P = 0.5;
+    public static final double ROT_P = 0.65;
     /**Swerve Module Names */
     public static final String[] POD_NAMES = new String[]{"FL", "FR", "BL", "BR"};
     /**Deadband for deciding if drive is at position target, meters */

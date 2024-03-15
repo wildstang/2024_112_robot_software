@@ -12,9 +12,14 @@ public class SetGyroStep extends AutoStep {
      * @param heading value you want the gyro to currently read
      * @param drive the swerveDrive subsystem
      */
-    public SetGyroStep(double heading, SwerveDriveTemplate drive) {
-        this.heading = heading;
-        m_drive = drive;
+    public SetGyroStep(double heading, SwerveDriveTemplate drive, boolean isBlueAlliance) {
+        if (isBlueAlliance) {
+            this.heading = heading;
+        } else {
+            this.heading = heading - 180;
+        }
+        // this.heading = heading;
+        // m_drive = drive;
     }
 
     @Override

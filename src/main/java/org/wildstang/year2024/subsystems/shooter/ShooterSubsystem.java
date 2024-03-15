@@ -21,6 +21,7 @@ import org.wildstang.year2024.robot.WsSubsystems;
 
 import org.wildstang.year2024.subsystems.LED.LedSubsystem;
 import org.wildstang.year2024.subsystems.LED.LedSubsystem.LedColor;
+import org.wildstang.year2024.subsystems.swerve.FieldConstants;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class  ShooterSubsystem implements Subsystem{
@@ -383,6 +384,7 @@ public class  ShooterSubsystem implements Subsystem{
                 hood_deploy = false;
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
+                goalPos = ArmConstants.SOFT_STOP_LOW;
                 goalVel = 0.0;
                 shooterEnable = false;
                 if (timer.hasElapsed(1.5)){
@@ -423,7 +425,11 @@ public class  ShooterSubsystem implements Subsystem{
 
         // Hood control system
         if (hood_deploy){  //  && hoodPos < HoodConstants.DEPLOY_POS  TODO: decide if we want to stall or brake the motor
-            hoodOutput = HoodConstants.DEPLOY_OUTPUT;
+            if (hoodIsAtTarget()) {
+                hoodOutput = 1.0;
+            } else {
+                hoodOutput = HoodConstants.DEPLOY_OUTPUT;
+            }
         } else if (hoodPos > HoodConstants.RETRACT_POS){
             hoodOutput = HoodConstants.RETRACT_OUTPUT;
         } else {
@@ -479,6 +485,10 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putBoolean("Sensor Override", sensorOverride);
         SmartDashboard.putBoolean("Source Mode", sourceMode);
         SmartDashboard.putNumber("iterCount", iterCount);
+
+        // Vision values
+        SmartDashboard.putNumber("Angle to Speaker", getTargetAngle(distance));
+
     }
     
     @Override
@@ -526,8 +536,8 @@ public class  ShooterSubsystem implements Subsystem{
     public double getTargetAngle(double distance){
         //  return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
         //         * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
-        // return Math.atan(FieldConstants.SPEAKER_Z/distance)
-        return 35 * Math.PI / 180.0;
+        return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235));
+        // return 35 * Math.PI / 180.0;
     }
 
     public void setShooterState(shooterType newState){
@@ -561,5 +571,9 @@ public class  ShooterSubsystem implements Subsystem{
 
     public boolean isOff() {
         return shooterState == shooterType.WAIT;
+    }
+
+    public boolean isIdle() {
+        return shooterState == shooterType.IDLE;
     }
 }

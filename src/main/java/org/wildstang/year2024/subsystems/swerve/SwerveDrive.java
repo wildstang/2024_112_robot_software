@@ -98,12 +98,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
         leftTrigger.addInputListener(this);
         // rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
         // rightBumper.addInputListener(this);
-        // leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
-        // leftBumper.addInputListener(this);
+        leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
+        leftBumper.addInputListener(this);
         select = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_SELECT);
         select.addInputListener(this);
-        start = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_START);
-        start.addInputListener(this);
+        // start = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_START);
+        // start.addInputListener(this);
         faceUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_UP);
         faceUp.addInputListener(this);
         faceLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_LEFT);
@@ -236,8 +236,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 break;
             case SPEAKER:
                 //Turn Robot Toward Speaker
-                rotTarget = getAngleToSpeaker();
-                rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                rotLocked = false;
+                rotSpeed = swerveHelper.getRotControl(0, getAngleToSpeaker());
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
                 drive();
                 break;
@@ -276,6 +276,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putBoolean("drive at target", isAtTarget());
         SmartDashboard.putNumber("pose x", poseEstimator.getEstimatedPosition().getX());
         SmartDashboard.putNumber("pose y", poseEstimator.getEstimatedPosition().getY());
+        SmartDashboard.putNumber("Speaker angle", getAngleToSpeaker());
+        SmartDashboard.putNumber("Speaker distance", getDistanceFromSpeaker());
+        SmartDashboard.putNumber("rot target", rotTarget);
         // SmartDashboard.putNumber("target yaw", targetYaw);
     }
     
@@ -324,8 +327,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
      // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
      public double getAngleToSpeaker(){
+        if (isBlueAlliance == null) return -1;
         if (isBlueAlliance) {
             return PhotonUtils.getYawToPose(poseEstimator.getEstimatedPosition(), FieldConstants.BLUE_SPEAKER).getDegrees();
+            // return Math.atan2(poseEstimator.getEstimatedPosition().getY()-FieldConstants.BLUE_SPEAKER.getY(), poseEstimator.getEstimatedPosition().getX()-FieldConstants.BLUE_SPEAKER.getX());
         } else {
             return PhotonUtils.getYawToPose(poseEstimator.getEstimatedPosition(), FieldConstants.RED_SPEAKER).getDegrees();
         }
@@ -438,9 +443,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
         return poseEstimator.getEstimatedPosition().getY();
     }
 
+    public double getPosTheta(){
+        return poseEstimator.getEstimatedPosition().getRotation().getDegrees();
+    }
+
     public Boolean isAtTarget(){
         // return PhotonUtils.getDistanceToPose(poseEstimator.getEstimatedPosition(), goalPose) < DriveConstants.POS_DB;
         // return (Math.abs(targetYaw) < 4 || Double.isNaN(targetYaw));
+        // return true;
+        if (driveState == driveType.SPEAKER) return (Math.abs(rotTarget) < 4);
         return true;
+        
     }
 }
