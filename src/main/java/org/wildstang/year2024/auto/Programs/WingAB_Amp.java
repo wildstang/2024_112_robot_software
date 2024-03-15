@@ -27,7 +27,7 @@ public class WingAB_Amp extends AutoProgram{
 
          //Preload
         addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
-        addStep(new SetGyroStep(-2.245537422197309, swerve));
+        addStep(new SetGyroStep(-2.245537422197309, swerve, color));
         addStep(new ShootNoteStep());
 
         // Get and Shoot Wing A
