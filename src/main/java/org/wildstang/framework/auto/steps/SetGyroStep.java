@@ -19,7 +19,7 @@ public class SetGyroStep extends AutoStep {
             this.heading = heading - 180;
         }
         // this.heading = heading;
-        // m_drive = drive;
+        m_drive = drive;
     }
 
     @Override

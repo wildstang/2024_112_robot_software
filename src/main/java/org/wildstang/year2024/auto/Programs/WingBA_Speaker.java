@@ -27,7 +27,7 @@ public class WingBA_Speaker extends AutoProgram{
 
          // Preload From Subwoofer
         addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),180, color));
-        addStep(new SetGyroStep(Math.PI, swerve));
+        addStep(new SetGyroStep(Math.PI, swerve, color));
         addStep(new ShootNoteStep());
 
         // Get Wing B and Shoot Wing B

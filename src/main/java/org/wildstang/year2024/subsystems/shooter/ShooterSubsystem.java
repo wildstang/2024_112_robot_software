@@ -131,127 +131,128 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void inputUpdate(Input source) {
-        if (source == leftStickButton && leftStickButton.getValue()) {
-            sensorOverride = !sensorOverride;
-            if (sensorOverride) {
-                shooterState = shooterType.OVERRIDE;
-            } else {
-                shooterState = shooterType.WAIT;
-            }
-        }
-
         if (source == rightStickButton && rightStickButton.getValue()) {
             sourceMode = !sourceMode;
+        } else if (source == leftBumper && leftBumper.getValue()){
+            shooterState = shooterType.INIT_SPEAKER;
+            Log.warn("INIT_SPEAKER");
+        } else if (source == dpadUp && dpadUp.getValue()) {
+            shooterState = shooterType.INIT_AMP;
+            Log.warn("INIT_AMP");
+        } else if (source == rightBumper){
+            if (rightBumper.getValue()) {
+                if (sourceMode) {
+                    shooterState = shooterType.SOURCE_INTAKE;
+                    Log.warn("SOURCE_INTAKE");
+                } else {
+                    shooterState = shooterType.FLOOR_INTAKE;
+                    Log.warn("FLOOR_INTAKE");
+                }
+            } 
+        } else if (source == dpadDown){
+            if(dpadDown.getValue()){
+                shooterState = shooterType.OUTTAKE;
+                Log.warn("OUTTAKE");
+            } else {
+                shooterState = shooterType.WAIT;
+                Log.warn("WAIT");
+            }
+        } else if (source == start && start.getValue()) {
+            shooterState = shooterType.HANG;
+            Log.warn("HANG");
+        } else if (source == dpadLeft && dpadLeft.getValue()) {
+            goalPos = ArmConstants.SUBWOOFER_POS;
+        } else if (source == dpadRight && dpadRight.getValue()) {
+            goalPos = ArmConstants.PODIUM_POS;
         }
-
-        if (!sensorOverride) {
-            if (source == leftBumper && leftBumper.getValue()){
-                shooterState = shooterType.INIT_SPEAKER;
-                Log.warn("INIT_SPEAKER");
-            } else if (source == dpadUp && dpadUp.getValue()) {
-                shooterState = shooterType.INIT_AMP;
-                Log.warn("INIT_AMP");
-            } else if (source == rightBumper){
-                if (rightBumper.getValue()) {
-                    if (sourceMode) {
-                        shooterState = shooterType.SOURCE_INTAKE;
-                        Log.warn("SOURCE_INTAKE");
-                    } else {
-                        shooterState = shooterType.FLOOR_INTAKE;
-                        Log.warn("FLOOR_INTAKE");
-                    }
-                } 
-            } else if (source == dpadDown){
-                if(dpadDown.getValue()){
-                    shooterState = shooterType.OUTTAKE;
-                    Log.warn("OUTTAKE");
-                } else {
-                    shooterState = shooterType.WAIT;
-                    Log.warn("WAIT");
-                }
-            } else if (source == start && start.getValue()) {
-                shooterState = shooterType.HANG;
-                Log.warn("HANG");
-            }
-        } else {
-            if (source == leftBumper){
-                if (leftBumper.getValue()) {
-                    goalVel = ShooterConstants.SPEAKER_SPEED;
-                    shooterEnable = true;
-                } else {
-                    shooterEnable = false;
-                    goalPos = ArmConstants.SOFT_STOP_LOW;
-                    feedMotorOutput = 0.0;
-                    intakeMotorOutput = 0.0;
-                }
-            }
-            if (source == dpadUp) {
-                if (dpadUp.getValue()) {
-                    hood_deploy = true;
-                    goalPos = ArmConstants.AMP_POS;
-                    goalVel = ShooterConstants.AMP_SPEED;
-                    shooterEnable = true;
-                } else {
-                    hood_deploy = false;
-                    goalPos = ArmConstants.SOFT_STOP_LOW;
-                    shooterEnable = false;
-                    feedMotorOutput = 0.0;
-                    intakeMotorOutput = 0.0;
-                }
-            } else if (source == rightBumper){
-                if (rightBumper.getValue()) {
-                    if (sourceMode) {
-                        shooterOutput = ShooterConstants.SOURCE_INTAKE_SPEED;
-                        feedMotorOutput = FeedConstants.FEED_SOURCE_OUTPUT;
-                        goalPos = ArmConstants.SOURCE_INTAKE_POS;
-                        shooterEnable = true;
-                    } else {
-                        feedMotorOutput = FeedConstants.FEED_IN_OUTPUT;
-                        intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
-                        goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
-                        goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
-                    }
-                } else {
-                    feedMotorOutput = 0.0;
-                    intakeMotorOutput = 0.0;
-                    shooterEnable = false;
-                    if (sourceMode) goalPos = ArmConstants.SOFT_STOP_LOW;
-                }
-            } else if (source == dpadDown){
-                if(dpadDown.getValue()) {
-                    goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
-                    goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
-                    feedMotorOutput = FeedConstants.FEED_OUT_OUTPUT;
-                    intakeMotorOutput = FeedConstants.INTAKE_OUT_OUTPUT;
-                    goalVel = ShooterConstants.OUTTAKE_SPEED;
-                    shooterEnable = true;
-                } else {
-                    feedMotorOutput = 0.0;
-                    intakeMotorOutput = 0.0;
-                    shooterEnable = false;
-                }
-            } else if (source == start && start.getValue()) {
-                goalPos = ArmConstants.SOFT_STOP_LOW;
-            } else if (source == dpadLeft && dpadLeft.getValue()) {
-                goalPos -= 0.04;
-            } else if (source == dpadRight && dpadRight.getValue()) {
-                goalPos += 0.04;
-            }
-        }
+        
+        //  else {
+            // if (source == leftBumper){
+            //     if (leftBumper.getValue()) {
+            //         goalVel = ShooterConstants.SPEAKER_SPEED;
+            //         shooterEnable = true;
+            //     } else {
+            //         shooterEnable = false;
+            //         goalPos = ArmConstants.SOFT_STOP_LOW;
+            //         feedMotorOutput = 0.0;
+            //         intakeMotorOutput = 0.0;
+            //     }
+            // }
+            // if (source == dpadUp) {
+            //     if (dpadUp.getValue()) {
+            //         hood_deploy = true;
+            //         goalPos = ArmConstants.AMP_POS;
+            //         goalVel = ShooterConstants.AMP_SPEED;
+            //         shooterEnable = true;
+            //     } else {
+            //         hood_deploy = false;
+            //         goalPos = ArmConstants.SOFT_STOP_LOW;
+            //         shooterEnable = false;
+            //         feedMotorOutput = 0.0;
+            //         intakeMotorOutput = 0.0;
+            //     }
+            // } else if (source == rightBumper){
+            //     if (rightBumper.getValue()) {
+            //         if (sourceMode) {
+            //             shooterOutput = ShooterConstants.SOURCE_INTAKE_SPEED;
+            //             feedMotorOutput = FeedConstants.FEED_SOURCE_OUTPUT;
+            //             goalPos = ArmConstants.SOURCE_INTAKE_POS;
+            //             shooterEnable = true;
+            //         } else {
+            //             feedMotorOutput = FeedConstants.FEED_IN_OUTPUT;
+            //             intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
+            //             goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
+            //             goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
+            //         }
+            //     } else {
+            //         feedMotorOutput = 0.0;
+            //         intakeMotorOutput = 0.0;
+            //         shooterEnable = false;
+            //         if (sourceMode) goalPos = ArmConstants.SOFT_STOP_LOW;
+            //     }
+        //     } else if (source == dpadDown){
+        //         if(dpadDown.getValue()) {
+        //             goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
+        //             goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
+        //             feedMotorOutput = FeedConstants.FEED_OUT_OUTPUT;
+        //             intakeMotorOutput = FeedConstants.INTAKE_OUT_OUTPUT;
+        //             goalVel = ShooterConstants.OUTTAKE_SPEED;
+        //             shooterEnable = true;
+        //         } else {
+        //             feedMotorOutput = 0.0;
+        //             intakeMotorOutput = 0.0;
+        //             shooterEnable = false;
+        //         }
+        //     } else if (source == start && start.getValue()) {
+        //         goalPos = ArmConstants.SOFT_STOP_LOW;
+        //     } else if (source == dpadLeft && dpadLeft.getValue()) {
+        //         goalPos = ArmConstants.SUBWOOFER_POS;
+        //     } else if (source == dpadRight && dpadRight.getValue()) {
+        //         goalPos = ArmConstants.PODIUM_POS;
+        //     }
+        // }
     }
 
 
     @Override
     public void update() {
+        sensorOverride = swerve.sensorOverride;
+        // if (sensorOverride) {
+        //     shooterState = shooterType.OVERRIDE;
+        // }
         curVel = getShooterVelocity();
         curPos = getPivotPosition();
         hoodPos = hoodMotor.getPosition();
 
         switch (shooterState) {
             case INIT_SPEAKER:
-                distance = swerve.getDistanceFromSpeaker();
-                goalVel = getTargetSpeed(distance);
-                goalPos = getTargetAngle(distance);
+                // if (!sensorOverride){
+                //     distance = swerve.getDistanceFromSpeaker();
+                //     goalVel = getTargetSpeed(distance);
+                //     goalPos = getTargetAngle(distance);
+                // } else {
+                    goalVel = ShooterConstants.SPEAKER_SPEED;
+                // }
                 shooterEnable = true;
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     shooterState = shooterType.SHOOT;
@@ -327,10 +328,12 @@ public class  ShooterSubsystem implements Subsystem{
                 goalPos = ArmConstants.SOURCE_INTAKE_POS;
                 goalVel = ShooterConstants.SOURCE_INTAKE_SPEED;
                 feedMotorOutput = FeedConstants.FEED_SOURCE_OUTPUT;
+                shooterEnable = true;
                 if (intakeBeamBreak.getValue()) {
                     LedSubsystem.ledState = LedColor.FLASH_ORANGE;
-                    shooterState = shooterType.SOURCE_STOW_1;
-                    Log.warn("SOURCE_STOW_1");
+                    goalPos = ArmConstants.SOFT_STOP_LOW;
+                    shooterState = shooterType.STOW;
+                    Log.warn("STOW");
                     timer.reset();
                     timer.start();
                 }
@@ -436,10 +439,10 @@ public class  ShooterSubsystem implements Subsystem{
             hoodOutput = 0.0;
         }
 
-        if (sensorOverride  && shooterEnable && pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()) {
-            feedMotorOutput = FeedConstants.FEED_OUTPUT;
-            intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
-        }
+        // if (sensorOverride  && shooterEnable && pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()) {
+        //     feedMotorOutput = FeedConstants.FEED_OUTPUT;
+        //     intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
+        // }
 
         intakeMotor.setSpeed(intakeMotorOutput);
         feedMotor.setSpeed(feedMotorOutput);
@@ -490,6 +493,10 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("Angle to Speaker", getTargetAngle(distance));
 
     }
+
+    public void setGoalPos(double pos) {
+        goalPos = pos;
+    }
     
     @Override
     public void resetState() {
@@ -513,11 +520,11 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getPivotPosition(){
-        if (sensorOverride){
-            return ((angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW) % (2 * Math.PI);
-        } else {
+        // if (sensorOverride){
+        //     return ((angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW) % (2 * Math.PI);
+        // } else {
             return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW) % (2 * Math.PI);
-        }
+        // }
     }
 
     public double getTargetSpeed(double distance){

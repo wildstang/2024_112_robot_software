@@ -26,15 +26,15 @@ public class OneNoteWingAutoTop extends AutoProgram{
 
         //Preload Shot
         addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));//defines position and angle the robot is currently in (used to estimate)
+        addStep(new ShootNoteStep());
         addStep(new SetGyroStep(swerve.getPosTheta(), swerve, color));
-        addStep(new ShootNoteStep());
 
-        // Wing Note 1
-        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-        group0.addStep(new IntakeNoteStep());
-        group0.addStep(new SwervePathFollowerStep("OneNoteWingAutoTop.1", swerve, color));//gets values to drive toward
-        addStep(group0);
-        addStep(new ShootNoteStep());
+        // // Wing Note 1
+        // AutoParallelStepGroup group0 = new AutoParallelStepGroup();
+        // group0.addStep(new IntakeNoteStep());
+        // group0.addStep(new SwervePathFollowerStep("OneNoteWingAutoTop.1", swerve, color));//gets values to drive toward
+        // addStep(group0);
+        // addStep(new ShootNoteStep());
 
     }
 
