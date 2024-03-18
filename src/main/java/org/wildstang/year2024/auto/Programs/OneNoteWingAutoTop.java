@@ -6,7 +6,6 @@ import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
-import org.wildstang.year2024.auto.Steps.StartOdometryStep;
 import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
@@ -25,7 +24,6 @@ public class OneNoteWingAutoTop extends AutoProgram{
         color = (DriverStation.getAlliance().orElse(null).equals(Alliance.Blue));
 
         //Preload Shot
-        addStep(new StartOdometryStep(swerve.getPosX(),swerve.getPosY(), 180, color));//defines position and angle the robot is currently in (used to estimate)
         addStep(new ShootNoteStep());
         addStep(new SetGyroStep(swerve.getPosTheta(), swerve, color));
 

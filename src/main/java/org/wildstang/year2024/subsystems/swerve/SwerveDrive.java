@@ -5,7 +5,6 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import org.photonvision.PhotonUtils;
 import org.wildstang.framework.core.Core;
 import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.framework.logger.Log;
 import org.wildstang.framework.io.inputs.AnalogInput;
 import org.wildstang.framework.io.inputs.DigitalInput;
 import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
@@ -47,20 +46,18 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private DigitalInput dpadUp;
     private DigitalInput leftStickButton;
 
+    private double xOutput;
+    private double yOutput;
+    private double rotOutput;
     private double xSpeed;
     private double ySpeed;
-    private double rotSpeed;
+    private double wSpeed;
     private double thrustValue;
     private double derateValue;
     private boolean rotLocked;
-    private boolean isFieldCentric;
     private double rotTarget;
-    private double pathVel;
-    private double pathHeading;
-    private double pathAccel;
-    private double pathTarget;
-    private double pathXOffset = 0;
-    private double pathYOffset = 0;
+    private double pathX = 0;
+    private double pathY = 0;
 
     private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
     public SwerveModule[] modules;
@@ -77,6 +74,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private Boolean isBlueAlliance = null;
     private Pose2d curPose, goalPose;
     public boolean sensorOverride;
+
+    private static final double DEG_TO_RAD = Math.PI / 180.0;
+    private static final double RAD_TO_DEG = 180.0 / Math.PI;
 
     @Override
     public void init() {
@@ -99,14 +99,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
         rightTrigger.addInputListener(this);
         leftTrigger = (AnalogInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_TRIGGER);
         leftTrigger.addInputListener(this);
-        // rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
-        // rightBumper.addInputListener(this);
+        rightBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_RIGHT_SHOULDER);
+        rightBumper.addInputListener(this);
         leftBumper = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_LEFT_SHOULDER);
         leftBumper.addInputListener(this);
         select = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_SELECT);
         select.addInputListener(this);
-        // start = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_START);
-        // start.addInputListener(this);
+        start = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_START);
+        start.addInputListener(this);
         faceUp = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_UP);
         faceUp.addInputListener(this);
         faceLeft = (DigitalInput) Core.getInputManager().getInput(WsInputs.DRIVER_FACE_LEFT);
@@ -145,14 +145,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
             sensorOverride = !sensorOverride;
         }
         driveState = driveType.TELEOP;
-        //determine if we are in cross or teleop
-        // if (source == start && start.getValue()) {
-        //     driveState = driveType.CROSS;
-        //     for (int i = 0; i < modules.length; i++) {
-        //         modules[i].setDriveBrake(true);
-        //     }
-        //     this.swerveSignal = new SwerveSignal(new double[]{0, 0, 0, 0 }, swerveHelper.setCross().getAngles());
-        // }
         // if (!sensorOverride) {
         //     if (source == leftBumper && leftBumper.getValue()) driveState = driveType.SPEAKER;
         //     // if (source == dpadUp && dpadUp.getValue()) driveState = driveType.AMP;
@@ -162,47 +154,63 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //     }
         // }
 
-        //get x and y speeds
-        xSpeed = swerveHelper.scaleDeadband(leftStickX.getValue(), DriveConstants.DEADBAND);
-        ySpeed = swerveHelper.scaleDeadband(leftStickY.getValue(), DriveConstants.DEADBAND);
-        
+        // get x and y speeds
+        // joystick axes: +X is to the driver's right, +Y is away from the driver
+        // field axes: +X is away from the blue alliance driver station, +Y is to the left from the blue alliance driver station perspective
+        xOutput = swerveHelper.scaleDeadband(leftStickY.getValue(), DriveConstants.DEADBAND);  // joystick y value corresponds to driving forward, i.e. pushing the stick away from the driver (stick +Y) should make the robot drive away from the driver station (field +X)
+        yOutput = swerveHelper.scaleDeadband(-leftStickX.getValue(), DriveConstants.DEADBAND);  // joystick x value corresonds to driving sideways in the opposite direction, i.e. pushing the stick to the drivers left (stick -X) should make the robot drive towards the 
 
-        //reset gyro
+        // reverse x/y directions if on red alliance to match field coordinate system
+        if (!isBlueAlliance) {
+            xOutput *= -1;
+            yOutput *= -1;
+        }
+        
+        // reset gyro when facing away from alliance station
         if (source == select && select.getValue()) {
-            gyro.setYaw(0.0);
-            if (rotLocked) rotTarget = 0.0;
+            if (isBlueAlliance) {
+                gyro.setYaw(0.0);  // away from alliance station is 0 rad on blue alliance
+                rotTarget = 0.0;
+            } else {
+                gyro.setYaw(Math.PI * RAD_TO_DEG);  // away from alliance station is pi rad on red alliance
+                rotTarget = Math.PI;
+            }
         }
 
-        if (source == faceUp || source == faceRight || source == faceDown || source == faceLeft){
+        if ((source == faceUp && faceUp.getValue()) || (source == faceRight && faceRight.getValue()) || (source == faceDown && faceDown.getValue()) || (source == faceLeft && faceLeft.getValue())){
             if (faceUp.getValue()){
                 if (faceLeft.getValue()){
-                    rotTarget = 315.0;
+                    rotTarget = Math.PI / 4.0;
                 } else if (faceRight.getValue()){ 
-                    rotTarget = 45.0;
+                    rotTarget = 7.0 * Math.PI / 4.0;
                 } else  rotTarget = 0.0;
-                rotLocked = true;
             } else if (faceDown.getValue()){
                 if (faceLeft.getValue()){
-                    rotTarget = 225.0;
+                    rotTarget = 3.0 * Math.PI / 4.0;
                 } else if (faceRight.getValue()){ 
-                    rotTarget = 135.0;
-                } else  rotTarget = 180.0;
-                rotLocked = true;
+                    rotTarget = 5.0 * Math.PI / 4.0;
+                } else  rotTarget = Math.PI;
             } else if (faceLeft.getValue()){
-                rotTarget = 270.0;
-                rotLocked = true;
+                rotTarget = Math.PI / 2.0;
             } else if (faceRight.getValue()){
-                rotTarget = 90.0;
-                rotLocked = true;
+                rotTarget = 3.0 * Math.PI / 2.0;
+            }
+            rotLocked = true;
+            if (!isBlueAlliance) {
+                rotTarget = (rotTarget - Math.PI) % (2.0 * Math.PI);  // flip rotation target if on red alliance to match field coordinate system
             }
         }
 
         //get rotational joystick
-        rotSpeed = swerveHelper.scaleDeadband(rightStickX.getValue(), DriveConstants.DEADBAND);
-        rotSpeed *= Math.abs(rotSpeed);
-        rotSpeed *= DriveConstants.ROTATION_SPEED;
-        //if the rotational joystick is being used, the robot should not be auto tracking heading
-        if (rotSpeed != 0) {
+        // joystick positive value corresponds to cw rotation
+        // drivetrain positive value corresponds to ccw rotation
+        rotOutput = swerveHelper.scaleDeadband(-rightStickX.getValue(), DriveConstants.DEADBAND);  // negate joystick value so positive on the joystick (right) commands a negative rot speed (turn cw) and vice versa
+        
+        // if the rotational joystick is being used, the robot should not be auto tracking heading
+        // otherwise engage rotation lock at current heading
+        if (rotOutput != 0) {
+            rotOutput *= Math.abs(rotOutput);
+            rotOutput *= DriveConstants.ROTATION_SPEED;
             rotLocked = false;
         } else if (rotLocked == false) {
             rotTarget = getGyroAngle();
@@ -212,9 +220,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //assign thrust
         thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
         derateValue = (DriveConstants.DRIVE_DERATE * Math.abs(leftTrigger.getValue()) + 1);
-        xSpeed *= thrustValue/derateValue;
-        ySpeed *= thrustValue/derateValue;
-        rotSpeed *= thrustValue/derateValue;
+        xOutput *= thrustValue/derateValue;
+        yOutput *= thrustValue/derateValue;
+        rotOutput *= thrustValue/derateValue;
+
     }
     @Override
     public void update() {
@@ -227,72 +236,60 @@ public class SwerveDrive extends SwerveDriveTemplate {
         poseEstimator.update(odoAngle(), odoPosition());
         // targetYaw = pvCam.getYaw();
         pvCam.odometryUpdate(poseEstimator);
+        curPose = poseEstimator.getEstimatedPosition();
 
         switch (driveState) {
             case TELEOP:
                 if (rotLocked){
                     //if rotation tracking, replace rotational joystick value with controller generated one
-                    rotSpeed = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                    rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 }
-                this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-                drive();
                 break;
             case AUTO:
-                rotSpeed = swerveHelper.getRotControl(pathTarget, getGyroAngle());  // get controller generated rotation value
-                // rotSpeed = Math.max(-0.2, Math.min(0.2, swerveHelper.getRotControl(pathTarget, getGyroAngle())));  // ensure rotation is never more than 0.2 to prevent normalization of translation from occuring
-                
-                //update where the robot is, to determine error in path
-                this.swerveSignal = swerveHelper.setAuto(swerveHelper.getAutoPower(pathVel, pathAccel), pathHeading, rotSpeed, getGyroAngle(), pathXOffset, pathYOffset);
-                drive();  
+                rotOutput = wSpeed * DriveConstants.DRIVE_F_ROT + swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                xOutput = xSpeed * DriveConstants.DRIVE_F_K + (pathX - curPose.getX()) * DriveConstants.POS_P;
+                yOutput = ySpeed * DriveConstants.DRIVE_F_K + (pathY - curPose.getY()) * DriveConstants.POS_P;
                 break;
             case SPEAKER:
                 //Turn Robot Toward Speaker
-                rotLocked = false;
-                rotSpeed = swerveHelper.getRotControl(getAngleToSpeaker() % 360, getGyroAngle());
-                this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-                drive();
+                rotTarget = getAngleToSpeaker();
+                rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 break;
             case AMP:
-                rotLocked = false;
-                curPose = poseEstimator.getEstimatedPosition();
+                rotTarget = 3.0 * Math.PI / 2.0;
                 if (isBlueAlliance) {
                     goalPose = FieldConstants.BLUE_AMP;
-                    ySpeed = (goalPose.getX() - curPose.getX()) * DriveConstants.POS_P;
-                    xSpeed = (goalPose.getY() - curPose.getY()) * DriveConstants.POS_P;
-                    
-                    rotSpeed = swerveHelper.getRotControl(270, getGyroAngle());
                 } else {
-                    // Log.warn("red amp");
                     goalPose = FieldConstants.RED_AMP;
-                    ySpeed = -(goalPose.getX() - curPose.getX()) * DriveConstants.POS_P;
-                    xSpeed = (goalPose.getY() - curPose.getY()) * DriveConstants.POS_P;
-                    rotSpeed = swerveHelper.getRotControl(270, getGyroAngle());
                 }
-                this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-                drive();
+
+                yOutput = (goalPose.getX() - curPose.getX()) * DriveConstants.POS_P;
+                xOutput = (goalPose.getY() - curPose.getY()) * DriveConstants.POS_P;
+                rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 break;
+
             case STAGE:
-                curPose = poseEstimator.getEstimatedPosition();
-                xSpeed = (goalPose.getX() - curPose.getX()) * DriveConstants.POS_P;
-                ySpeed = (goalPose.getY() - curPose.getY()) * DriveConstants.POS_P;
-                rotSpeed = swerveHelper.getRotControl(goalPose.getRotation().getDegrees(), getGyroAngle());
-                this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
-                drive();
+                rotTarget = goalPose.getRotation().getDegrees();
+                xOutput = (goalPose.getX() - curPose.getX()) * DriveConstants.POS_P;
+                yOutput = (goalPose.getY() - curPose.getY()) * DriveConstants.POS_P;
+                rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 break;
         }
+        this.swerveSignal = swerveHelper.setDrive(xOutput , yOutput, rotOutput, getGyroAngle());
+        drive();  
 
         SmartDashboard.putNumber("Gyro Reading", getGyroAngle());
-        SmartDashboard.putNumber("X speed", xSpeed);
-        SmartDashboard.putNumber("Y speed", ySpeed);
-        SmartDashboard.putNumber("rotSpeed", rotSpeed);
+        SmartDashboard.putNumber("X output", xOutput);
+        SmartDashboard.putNumber("Y output", yOutput);
+        SmartDashboard.putNumber("rotOutput", rotOutput);
         SmartDashboard.putString("Drive mode", driveState.toString());
-        SmartDashboard.putBoolean("rotLocked", rotLocked);
-        SmartDashboard.putNumber("Auto velocity", pathVel);
-        SmartDashboard.putNumber("Auto translate direction", pathHeading);
-        SmartDashboard.putNumber("Auto rotation target", pathTarget);
+        SmartDashboard.putNumber("Auto x velocity", xSpeed);
+        SmartDashboard.putNumber("Auto y velocity", ySpeed);
+        SmartDashboard.putNumber("Auto x pos", pathX);
+        SmartDashboard.putNumber("Auto y pos", pathY);
         SmartDashboard.putBoolean("drive at target", isAtTarget());
-        SmartDashboard.putNumber("pose x", poseEstimator.getEstimatedPosition().getX());
-        SmartDashboard.putNumber("pose y", poseEstimator.getEstimatedPosition().getY());
+        SmartDashboard.putNumber("pose x", curPose.getX());
+        SmartDashboard.putNumber("pose y", curPose.getY());
         SmartDashboard.putNumber("Speaker angle", getAngleToSpeaker());
         SmartDashboard.putNumber("Speaker distance", getDistanceFromSpeaker());
         SmartDashboard.putNumber("rot target", rotTarget);
@@ -301,17 +298,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
     
     @Override
     public void resetState() {
-        xSpeed = 0;
-        ySpeed = 0;
-        rotSpeed = 0;
+        xOutput = 0;
+        yOutput = 0;
+        rotOutput = 0;
         setToTeleop();
         rotLocked = false;
         rotTarget = 0.0;
-        pathVel = 0.0;
-        pathHeading = 0.0;
-        pathAccel = 0.0;
-        pathTarget = 0.0;
-        isFieldCentric = true;
         sensorOverride = false;
     }
 
@@ -344,20 +336,18 @@ public class SwerveDrive extends SwerveDriveTemplate {
         return returnPose;
     }
 
-     // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
-     public double getAngleToSpeaker(){
+    // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
+    public double getAngleToSpeaker(){
         if (isBlueAlliance == null) return -1;
         if (isBlueAlliance) {
-            // return PhotonUtils.getYawToPose(poseEstimator.getEstimatedPosition(), FieldConstants.BLUE_SPEAKER).getDegrees();
-            return 180 + Math.atan2(poseEstimator.getEstimatedPosition().getY()-FieldConstants.BLUE_SPEAKER.getY(), poseEstimator.getEstimatedPosition().getX()-FieldConstants.BLUE_SPEAKER.getX()) * 180.0/Math.PI;
+            return Math.atan2(FieldConstants.BLUE_SPEAKER.getY()-poseEstimator.getEstimatedPosition().getY(), FieldConstants.BLUE_SPEAKER.getX()-poseEstimator.getEstimatedPosition().getX()) % (2.0 * Math.PI);
         } else {
-            // return PhotonUtils.getYawToPose(poseEstimator.getEstimatedPosition(), FieldConstants.RED_SPEAKER).getDegrees();
-            return 180 + Math.atan2(-(poseEstimator.getEstimatedPosition().getY()-FieldConstants.BLUE_SPEAKER.getY()), -(poseEstimator.getEstimatedPosition().getX()-FieldConstants.BLUE_SPEAKER.getX())) * 180.0/Math.PI;
+            return Math.atan2(FieldConstants.RED_SPEAKER.getY()-poseEstimator.getEstimatedPosition().getY(), FieldConstants.RED_SPEAKER.getX()-poseEstimator.getEstimatedPosition().getX()) % (2.0 * Math.PI);
         }
     }
 
-     //blue is true and red is falase
-     public double getDistanceFromSpeaker(){
+    //blue is true and red is falase
+    public double getDistanceFromSpeaker(){
         if (isBlueAlliance == null) return -1;
         if (isBlueAlliance) {
             return PhotonUtils.getDistanceToPose(poseEstimator.getEstimatedPosition(), FieldConstants.BLUE_SPEAKER);
@@ -388,12 +378,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
         for (int i = 0; i < modules.length; i++) {
             modules[i].setDriveBrake(false);
         }
-        rotSpeed = 0;
-        xSpeed = 0;
-        ySpeed = 0;
-        pathHeading = 0;
-        pathVel = 0;
-        pathAccel = 0;
+        rotOutput = 0;
+        xOutput = 0;
+        yOutput = 0;
         rotLocked = false;
     }
 
@@ -418,36 +405,36 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     /**sets autonomous values from the path data file */
-    public void setAutoValues(double velocity, double heading, double accel, double xOffset, double yOffset) {
-        pathVel = velocity;
-        pathHeading = heading;
-        pathAccel = accel;
-        pathXOffset = xOffset;
-        pathYOffset = yOffset;
+    public void setAutoValues(double velocityX, double velocityY, double angVel, double xPos, double yPos, double heading) {
+        xSpeed = velocityX;
+        ySpeed = velocityY;
+        wSpeed = angVel;
+        pathX = xPos;
+        pathY = yPos;
+        rotTarget = heading;
     }
 
     /**sets the autonomous heading controller to a new target */
     public void setAutoHeading(double headingTarget) {
-        pathTarget = headingTarget;
+        rotTarget = headingTarget;
     }
 
     /**
-     * Resets the gyro, and sets it the input number of degrees
+     * Resets the gyro, and sets it the input number of radians
      * Used for starting the match at a non-0 angle
      * @param degrees the current value the gyro should read
      */
-    public void setGyro(double degrees) {
+    public void setGyro(double radians) {
         resetState();
         setToAuto();
-        gyro.setYaw(degrees);
+        gyro.setYaw(radians * RAD_TO_DEG);
     }
 
     public double getGyroAngle() {
-        if (!isFieldCentric) return 0;
-        return (359.99 - gyro.getYaw()+360)%360;
+        return (gyro.getYaw() * DEG_TO_RAD) % (2 * Math.PI);
     }  
     public Rotation2d odoAngle(){
-        return new Rotation2d(Math.toRadians(360-getGyroAngle()));
+        return new Rotation2d(getGyroAngle());
     }
     public SwerveModulePosition[] odoPosition(){
         return new SwerveModulePosition[]{modules[0].odoPosition(), modules[1].odoPosition(), modules[2].odoPosition(), modules[3].odoPosition()};
@@ -469,7 +456,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public double getPosTheta(){
-        return poseEstimator.getEstimatedPosition().getRotation().getDegrees();
+        return poseEstimator.getEstimatedPosition().getRotation().getRadians();
     }
 
     public Boolean isAtTarget(){

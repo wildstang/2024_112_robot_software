@@ -17,17 +17,17 @@ public class ShootNoteStep extends AutoStep {
 
     @Override
     public void initialize() {
-       shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
-       drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
+        shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
+        drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         shooter.setGoalPos(ArmConstants.SUBWOOFER_POS);
         shooter.setShooterState(shooterType.INIT_SPEAKER);
+        drive.setToSpeaker();
     }
 
     @Override
     public void update() {
-        // drive.setToSpeaker();
         if (shooter.isOff()){
-            // drive.setToAuto();
+            drive.setToAuto();
             setFinished();
         }
         

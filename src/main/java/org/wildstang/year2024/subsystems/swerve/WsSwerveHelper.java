@@ -7,7 +7,7 @@ public class WsSwerveHelper {
     private double baseV;
     private double[] xCoords = new double[]{0.0, 0.0, 0.0, 0.0};
     private double[] yCoords = new double[]{0.0, 0.0, 0.0, 0.0};
-    private double rotDelta;
+    private double rotErr;
     private double rotPID;
 
     /** sets the robot in the immobile "cross" defensive position
@@ -33,8 +33,8 @@ public class WsSwerveHelper {
         baseV = Math.atan(DriveConstants.ROBOT_LENGTH / DriveConstants.ROBOT_WIDTH);
 
         //find the translational vectors rotated to account for the gyro
-        double xTrans = i_tx * Math.cos(Math.toRadians(i_gyro)) - i_ty * Math.sin(Math.toRadians(i_gyro));
-        double yTrans = i_tx * Math.sin(Math.toRadians(i_gyro)) + i_ty * Math.cos(Math.toRadians(i_gyro));
+        double xTrans = i_tx * Math.cos(i_gyro) + i_ty * Math.sin(i_gyro);
+        double yTrans = - i_tx * Math.sin(i_gyro) + i_ty * Math.cos(i_gyro);
 
         //account for slight second order skew due to rotation and translation at the same time
         xTrans += Math.cos(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
@@ -59,36 +59,21 @@ public class WsSwerveHelper {
         // }
     }
 
-    /**sets the robot to move in autonomous
-     * 
-     * @param i_power magnitude of translational vector, in signal [0,1]
-     * @param i_heading direction of translational vector, in field centric bearing degrees
-     * @param i_rot the rotational joystick value, created by the heading controller
-     * @param i_gyro the gyro value, field centric, in bearing degrees
-     * @return SwerveSignal that is the command for the robot to move
-     */
-    public SwerveSignal setAuto(double i_power, double i_heading, double i_rot, double i_gyro, double xOffset, double yOffset) {
-        return setDrive(i_power * -Math.sin(Math.toRadians(i_heading))+ xOffset * DriveConstants.POS_P, i_power * -Math.cos(Math.toRadians(i_heading))+ yOffset * DriveConstants.POS_P, i_rot, i_gyro);
-    }
-
     /**automatically creates a rotational joystick value to rotate the robot towards a specific target
      * 
-     * @param i_target target direction for the robot to face, field centric, bearing degrees
-     * @param i_gyro the gyro value, field centric, in bearing degrees
+     * @param i_target target direction for the robot to face, field centric, radians
+     * @param i_gyro the gyro value, field centric, in radians
      * @return double that indicates what the rotational joystick value should be
      */
     public double getRotControl(double i_target, double i_gyro) {
-        rotDelta = i_target - i_gyro;
-        if (rotDelta > 180) {
-            rotPID = (rotDelta - 360) / 180;
-        }
-        else if (Math.abs(rotDelta) <= 180.0) {
-            rotPID = rotDelta / 180.0;
+        rotErr = i_target - i_gyro;
+        if (rotErr > Math.PI) {
+            rotPID = (rotErr - Math.PI * 2.0) * DriveConstants.ROT_P;  // if error is greater than pi, it is faster to spin cw
         }
         else {
-            rotPID = (rotDelta + 360) / 180;
-        } 
-        return Math.signum(rotPID) * Math.min(Math.abs(rotPID*DriveConstants.ROT_P), 1.0);
+            rotPID = rotErr * DriveConstants.ROT_P;  // otherwise spin ccw
+        }
+        return Math.max(Math.min(rotPID, 1.0), -1.0);  // saturate rotation control to range [-1.0, 1.0]
     }
 
     /**determines the translational magnitude of the robot in autonomous

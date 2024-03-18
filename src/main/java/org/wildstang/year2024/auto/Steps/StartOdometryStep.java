@@ -13,20 +13,14 @@ public class StartOdometryStep extends AutoStep{
 
     private double x, y, heading;
     private SwerveDrive swerve;
-    private boolean color;//true for blue, false for red
 
-    public StartOdometryStep(double X, double Y, double pathHeading, boolean allianceColor){
+    public StartOdometryStep(double X, double Y, double pathHeading){
         x = X;
         y = Y;
         heading = pathHeading;
-        color = allianceColor;
     }
     public void update(){
-        if (color){
-           swerve.setPose(new Pose2d(new Translation2d(x, y), new Rotation2d(Math.toRadians(360.0-heading))));
-        } else {
-            swerve.setPose(new Pose2d(new Translation2d(x, 8.016-y), new Rotation2d(Math.toRadians(360.0-heading))));
-        }
+        swerve.setPose(new Pose2d(new Translation2d(x, y), new Rotation2d(heading)));
         this.setFinished();
     }
     public void initialize(){
