@@ -1,7 +1,7 @@
 package org.wildstang.year2024.subsystems.shooter;
 
 public final class ArmConstants {
-    public static final double SOFT_STOP_LOW = 27.0 * Math.PI/180.0; // rad
+public static final double SOFT_STOP_LOW = 27.0 * Math.PI/180.0; // rad
     public static final double SOFT_STOP_HIGH = 107.0 * Math.PI/180.0; // rad
 
     public static final double RATIO = 187.5;

@@ -15,16 +15,18 @@ public class ScoreAmp extends AutoStep {
     @Override
     public void initialize() {
         shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
+          shooter.setShooterState(shooterType.INIT_AMP);
+        
     }
 
     @Override
     public void update() {
-        shooter.setShooterState(shooterType.INIT_AMP);
-        if (shooter.isOff()){
+          if (shooter.isOff()){
             setFinished();
         }
-    }
 
+    }
+  
     @Override
     public String toString() {
         return "Score amp";

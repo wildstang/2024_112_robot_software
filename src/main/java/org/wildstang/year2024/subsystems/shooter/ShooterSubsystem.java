@@ -368,7 +368,7 @@ public class  ShooterSubsystem implements Subsystem{
                     Log.warn("IDLE");
                 }
                 break;
-            case IDLE:
+            case IDLE://start spooling up shooter motor after intaking
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
                 goalVel = 150.0;
@@ -546,7 +546,8 @@ public class  ShooterSubsystem implements Subsystem{
         return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235));
         // return 35 * Math.PI / 180.0;
     }
-
+    
+    //* sets the shooter state of the roboot */
     public void setShooterState(shooterType newState){
         shooterState = newState;
     }

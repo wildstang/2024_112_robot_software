@@ -12,12 +12,15 @@ public class IntakeNoteStep extends AutoStep{
     @Override
     public void initialize() {
         shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
+        shooter.setShooterState(shooterType.FLOOR_INTAKE);
+        
     }
 
     @Override
     public void update() {
-        shooter.setShooterState(shooterType.FLOOR_INTAKE);
-        if (shooter.isIdle()) setFinished();
+       if (shooter.isIdle()){
+        setFinished();
+       } 
     }
 
     @Override
