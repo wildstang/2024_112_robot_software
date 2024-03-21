@@ -574,10 +574,6 @@ public class  ShooterSubsystem implements Subsystem{
         // return 35 * Math.PI / 180.0;
     }
 
-    public double getGoalPos(){
-        return goalPos;
-    }
-
     public void setShooterState(shooterType newState){
         shooterState = newState;
     }
