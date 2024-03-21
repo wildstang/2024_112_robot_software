@@ -159,7 +159,7 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getModuleState(){
-        return new SwerveModuleState(driveMotor.getVelocity() * (2*Math.PI*((ModuleConstants.WHEEL_DIAMETER / 2)*0.0254)) / 60, Rotation2d.fromDegrees(target));
+        return new SwerveModuleState(driveMotor.getVelocity() * (2*Math.PI*((ModuleConstants.WHEEL_DIAMETER / 2)*0.0254)) / 60, Rotation2d.fromDegrees(360-getAngle()));
     }
     public SwerveModulePosition odoPosition(){
         return new SwerveModulePosition(getPosition()*inToM, new Rotation2d(Math.toRadians(360-getAngle())));
