@@ -1,5 +1,6 @@
 package org.wildstang.year2024.subsystems.shooter;
 
+import com.ctre.phoenix6.sim.ChassisReference;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
@@ -64,6 +65,14 @@ public class  ShooterSubsystem implements Subsystem{
 
     private int iterCount;
 
+    /* Shoot while move variables */
+
+    double estimatedRobotPosX;
+    double estimatedRobotPosY;
+    double previousRobotPosX;
+    double previousRobotPosY;
+    
+
     // public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
 
     // public double[] angles = {1,1,1,1,1,1};
@@ -73,6 +82,7 @@ public class  ShooterSubsystem implements Subsystem{
     // public int[] indexes = new int[2];
 
     Timer timer;
+    Timer shootMoveTimer;
 
     @Override
     public void init() {
@@ -125,6 +135,10 @@ public class  ShooterSubsystem implements Subsystem{
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         xboxController = (XboxControllerOutput) Core.getOutputManager().getOutput(WsOutputs.XBOXCONTROLLER);
         timer = new Timer();
+        shootMoveTimer = new Timer();
+        previousRobotPosX =  swerve.getPosX();
+        previousRobotPosY = swerve.getPosY();
+
 
         resetState();
     }
@@ -236,6 +250,19 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void update() {
+        shootMoveTimer.start();
+
+        estimatedRobotPosX = (previousRobotPosX - swerve.getPosX()) / shootMoveTimer.get();
+        estimatedRobotPosY = (previousRobotPosY - swerve.getPosY()) / shootMoveTimer.get();
+        
+        previousRobotPosX = estimatedRobotPosX;
+        previousRobotPosY = estimatedRobotPosY;
+
+        shootMoveTimer.stop();
+        shootMoveTimer.reset();
+
+
+
         sensorOverride = swerve.sensorOverride;
         // if (sensorOverride) {
         //     shooterState = shooterType.OVERRIDE;
@@ -545,6 +572,10 @@ public class  ShooterSubsystem implements Subsystem{
         //         * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
         return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235));
         // return 35 * Math.PI / 180.0;
+    }
+
+    public double getGoalPos(){
+        return goalPos;
     }
 
     public void setShooterState(shooterType newState){

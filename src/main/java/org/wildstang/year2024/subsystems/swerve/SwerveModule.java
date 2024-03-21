@@ -7,6 +7,7 @@ import org.wildstang.hardware.roborio.outputs.WsSpark;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
@@ -155,6 +156,10 @@ public class SwerveModule {
 
     public WsSpark getDriveMotor() {
         return driveMotor;
+    }
+
+    public SwerveModuleState getModuleState(){
+        return new SwerveModuleState(driveMotor.getVelocity() * (2*Math.PI*((ModuleConstants.WHEEL_DIAMETER / 2)*0.0254)) / 60, Rotation2d.fromDegrees(target));
     }
     public SwerveModulePosition odoPosition(){
         return new SwerveModulePosition(getPosition()*inToM, new Rotation2d(Math.toRadians(360-getAngle())));

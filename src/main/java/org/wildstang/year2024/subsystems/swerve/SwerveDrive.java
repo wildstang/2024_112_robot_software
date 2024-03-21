@@ -13,14 +13,17 @@ import org.wildstang.hardware.roborio.outputs.WsSpark;
 import org.wildstang.year2024.robot.CANConstants;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
+import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 import org.wildstang.year2024.subsystems.targeting.WsVision;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -69,6 +72,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private SwerveDrivePoseEstimator poseEstimator;
     private Timer autoTimer = new Timer();
 
+    ChassisSpeeds chassisSpeeds;
+    SwerveDriveKinematics swerveKinematics;
+    SwerveModuleState[] moduleStates = new SwerveModuleState[4];
     private WsVision pvCam;
     // private double targetYaw;
 
@@ -77,6 +83,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private Boolean isBlueAlliance = null;
     private Pose2d curPose, goalPose;
     public boolean sensorOverride;
+
+    public double robotVelMag, robotVelTheta, predictedHeadingAngle, noteVel;
+    public ShooterSubsystem shooter = new ShooterSubsystem();
+
 
     @Override
     public void init() {
@@ -133,10 +143,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
             new SwerveModule((WsSpark) Core.getOutputManager().getOutput(WsOutputs.DRIVE4), 
                 (WsSpark) Core.getOutputManager().getOutput(WsOutputs.ANGLE4), DriveConstants.REAR_RIGHT_OFFSET)
         };
+
+        swerveKinematics = new SwerveDriveKinematics(new Translation2d(DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2), new Translation2d(-DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(-DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2));
         //create default swerveSignal
         swerveSignal = new SwerveSignal(new double[]{0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0});
-        poseEstimator = new SwerveDrivePoseEstimator(new SwerveDriveKinematics(new Translation2d(DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2),
-            new Translation2d(-DriveConstants.ROBOT_WIDTH/2, DriveConstants.ROBOT_LENGTH/2), new Translation2d(-DriveConstants.ROBOT_WIDTH/2, -DriveConstants.ROBOT_LENGTH/2)), odoAngle(), odoPosition(), new Pose2d());
+        poseEstimator = new SwerveDrivePoseEstimator(swerveKinematics, odoAngle(), odoPosition(), new Pose2d());
     }
 
     @Override
@@ -216,8 +227,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
         ySpeed *= thrustValue/derateValue;
         rotSpeed *= thrustValue/derateValue;
     }
+
+
     @Override
     public void update() {
+
+        for(int i = 0; i < modules.length; i++){
+            moduleStates[i] = modules[i].getModuleState();
+        }
+        chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerveKinematics.toChassisSpeeds(moduleStates), Rotation2d.fromDegrees(getGyroAngle()));
+        
         if (isBlueAlliance == null){
             if (DriverStation.getAlliance().isPresent()){
                 isBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
@@ -227,6 +246,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         poseEstimator.update(odoAngle(), odoPosition());
         // targetYaw = pvCam.getYaw();
         pvCam.odometryUpdate(poseEstimator);
+
+        predictedHeadingAngle = shooter.getGoalPos() - (Math.asin(-((robotVelMag)/(noteVel)) * Math.sin(shooter.getGoalPos()-robotVelTheta)));
 
         switch (driveState) {
             case TELEOP:
@@ -297,6 +318,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Speaker distance", getDistanceFromSpeaker());
         SmartDashboard.putNumber("rot target", rotTarget);
         // SmartDashboard.putNumber("target yaw", targetYaw);
+
+
     }
     
     @Override
