@@ -395,7 +395,7 @@ public class  ShooterSubsystem implements Subsystem{
                     Log.warn("IDLE");
                 }
                 break;
-            case IDLE:
+            case IDLE://start spooling up shooter motor after intaking
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
                 goalVel = 150.0;
