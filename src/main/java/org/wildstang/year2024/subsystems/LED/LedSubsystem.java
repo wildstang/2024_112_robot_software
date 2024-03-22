@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LedSubsystem implements Subsystem{
 
-    public enum LedColor {FLASH_ORANGE, GREEN, SOLID_ORANGE, BLUE, PULSE_BLUE, YELLOW}
+    public enum LedColor {FLASH_ORANGE, GREEN, SOLID_ORANGE, BLUE, PULSE_BLUE, PINK}
+
+    public enum TieDye {NAVYBLUE, LIGHTBLUE, GRAY};
+    public TieDye tieDyeColor;
     public static LedColor ledState;
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
@@ -61,9 +64,9 @@ public class LedSubsystem implements Subsystem{
                     }
                 }
                 break;
-            case YELLOW:
+            case PINK:
                 for (int i = 0; i < length; i++) {
-                    ledBuffer.setRGB(i, 255, 255, 0);
+                    ledBuffer.setRGB(i, 255, 51, 255);
                 }
                 break;
             case GREEN:
@@ -72,10 +75,69 @@ public class LedSubsystem implements Subsystem{
                 }
                 break;
             case BLUE:
-                for (int i = 0; i < length; i++) {
-                    ledBuffer.setRGB(i, 0, 0, 255);
+
+                /* Bouncing LaserBeam */
+                for(int a = 0; a < length-4; a++){
+                    clock.start();
+                    ledBuffer.setRGB(a, 0, 0, 150);
+                    ledBuffer.setRGB(a+1, 0, 0, 150);
+                    ledBuffer.setRGB(a+2, 0, 0, 150);
+                    ledBuffer.setRGB(a+3, 0, 0, 150);
+                    
+                    if(clock.hasElapsed(0.02)){
+                        ledBuffer.setRGB(a, 0, 0, 0);
+                        clock.stop();
+                        clock.reset();
+                    }
                 }
-                break;
+                for(int a = length; a >= 3; a--){
+                    clock.start();
+                    ledBuffer.setRGB(a,0,0,150);
+                    ledBuffer.setRGB(a-1, 0,0,150);
+                    ledBuffer.setRGB(a-2, 0, 0, 150);
+                    ledBuffer.setRGB(a-3, 0, 0, 150);
+
+                    if(clock.hasElapsed(0.02)){
+                        ledBuffer.setRGB(a, 0, 0, 0);
+                        clock.stop();
+                        clock.reset();
+                    }
+
+                }
+
+                /* ------------------ */
+
+                /* Blue-TieDye */
+
+                clock.start();
+                for(int i = 0; i < length; i++){
+                    int randomNum = (int)(Math.random()*2);
+                    switch(randomNum){
+                    case 0:
+                        ledBuffer.setRGB(i, 0, 0, 153);
+                    case 1:
+                        ledBuffer.setRGB(i, 102, 178, 255);
+                    case 2:
+                        ledBuffer.setRGB(i, 255, 153, 204);
+                    }
+                } 
+                if(clock.hasElapsed(1)){
+                    for(int i = 0; i < length; i++){
+                        int randomNum = (int)(Math.random()*2);
+                        switch(randomNum){
+                        case 0:
+                            ledBuffer.setRGB(i, 0, 0, 153);
+                        case 1:
+                            ledBuffer.setRGB(i, 102, 178, 255);
+                        case 2:
+                            ledBuffer.setRGB(i, 255, 153, 204);
+                        }
+                    }
+                    clock.stop();
+                    clock.reset();
+                }
+            break;
+
             case PULSE_BLUE:
                 for (int i = 0; i < length; i++) {
                     ledBuffer.setRGB(i, 0, 0, value);

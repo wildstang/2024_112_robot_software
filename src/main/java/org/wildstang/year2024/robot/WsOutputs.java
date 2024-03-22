@@ -53,7 +53,7 @@ public enum WsOutputs implements Outputs {
     // ---------------------------------
 
     XBOXCONTROLLER("Xbox Controller", new WsXboxControllerConfig(0,RumbleType.kBothRumble));
-
+    
 
     ; // end of enum
 

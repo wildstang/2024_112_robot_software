@@ -10,6 +10,8 @@ import org.wildstang.hardware.roborio.inputs.config.WsDPadButtonInputConfig;
 import org.wildstang.hardware.roborio.inputs.config.WsDigitalInputConfig;
 import org.wildstang.hardware.roborio.inputs.config.WsJSJoystickInputConfig;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+
 /**
  * Input mappings are stored here.
  * We currently use two Xbox controller for input, driver and operator, plus additional sensors.
@@ -97,11 +99,11 @@ public enum WsInputs implements Inputs {
     // Digital IOs
     // ********************************
     BEAMBREAK_SENSOR_INTAKE ("Intake sensor", new WsDigitalInputConfig(0, false)),
-    BEAMBREAK_SENSOR_SHOOTER ("Shooter sensor", new WsDigitalInputConfig(1, false));
-    
+    BEAMBREAK_SENSOR_SHOOTER ("Shooter sensor", new WsDigitalInputConfig(1, false)),
     // -------------------------------
     // Networked sensors
     // -------------------------------
+
 
     // ********************************
     // Others ...

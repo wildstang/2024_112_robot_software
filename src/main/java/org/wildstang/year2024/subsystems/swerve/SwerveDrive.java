@@ -78,14 +78,16 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private WsVision pvCam;
     // private double targetYaw;
 
-    public enum driveType {TELEOP, AUTO, SPEAKER, AMP, STAGE};
+    public enum driveType {TELEOP, AUTO, SPEAKER, AMP, STAGE, INTAKE};
     public driveType driveState;
     private Boolean isBlueAlliance = null;
     private Pose2d curPose, goalPose;
     public boolean sensorOverride;
 
+
+
     public double robotVelMag, robotVelTheta, predictedHeadingAngle, noteVel;
-    public ShooterSubsystem shooter = new ShooterSubsystem();
+    
 
 
     @Override
@@ -302,6 +304,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 rotSpeed = swerveHelper.getRotControl(goalPose.getRotation().getDegrees(), getGyroAngle());
                 this.swerveSignal = swerveHelper.setDrive(xSpeed, ySpeed, rotSpeed, getGyroAngle());
                 drive();
+                break;
+            case INTAKE:
+                /* Intake state for note vision*/
                 break;
         }
 
