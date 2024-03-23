@@ -18,14 +18,13 @@ public class LedSubsystem implements Subsystem{
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
     private int ledIndex = 0;
-    private boolean goBackward = false;
-    private boolean goForward = true;
+    private int ledIndexFirst = 0;
+    private int ledIndexLast = 0;
     
 
     private int port = 0;
     private int length = 53;
 
-    private int ledBrightnessDecrement = 255 / length;
 
     private int value, adjust;
 
@@ -86,10 +85,85 @@ public class LedSubsystem implements Subsystem{
                 break;
             case BLUE:
 
-                /* Bouncing LaserBeam */
-                 
-                /* 
-                clock.start();
+                blueTieDye();
+            
+
+            break;
+
+            case PULSE_BLUE:
+                for (int i = 0; i < length; i++) {
+                    ledBuffer.setRGB(i, 0, 0, value);
+                }
+                break;
+        }  
+
+        value += adjust;
+        if (value >= 255) {
+            value = 255;
+            adjust *= -1;
+        } else if (value <= 0) {
+            value = 0;
+            adjust *= -1;
+        }
+
+        led.setData(ledBuffer);
+        led.start();
+        SmartDashboard.putString("led state", ledState.name());
+    }
+
+    public void fadingSnake(){
+        clock.start(); 
+        ledBuffer.setRGB(ledIndexFirst, 0, 0, 150);
+        if(clock.hasElapsed(0.3)){
+            if((ledIndexFirst >= 0) && (ledIndexFirst < length-1)){
+                ledIndexFirst++;
+                ledBuffer.setRGB(ledIndexFirst,0, 0, 150);
+                ledBuffer.setRGB(ledIndexFirst-1,0,0,0);
+                int brightness = 150;
+                int brightnessDecrement = 150 / length;
+                for(int i = ledIndexFirst; i >= 0; i--){
+                    ledBuffer.setRGB(i, 0, 0, brightness);
+                    brightness -= brightnessDecrement;
+                }
+                for(int i = length; i > ledIndexFirst; i--){
+                    ledBuffer.setRGB(i, 0, 0, brightness);
+                    brightness -= brightnessDecrement;
+                }
+            
+            }
+        }          
+        clock.stop();
+        clock.reset();
+    }          
+
+
+    public void blueTieDye(){
+        clock.start();
+                if(clock.hasElapsed(0.05)){
+                    for(int i = 0; i < length; i++){
+                        int randomNum = (int)(Math.random()*2);
+                        Timer timer = new Timer();
+                        timer.start();
+                        switch(randomNum){
+                        case 0:
+                            ledBuffer.setRGB(i, 0, 0, 153);
+                            break;
+                        case 1:
+                            ledBuffer.setRGB(i, 102, 178, 255);
+                            break;
+                        case 2:
+                            ledBuffer.setRGB(i, 255, 153, 204);
+                            break;
+                        }
+                    }
+                    clock.stop();
+                    clock.reset();
+                }
+    }
+
+    public void bouncingLaser(){
+        boolean goBackward = false;
+        clock.start();
                 
                 if(ledIndex <= 0){
                     ledBuffer.setRGB(ledIndex, 0, 0, 150);
@@ -128,106 +202,6 @@ public class LedSubsystem implements Subsystem{
                     clock.stop();
                     clock.reset();
                 }
-                
-                */
-               
-                    
-               
-                /*-- -------------*/
-
-                /* Fading Snake */
-                /* 
-                clock.start();
-                for(int i = 0; i < length; i++){
-                    ledBuffer.setRGB(i, 130, 230, 150);
-                }
-                
-                ledBuffer.setRGB(ledIndex, 0, 0, 150);
-                if(clock.hasElapsed(0.3)){
-                    if(goForward){
-                        if(ledIndex >= length){
-                            goForward = false;
-                            goBackward = true;
-                        }
-                        int brightness = 255;
-                        for(int i = ledIndex; i >= 0; i--){
-                            ledBuffer.setRGB(i, 0, 0, brightness-ledBrightnessDecrement);
-                        }
-                        ledIndex++;
-                    }else if(goBackward){
-                        if(ledIndex <= 0){
-                            goForward = true;
-                            goBackward = false;
-                        }
-                        int brightness = 255;
-                        for(int i = 0; i < ledIndex; i++){
-                            ledBuffer.setRGB(i, 0, 0, brightness - ledBrightnessDecrement);
-                        }
-                        ledIndex--;
-                    }
-                    
-                    clock.stop();
-                    clock.reset();
-                }
-                */
-                
-                /* ------------------ */
-
-                /* Blue-TieDye */
-                
-
-                clock.start();
-  
-                if(clock.hasElapsed(0.05)){
-                    for(int i = 0; i < length; i++){
-                        int randomNum = (int)(Math.random()*2);
-                        switch(randomNum){
-                        case 0:
-                            ledBuffer.setRGB(i, 0, 0, 153);
-                            break;
-                        case 1:
-                            ledBuffer.setRGB(i, 102, 178, 255);
-                            break;
-                        case 2:
-                            ledBuffer.setRGB(i, 255, 153, 204);
-                            break;
-                        }
-                    }
-                    clock.stop();
-                    clock.reset();
-                }
-                /* ----------------------- */
-
-
-                /* Fade/Smooth TieDye */
-
-                /*clock.start();
-                
-                if(clock.hasElapsed(0.2)){
-                    
-                }*/
-
-            break;
-
-            case PULSE_BLUE:
-                for (int i = 0; i < length; i++) {
-                    ledBuffer.setRGB(i, 0, 0, value);
-                }
-                break;
-        }  
-
-        value += adjust;
-        if (value >= 255) {
-            value = 255;
-            adjust *= -1;
-        } else if (value <= 0) {
-            value = 0;
-            adjust *= -1;
-        }
-
-        led.setData(ledBuffer);
-        led.start();
-        SmartDashboard.putString("led state", ledState.name());
     }
 
     @Override
