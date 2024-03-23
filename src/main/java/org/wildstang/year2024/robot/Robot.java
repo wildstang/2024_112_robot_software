@@ -5,6 +5,7 @@ import org.wildstang.framework.logger.Log;
 import org.wildstang.framework.logger.Log.LogLevel;
 import org.wildstang.hardware.roborio.RoboRIOInputFactory;
 import org.wildstang.hardware.roborio.RoboRIOOutputFactory;
+import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
 
     Core core;
     private SendableChooser<LogLevel> logChooser;
+    private ShooterSubsystem shooter; 
 
     /**
      * Runs on initialization, creates and configures the framework Core.
@@ -32,7 +34,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         Log.info("Initializing robot.");
-
+        shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
         core = new Core(RoboRIOInputFactory.class, RoboRIOOutputFactory.class);
         core.createInputs(WsInputs.values());
         core.createOutputs(WsOutputs.values());
@@ -53,6 +55,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void disabledInit() {
+          shooter.angleMotor.setCoast();  
         Log.info("Engaging disabled mode.");
     }
 
@@ -62,6 +65,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
+        shooter.angleMotor.setBrake();
         Log.danger("Engaging autonomous mode.");
         Core.getSubsystemManager().resetState();
         Core.getAutoManager().startCurrentProgram();
@@ -74,6 +78,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopInit() {
+        shooter.angleMotor.setBrake();
         Log.danger("Engaging teleoperated mode.");
         // tell AutoManager not to preload or run any more programs
         Core.getAutoManager().endPeriod();
