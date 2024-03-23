@@ -9,15 +9,15 @@ public final class DriveConstants {
     /**speed with which the robot rotates relative to drive speed */
     public static final double ROTATION_SPEED = 0.5;
     /**offset of module 1, the front left module, in degrees */
-    public static final double FRONT_LEFT_OFFSET = -90;
+    public static final double FRONT_LEFT_OFFSET = Math.PI / 2.0;
     /**offset of module 2, the front right module, in degrees */
     public static final double FRONT_RIGHT_OFFSET = 0;
     /**offset of module 3, the rear left module, in degrees */
-    public static final double REAR_LEFT_OFFSET = 180;
+    public static final double REAR_LEFT_OFFSET = Math.PI;
     /**offset of module 4, the rear right module, in degrees */
-    public static final double REAR_RIGHT_OFFSET = 90;
+    public static final double REAR_RIGHT_OFFSET = 3.0 * Math.PI / 2.0;
     /**deadband of the controller's joysticks */
-    public static final double DEADBAND = 0.05;
+    public static final double DEADBAND = 0.07;
     /**factor of thrust for the drive trigger */
     public static final double DRIVE_THRUST = 0.4;
     /**factor of derate for the drive trigger */

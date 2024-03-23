@@ -3,7 +3,6 @@ package org.wildstang.year2024.subsystems.swerve;
 public class WsSwerveHelper {
 
     private SwerveSignal swerveSignal;
-    private double rotMag;
     private double baseV;
     private double[] xCoords = new double[]{0.0, 0.0, 0.0, 0.0};
     private double[] yCoords = new double[]{0.0, 0.0, 0.0, 0.0};
@@ -27,8 +26,6 @@ public class WsSwerveHelper {
      * @return driveSignal for normal driving, normalized
      */
     public SwerveSignal setDrive(double i_tx, double i_ty, double i_rot, double i_gyro) {
-        //magnitude of rotation vector
-        rotMag = i_rot;
         //angle of front left rotation vector
         baseV = Math.atan(DriveConstants.ROBOT_LENGTH / DriveConstants.ROBOT_WIDTH);
 
@@ -37,13 +34,14 @@ public class WsSwerveHelper {
         double yTrans = - i_tx * Math.sin(i_gyro) + i_ty * Math.cos(i_gyro);
 
         //account for slight second order skew due to rotation and translation at the same time
-        xTrans += Math.cos(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
-        yTrans += -Math.sin(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
+        // xTrans += Math.cos(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
+        // yTrans += -Math.sin(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
 
         //cartesian vector addition of translation and rotation vectors
+        //FL->FR->RL->RR
         //note rotation vector angle advances in the cos -> sin -> -cos -> -sin fashion
-        xCoords = new double[]{xTrans + rotMag * Math.cos(baseV), xTrans + rotMag*Math.sin(baseV), xTrans - rotMag * Math.sin(baseV), xTrans - rotMag*Math.cos(baseV)}; 
-        yCoords = new double[]{yTrans + rotMag * Math.sin(baseV), yTrans - rotMag*Math.cos(baseV), yTrans + rotMag * Math.cos(baseV), yTrans - rotMag*Math.sin(baseV)};
+        xCoords = new double[]{xTrans - i_rot * Math.sin(baseV), xTrans + i_rot * Math.sin(baseV), xTrans - i_rot * Math.sin(baseV), xTrans + i_rot * Math.sin(baseV)}; 
+        yCoords = new double[]{yTrans + i_rot * Math.cos(baseV), yTrans + i_rot * Math.cos(baseV), yTrans - i_rot * Math.cos(baseV), yTrans - i_rot * Math.cos(baseV)};
 
         //create drivesignal, with magnitudes and directions of x and y
         swerveSignal = new SwerveSignal(new double[]{Math.hypot(xCoords[0], yCoords[0]), Math.hypot(xCoords[1], yCoords[1]), Math.hypot(xCoords[2], yCoords[2]), Math.hypot(xCoords[3], yCoords[3])}, 
@@ -89,13 +87,13 @@ public class WsSwerveHelper {
 
     /**x,y inputs are cartesian, angle values are in bearing, returns 0 - 360 */
     public double getDirection(double x, double y) {
-        double measurement = Math.toDegrees(Math.atan2(x,y));//returns angle in bearing form
-        if (measurement < 0) {
-            measurement = 360 + measurement;
-        }
-        else if (measurement >= 360) {
-            measurement = measurement - 360;
-        }
+        double measurement = (2.0 * Math.PI + Math.atan2(y,x)) % (2.0 * Math.PI);
+        // if (measurement < 0) {
+        //     measurement = 2.0 * Math.PI + measurement;
+        // }
+        // else if (measurement >= 360) {
+        //     measurement = measurement - 360;
+        // }
         return measurement;
     }
     

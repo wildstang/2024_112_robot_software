@@ -71,7 +71,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     public enum driveType {TELEOP, AUTO, SPEAKER, AMP, STAGE};
     public driveType driveState;
-    private Boolean isBlueAlliance = null;
+    private boolean isBlueAlliance;
     private Pose2d curPose, goalPose;
     public boolean sensorOverride;
 
@@ -227,11 +227,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
     @Override
     public void update() {
-        if (isBlueAlliance == null){
-            if (DriverStation.getAlliance().isPresent()){
-                isBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
-            }
-        }
+        isBlueAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
         
         poseEstimator.update(odoAngle(), odoPosition());
         // targetYaw = pvCam.getYaw();
@@ -293,6 +289,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Speaker angle", getAngleToSpeaker());
         SmartDashboard.putNumber("Speaker distance", getDistanceFromSpeaker());
         SmartDashboard.putNumber("rot target", rotTarget);
+        SmartDashboard.putBoolean("Blue Alliance", isBlueAlliance);
         // SmartDashboard.putNumber("target yaw", targetYaw);
     }
     
@@ -305,13 +302,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
         rotLocked = false;
         rotTarget = 0.0;
         sensorOverride = false;
+        isBlueAlliance = true;
     }
 
     public Pose2d getClosestChain(){
         Pose2d curPose = poseEstimator.getEstimatedPosition();
         Pose2d returnPose;
         PhotonUtils.getDistanceToPose(curPose, FieldConstants.Chain14);
-        if (isBlueAlliance == null) return new Pose2d();
         if(isBlueAlliance){
             returnPose = FieldConstants.Chain14;
             double dist = PhotonUtils.getDistanceToPose(curPose, FieldConstants.Chain14);
@@ -338,7 +335,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
     public double getAngleToSpeaker(){
-        if (isBlueAlliance == null) return -1;
         if (isBlueAlliance) {
             return Math.atan2(FieldConstants.BLUE_SPEAKER.getY()-poseEstimator.getEstimatedPosition().getY(), FieldConstants.BLUE_SPEAKER.getX()-poseEstimator.getEstimatedPosition().getX()) % (2.0 * Math.PI);
         } else {
@@ -348,7 +344,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     //blue is true and red is falase
     public double getDistanceFromSpeaker(){
-        if (isBlueAlliance == null) return -1;
         if (isBlueAlliance) {
             return PhotonUtils.getDistanceToPose(poseEstimator.getEstimatedPosition(), FieldConstants.BLUE_SPEAKER);
         } else {
