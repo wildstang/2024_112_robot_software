@@ -12,7 +12,6 @@ import org.wildstang.hardware.roborio.outputs.WsSpark;
 import org.wildstang.year2024.robot.CANConstants;
 import org.wildstang.year2024.robot.WsInputs;
 import org.wildstang.year2024.robot.WsOutputs;
-import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 import org.wildstang.year2024.subsystems.targeting.WsVision;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -225,10 +224,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
             rotOutput *= Math.abs(rotOutput);
             rotOutput *= DriveConstants.ROTATION_SPEED;
             rotLocked = false;
-        } else if (rotLocked == false) {
-            rotTarget = getGyroAngle();
-            rotLocked = true;
-        }
+        } 
+        // else if (rotLocked == false) {
+        //     rotTarget = getGyroAngle();
+        //     rotLocked = true;
+        // }
         
         //assign thrust
         thrustValue = 1 - DriveConstants.DRIVE_THRUST + DriveConstants.DRIVE_THRUST * Math.abs(rightTrigger.getValue());
@@ -243,13 +243,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
     @Override
     public void update() {
 
-        for(int i = 0; i < modules.length; i++){
-            moduleStates[i] = modules[i].getModuleState();
-        }
-        chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerveKinematics.toChassisSpeeds(moduleStates), Rotation2d.fromDegrees(getGyroAngle()));
-        
-        robotVelTheta = Math.atan2(chassisSpeeds.vyMetersPerSecond, chassisSpeeds.vxMetersPerSecond);
-        robotVelMag = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
 
         isBlueAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
         
@@ -257,8 +250,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         // targetYaw = pvCam.getYaw();
         pvCam.odometryUpdate(poseEstimator);
         curPose = poseEstimator.getEstimatedPosition();
-
-        predictedHeadingAngle = getAngleToSpeaker() - (Math.asin(-((robotVelMag)/(noteVel)) * Math.sin(getAngleToSpeaker()-robotVelTheta)));
 
         switch (driveState) {
             case TELEOP:
@@ -274,7 +265,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 break;
             case SPEAKER:
                 //Turn Robot Toward Speaker
-                rotTarget = getAngleToSpeaker();
+                for(int i = 0; i < modules.length; i++){
+                    moduleStates[i] = modules[i].getModuleState();
+                }
+                chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerveKinematics.toChassisSpeeds(moduleStates), Rotation2d.fromDegrees(getGyroAngle()));
+                
+                robotVelTheta = Math.atan2(chassisSpeeds.vyMetersPerSecond, chassisSpeeds.vxMetersPerSecond);
+                robotVelMag = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
+                rotTarget = getAngleToSpeaker() - (Math.asin(-((robotVelMag)/(noteVel)) * Math.sin(getAngleToSpeaker()-robotVelTheta)));
                 rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 break;
             case AMP:
@@ -299,9 +297,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
             case INTAKE:
                 /* Intake state for note vision*/
                 break;
-            case INTAKE:
-                /* Intake state for note vision*/
-                break;
         }
         this.swerveSignal = swerveHelper.setDrive(xOutput , yOutput, rotOutput, getGyroAngle());
         drive();  
@@ -313,11 +308,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putString("Drive mode", driveState.toString());
         SmartDashboard.putNumber("Auto x velocity", xSpeed);
         SmartDashboard.putNumber("Auto y velocity", ySpeed);
+        SmartDashboard.putNumber("Auto ang velocity", wSpeed);
         SmartDashboard.putNumber("Auto x pos", pathX);
         SmartDashboard.putNumber("Auto y pos", pathY);
         SmartDashboard.putBoolean("drive at target", isAtTarget());
         SmartDashboard.putNumber("pose x", curPose.getX());
         SmartDashboard.putNumber("pose y", curPose.getY());
+        SmartDashboard.putNumber("pose theta", curPose.getRotation().getRadians());
         SmartDashboard.putNumber("Speaker angle", getAngleToSpeaker());
         SmartDashboard.putNumber("Speaker distance", getDistanceFromSpeaker());
         SmartDashboard.putNumber("rot target", rotTarget);
@@ -419,6 +416,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
         for (int i = 0; i < modules.length; i++) {
             modules[i].setDriveBrake(true);
         }
+        pathX = curPose.getX();
+        pathY = curPose.getY();
+        rotTarget = getGyroAngle();
     }
 
     public void setToSpeaker() {
@@ -457,6 +457,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
         resetState();
         setToAuto();
         gyro.setYaw(radians * RAD_TO_DEG);
+    }
+
+    public void clearPathTargets(){
+        pathX = curPose.getX();
+        pathY = curPose.getY();
+
     }
 
     public double getGyroAngle() {

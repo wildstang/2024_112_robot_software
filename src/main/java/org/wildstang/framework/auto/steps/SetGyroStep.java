@@ -13,19 +13,18 @@ public class SetGyroStep extends AutoStep {
      * @param drive the swerveDrive subsystem
      */
     public SetGyroStep(double heading, SwerveDriveTemplate drive, boolean isBlueAlliance) {
-        if (isBlueAlliance) {
-            this.heading = heading;
-        } else {
-            this.heading = heading - 180;
-        }
-        // this.heading = heading;
+        // if (isBlueAlliance) {
+        //     this.heading = heading;
+        // } else {
+        //     this.heading = (heading + Math.PI) % (2.0 * Math.PI);
+        // }
+        this.heading = heading;
         m_drive = drive;
     }
 
     @Override
     public void initialize() {
         m_drive.setToAuto();
-        m_drive.setAutoValues(0.0, 0.0, 0.0 ,0.0, 0.0, 0.0);
         m_drive.setGyro(heading);
         m_drive.setAutoHeading(heading);
     }

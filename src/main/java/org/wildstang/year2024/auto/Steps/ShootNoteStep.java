@@ -6,9 +6,11 @@ import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.shooter.ArmConstants;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem.shooterType;
+import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class ShootNoteStep extends AutoStep {
     private ShooterSubsystem shooter;
+    private SwerveDrive drive;
 
     public ShootNoteStep(){
     }
