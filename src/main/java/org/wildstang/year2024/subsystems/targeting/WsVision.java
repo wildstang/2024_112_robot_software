@@ -63,9 +63,9 @@ public class WsVision implements Subsystem {
             double[] fpose = {frontPose.estimatedPose.getX(),frontPose.estimatedPose.getY(),frontPose.estimatedPose.getZ()};
             SmartDashboard.putNumberArray("front pose", fpose);
         }
-        rearPose = frontPoseEstimator.update().orElse(null);
+        rearPose = rearPoseEstimator.update().orElse(null);
         if (rearPose != null){
-            Log.warn("rear pose");
+            // Log.warn("rear pose");
             double[] rpose = {rearPose.estimatedPose.getX(),rearPose.estimatedPose.getY(),rearPose.estimatedPose.getZ()};
             SmartDashboard.putNumberArray("rear pose", rpose);
         }

@@ -48,7 +48,6 @@ public class  ShooterSubsystem implements Subsystem{
     public LedSubsystem leds;
 
     private boolean sensorOverride, sourceMode;
-    private double distance;
 
     private boolean hood_deploy;
     private double hoodPos;
@@ -118,6 +117,7 @@ public class  ShooterSubsystem implements Subsystem{
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         leds = (LedSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.LEDS);
         xboxController = (XboxControllerOutput) Core.getOutputManager().getOutput(WsOutputs.XBOXCONTROLLER);
+        timer = new Timer();
 
         resetState();
     }
@@ -169,6 +169,7 @@ public class  ShooterSubsystem implements Subsystem{
         curVel = getShooterVelocity();
         curPos = getPivotPosition();
         hoodPos = hoodMotor.getPosition();
+        
 
         switch (shooterState) {
             case INIT_SPEAKER:
@@ -177,6 +178,7 @@ public class  ShooterSubsystem implements Subsystem{
                 }
                 goalVel = ShooterConstants.SPEAKER_SPEED;
                 shooterEnable = true;
+                Log.warn("foo");
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     shooterState = shooterType.SHOOT;
                     Log.warn("SHOOT");
@@ -285,7 +287,7 @@ public class  ShooterSubsystem implements Subsystem{
                 hood_deploy = false;
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
-                goalPos = ArmConstants.SOFT_STOP_LOW;
+                // goalPos = ArmConstants.SOFT_STOP_LOW;
                 goalVel = 0.0;
                 shooterEnable = false;
                 if (timer.hasElapsed(1.5)){
@@ -303,6 +305,7 @@ public class  ShooterSubsystem implements Subsystem{
         goalVel = Math.max(goalVel, -ShooterConstants.MAX_VEL);
         velErr = goalVel - curVel;
         shooterOutput = goalVel * ShooterConstants.kF + velErr * ShooterConstants.kP;
+        shooterOutput = Math.min(Math.max(shooterOutput,-1.0),1.0);
         if (!shooterEnable) {
             shooterOutput = 0.0;
         }
@@ -379,7 +382,9 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("iterCount", iterCount);
 
         // Vision values
-        SmartDashboard.putNumber("Angle to Speaker", getTargetAngle(distance));
+        SmartDashboard.putNumber("Speaker Elevation", getTargetAngle(swerve.getDistanceFromSpeaker()));
+
+        SmartDashboard.putNumber("pivot internal encoder", angleMotor.getPosition());
 
     }
     
@@ -415,8 +420,8 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getPivotPosition(){
-        // return ((angleMotor.getPosition() * 2.0 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW + 2.0 * Math.PI) % (2.0 * Math.PI);
-        return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW + pivotAdjustment) % (2 * Math.PI);
+        return ((angleMotor.getPosition() * 2.0 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW + 2.0 * Math.PI) % (2.0 * Math.PI);
+        // return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW + pivotAdjustment) % (2 * Math.PI);
     }
 
     public double getTargetAngle(double distance){

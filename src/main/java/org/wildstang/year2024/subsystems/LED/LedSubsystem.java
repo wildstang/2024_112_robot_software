@@ -87,8 +87,8 @@ public class LedSubsystem implements Subsystem{
             case BLUE:
 
                 //bouncingLaser();
-                //blueTieDye();
-                fadingSnake();
+                blueTieDye();
+                // fadingSnake();
             break;
 
             case PULSE_BLUE:

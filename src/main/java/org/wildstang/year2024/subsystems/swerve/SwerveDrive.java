@@ -87,9 +87,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private static final double DEG_TO_RAD = Math.PI / 180.0;
     private static final double RAD_TO_DEG = 180.0 / Math.PI;
 
+    public double robotVelMag, robotVelTheta, predictedHeadingAngle;
 
-
-    public double robotVelMag, robotVelTheta, predictedHeadingAngle, noteVel;
+    private static final double NOTE_VEL = 50.0;
     
 
 
@@ -249,6 +249,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         sensorOverride = false;
         isBlueAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
         aimAtSpeaker = false;
+        goalPose = FieldConstants.BLUE_AMP;
     }
 
     @Override
@@ -270,16 +271,21 @@ public class SwerveDrive extends SwerveDriveTemplate {
         switch (driveState) {
             case TELEOP:
                 if (rotLocked) rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());  // if rotation tracking, replace rotational joystick value with controller generated one
-                else if (aimAtSpeaker) rotOutput = getSpeakerRotation();
+                else if (aimAtSpeaker) {
+                    rotTarget = getSpeakerRotation();
+                    rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                } 
                 break;
             case AUTO:
-                if (aimAtSpeaker) rotOutput = getSpeakerRotation();
+                if (aimAtSpeaker) {
+                    rotTarget = getSpeakerRotation();
+                    rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                } 
                 else rotOutput = wSpeed * DriveConstants.DRIVE_F_ROT + swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 xOutput = xSpeed * DriveConstants.DRIVE_F_K + pathXErr * DriveConstants.POS_P;
                 yOutput = ySpeed * DriveConstants.DRIVE_F_K + pathYErr * DriveConstants.POS_P;
                 break;
             case AMP:
-                rotTarget = 3.0 * Math.PI / 2.0;
                 if (isBlueAlliance) {
                     goalPose = FieldConstants.BLUE_AMP;
                 } else {
@@ -288,12 +294,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
                 yOutput = (goalPose.getX() - curPose.getX()) * DriveConstants.POS_P;
                 xOutput = (goalPose.getY() - curPose.getY()) * DriveConstants.POS_P;
+                rotTarget = goalPose.getRotation().getRadians();
                 rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 break;
             case INTAKE:
-                if (pixyDio.getValue()) {
-                    rotOutput = (1.65 - pixyAnalog.getValue()) * DriveConstants.ROT_P;
-                }
+                // if (pixyDio.getValue()) {
+                //     rotOutput = (1.65 - pixyAnalog.getValue()) * DriveConstants.ROT_P;
+                // }
                 break;
         }
         rotOutput = Math.min(Math.max(rotOutput, -1.0), 1.0);
@@ -316,7 +323,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("pose x", getPosX());
         SmartDashboard.putNumber("pose y", getPosY());
         SmartDashboard.putNumber("pose theta", getPosTheta());
-        SmartDashboard.putNumber("Speaker angle", getAngleToSpeaker());
+        SmartDashboard.putNumber("Speaker Azimuth", getAngleToSpeaker());
         SmartDashboard.putNumber("Speaker distance", getDistanceFromSpeaker());
         SmartDashboard.putNumber("rot target", rotTarget);
         SmartDashboard.putBoolean("Blue Alliance", isBlueAlliance);
@@ -359,9 +366,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     // get rotation output to aim at speaker, including velocity adjustments
     public double getSpeakerRotation() {
-        rotTarget = getAngleToSpeaker() - (Math.asin(-((robotVelMag)/(noteVel)) * Math.sin(getAngleToSpeaker()-robotVelTheta)));
-        rotTarget = (2.0 * Math.PI + rotTarget) % (2.0 * Math.PI);
-        return swerveHelper.getRotControl(rotTarget, getGyroAngle());
+        double goalAng = getAngleToSpeaker() - (Math.asin(-((robotVelMag)/(NOTE_VEL)) * Math.sin(getAngleToSpeaker()-robotVelTheta)));
+        goalAng = (2.0 * Math.PI + goalAng) % (2.0 * Math.PI);
+        return goalAng;
     }
 
     /** resets the drive encoders on each module */
@@ -464,12 +471,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public double getPosTheta(){
-        return poseEstimator.getEstimatedPosition().getRotation().getRadians();
+        return (2.0 * Math.PI + (poseEstimator.getEstimatedPosition().getRotation().getRadians() % (2.0 * Math.PI))) % (2.0 * Math.PI);
     }
 
     public Boolean isAtTarget(){
-        if (aimAtSpeaker) return (Math.abs(rotTarget - getGyroAngle()) < 0.05);
-        if (driveState == driveType.AMP) return goalPose.getTranslation().getDistance(curPose.getTranslation()) < 0.05 && Math.abs(rotTarget - getGyroAngle()) < 0.05;
+        if (aimAtSpeaker) return (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI) < 0.05;
+        if (driveState == driveType.AMP) return goalPose.getTranslation().getDistance(curPose.getTranslation()) < 0.05 && (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI) < 0.05;
         return true;
         
     }
