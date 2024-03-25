@@ -25,10 +25,12 @@ public class LedSubsystem implements Subsystem{
     private int port = 0;
     private int length = 53;
 
+    boolean goBackward = false;
 
     private int value, adjust;
 
     Timer clock = new Timer();
+    Timer clockTwo = new Timer();
 
     @Override
     public void init() {
@@ -85,9 +87,9 @@ public class LedSubsystem implements Subsystem{
                 break;
             case BLUE:
 
-                blueTieDye();
-            
-
+                //bouncingLaser();
+                //blueTieDye();
+                fadingSnake();
             break;
 
             case PULSE_BLUE:
@@ -113,29 +115,33 @@ public class LedSubsystem implements Subsystem{
 
     public void fadingSnake(){
         clock.start(); 
-        ledBuffer.setRGB(ledIndexFirst, 0, 0, 150);
-        if(clock.hasElapsed(0.3)){
-            if((ledIndexFirst >= 0) && (ledIndexFirst < length-1)){
+        ledBuffer.setRGB(ledIndexFirst,0, 0, 150);
+        
+        if(clock.hasElapsed(0.02)){
+            if((ledIndexFirst >= 0) && (ledIndexFirst < length-5)){
                 ledIndexFirst++;
-                ledBuffer.setRGB(ledIndexFirst,0, 0, 150);
                 ledBuffer.setRGB(ledIndexFirst-1,0,0,0);
-                int brightness = 150;
-                int brightnessDecrement = 150 / length;
-                for(int i = ledIndexFirst; i >= 0; i--){
-                    ledBuffer.setRGB(i, 0, 0, brightness);
-                    brightness -= brightnessDecrement;
-                }
-                for(int i = length; i > ledIndexFirst; i--){
-                    ledBuffer.setRGB(i, 0, 0, brightness);
-                    brightness -= brightnessDecrement;
-                }
-            
+                
+               
+                
+
             }
-        }          
         clock.stop();
         clock.reset();
+        }          
+        int brightness = 140;
+        int brightnessDecrement = 150 / (length-1);
+        for(int i = ledIndexFirst; i >= 0; i--){
+                ledBuffer.setRGB(i, 0, 0, brightness);
+                brightness -= brightnessDecrement;
+        }
+        /*for(int i = length-1; i > ledIndexFirst; i--){
+                    ledBuffer.setRGB(i, 0, 0, brightness);
+                    brightness -= brightnessDecrement;
+                }*/
     }          
 
+    
 
     public void blueTieDye(){
         clock.start();
@@ -149,10 +155,10 @@ public class LedSubsystem implements Subsystem{
                             ledBuffer.setRGB(i, 0, 0, 153);
                             break;
                         case 1:
-                            ledBuffer.setRGB(i, 102, 178, 255);
+                            ledBuffer.setRGB(i, 102, 178, 150);
                             break;
                         case 2:
-                            ledBuffer.setRGB(i, 255, 153, 204);
+                            ledBuffer.setRGB(i, 200, 153, 200);
                             break;
                         }
                     }
@@ -162,38 +168,41 @@ public class LedSubsystem implements Subsystem{
     }
 
     public void bouncingLaser(){
-        boolean goBackward = false;
+        
         clock.start();
                 
-                if(ledIndex <= 0){
+        if(ledIndex == 0){
                     ledBuffer.setRGB(ledIndex, 0, 0, 150);
-                    ledBuffer.setRGB(ledIndex+1, 0, 0, 150);
-                    ledBuffer.setRGB(ledIndex+2, 0, 0, 150);
-                    ledBuffer.setRGB(ledIndex+3, 0, 0, 150);
-                }else if(ledIndex >= 49){
                     ledBuffer.setRGB(ledIndex+1, 0, 0, 150);
                     ledBuffer.setRGB(ledIndex+2, 0, 0, 150);
                     ledBuffer.setRGB(ledIndex+3, 0, 0, 150);
                     ledBuffer.setRGB(ledIndex+4, 0, 0, 150);
-                }else if(((ledIndex > 0) && (ledIndex < 49)) && goBackward){
+                    ledBuffer.setRGB(ledIndex+5, 0, 0, 150);
+                    goBackward = false;
+        }else if(ledIndex > 44){
+                    ledBuffer.setRGB(ledIndex+1, 0, 0, 150);
+                    ledBuffer.setRGB(ledIndex+2, 0, 0, 150);
+                    ledBuffer.setRGB(ledIndex+3, 0, 0, 150);
+                    ledBuffer.setRGB(ledIndex+4, 0, 0, 150);
+                    ledBuffer.setRGB(ledIndex+5, 0, 0, 150);
+                    ledBuffer.setRGB(ledIndex+6, 0, 0, 150);
+                    goBackward = true;
+                }else if(((ledIndex > 0) && (ledIndex < 48)) && goBackward){
                     ledBuffer.setRGB(ledIndex-1, 0, 0, 150);
                     ledBuffer.setRGB(ledIndex, 0, 0, 150);
                     ledBuffer.setRGB(ledIndex+1, 0, 0, 150);
                     ledBuffer.setRGB(ledIndex+2, 0, 0, 150);
-                    ledBuffer.setRGB(ledIndex+3, 0, 0, 0);
-                }else if(((ledIndex > 0) && (ledIndex < 49)) && !goBackward){
-                    ledBuffer.setRGB(ledIndex-1, 0, 0, 150);
+                    ledBuffer.setRGB(ledIndex+3, 0, 0, 150);
+                    ledBuffer.setRGB(ledIndex+4, 0, 0, 0);
+                }else if(((ledIndex > 0) && (ledIndex < 48)) && !goBackward){
+                    ledBuffer.setRGB(ledIndex-1, 0, 0, 0);
                     ledBuffer.setRGB(ledIndex, 0, 0, 150);
                     ledBuffer.setRGB(ledIndex+1, 0, 0, 150);
                     ledBuffer.setRGB(ledIndex+2, 0, 0, 150);
-                    ledBuffer.setRGB(ledIndex+3, 0, 0, 0);
+                    ledBuffer.setRGB(ledIndex+3, 0, 0, 150);
+                    ledBuffer.setRGB(ledIndex+4, 0, 0, 150);
                 }
-                if(clock.hasElapsed(0.02)){
-                    if(ledIndex >= 49){
-                        goBackward = true;
-                    }else if(ledIndex <= 0){
-                        goBackward = false;
-                    }
+                if(clock.hasElapsed(0.005)){
                     if(goBackward){
                         ledIndex--;
                     }else{
