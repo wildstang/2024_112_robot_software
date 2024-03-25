@@ -23,23 +23,21 @@ public class QualsAuto extends AutoProgram{
         //Preload 
         addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 0, color));
         addStep(new SetGyroStep(swerve.getPosTheta(), swerve, color));
-        addStep(new SwervePathFollowerStep("Quals.1", swerve, color));
         addStep(new ShootNoteStep());
 
         //Get Wing A
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         group0.addStep(new IntakeNoteStep());
-        group0.addStep(new SwervePathFollowerStep("Quals.2", swerve, color));
+        group0.addStep(new SwervePathFollowerStep("Quals.1", swerve, color));
         addStep(group0);
 
         //Shoot Wing A
-        addStep(new SwervePathFollowerStep("Quals.3", swerve, color));
         addStep(new ShootNoteStep());
 
         //Get Wing B
         AutoParallelStepGroup group1 = new AutoParallelStepGroup();
         group1.addStep(new IntakeNoteStep());
-        group1.addStep(new SwervePathFollowerStep("Quals.4", swerve, color));
+        group1.addStep(new SwervePathFollowerStep("Quals.2", swerve, color));
         addStep(group1);
     
         //Score wing B
@@ -48,7 +46,7 @@ public class QualsAuto extends AutoProgram{
         //get wing C
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();
         group2.addStep(new IntakeNoteStep());
-        group2.addStep(new SwervePathFollowerStep("Quals.5", swerve, color));
+        group2.addStep(new SwervePathFollowerStep("Quals.3", swerve, color));
         addStep(group2);
         //shoot wing c
         addStep(new ShootNoteStep());
@@ -56,10 +54,10 @@ public class QualsAuto extends AutoProgram{
     //get center D
     AutoParallelStepGroup group3 = new AutoParallelStepGroup();
     group3.addStep(new IntakeNoteStep());
-    group3.addStep(new SwervePathFollowerStep("Quals.6", swerve, color));
+    group3.addStep(new SwervePathFollowerStep("Quals.4", swerve, color));
 
     //go shoot center D
-    addStep(new SwervePathFollowerStep("Quals.7", swerve, finished));
+    addStep(new SwervePathFollowerStep("Quals.5", swerve, finished));
     addStep(new ShootNoteStep());
     }
     @Override

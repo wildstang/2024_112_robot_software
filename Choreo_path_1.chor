@@ -68,14 +68,14 @@
                         "first"
                     ],
                     "type": "StopPoint",
-                    "uuid": "7378f544-3cd9-491e-a42a-dff934a791b6"
+                    "uuid": "0b4a083a-e924-4dd6-9506-64212e6f41c5"
                 },
                 {
                     "scope": [
                         "last"
                     ],
                     "type": "StopPoint",
-                    "uuid": "c643d507-3246-4535-a64a-4ef7e2daf6da"
+                    "uuid": "1f461932-069f-4b56-9566-a36f3c59c7f1"
                 }
             ],
             "usesControlIntervalGuessing": true,
