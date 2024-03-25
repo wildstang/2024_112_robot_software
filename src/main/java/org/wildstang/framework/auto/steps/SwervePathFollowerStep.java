@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -25,6 +26,8 @@ public class SwervePathFollowerStep extends AutoStep {
     private Timer timer;
 
     private ChassisSpeeds localAutoVel;
+
+    private Pose2d drivePose;
 
     /** Sets the robot to track a new path
      * finishes after all values have been read to robot
@@ -51,13 +54,14 @@ public class SwervePathFollowerStep extends AutoStep {
     @Override
     public void update() {
         if (timer.get() >= pathtraj.getTotalTime()) {
-            m_drive.setAutoValues(0.0, 0.0, 0.0, pathtraj.getFinalPose().getX(), pathtraj.getFinalPose().getY(), pathtraj.getFinalPose().getRotation().getRadians());
+            m_drive.setAutoValues(0.0, 0.0, 0.0, 0.0, 0.0, pathtraj.getFinalPose().getRotation().getRadians());
             setFinished();
         } else {
             localAutoState = pathtraj.sample(timer.get(), !isBlue);
             localAutoVel = ChassisSpeeds.discretize(localAutoState.getChassisSpeeds(), 0.02);
+            drivePose = m_drive.returnPose();
             //update values the robot is tracking to
-            m_drive.setAutoValues(localAutoVel.vxMetersPerSecond, localAutoVel.vyMetersPerSecond, localAutoVel.omegaRadiansPerSecond, localAutoState.x, localAutoState.y, localAutoState.heading);
+            m_drive.setAutoValues(localAutoVel.vxMetersPerSecond, localAutoVel.vyMetersPerSecond, localAutoVel.omegaRadiansPerSecond, localAutoState.x - drivePose.getX(), localAutoState.y - drivePose.getY(), localAutoState.heading);
         }
     }
 

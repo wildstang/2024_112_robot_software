@@ -6,11 +6,10 @@ import org.wildstang.framework.hardware.InputConfig;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.hardware.JoystickConstants;
 import org.wildstang.hardware.roborio.inputs.config.WsJSButtonInputConfig;
+import org.wildstang.hardware.roborio.inputs.config.WsAnalogInputConfig;
 import org.wildstang.hardware.roborio.inputs.config.WsDPadButtonInputConfig;
 import org.wildstang.hardware.roborio.inputs.config.WsDigitalInputConfig;
 import org.wildstang.hardware.roborio.inputs.config.WsJSJoystickInputConfig;
-
-import edu.wpi.first.wpilibj.AnalogInput;
 
 /**
  * Input mappings are stored here.
@@ -100,6 +99,8 @@ public enum WsInputs implements Inputs {
     // ********************************
     BEAMBREAK_SENSOR_INTAKE ("Intake sensor", new WsDigitalInputConfig(0, false)),
     BEAMBREAK_SENSOR_SHOOTER ("Shooter sensor", new WsDigitalInputConfig(1, false)),
+    PIXY_DIO ("Pixy DIO", new WsDigitalInputConfig(3, false)),
+
     // -------------------------------
     // Networked sensors
     // -------------------------------
@@ -108,6 +109,7 @@ public enum WsInputs implements Inputs {
     // ********************************
     // Others ...
     // ********************************
+    PIXY_ANALOG ("Pixy Analog", new WsAnalogInputConfig(3)),
             
     ; // end of enum
     

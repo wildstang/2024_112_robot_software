@@ -6,7 +6,6 @@ import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
-import org.wildstang.year2024.auto.Steps.DriveToPositionStep;
 import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
@@ -25,16 +24,15 @@ public class OneNoteWingAutoTop extends AutoProgram{
         color = (DriverStation.getAlliance().orElse(null).equals(Alliance.Blue));
 
         //Preload Shot
-        // addStep(new ShootNoteStep());
+        addStep(new ShootNoteStep());
         addStep(new SetGyroStep(swerve.getPosTheta(), swerve, color));
-        addStep(new DriveToPositionStep(swerve, swerve.returnPose()));
 
-        // // Wing Note 1
-        // AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-        // group0.addStep(new IntakeNoteStep());
-        // group0.addStep(new SwervePathFollowerStep("OneNoteWingAutoTop.1", swerve, color));//gets values to drive toward
-        // addStep(group0);
-        // addStep(new ShootNoteStep());
+        // Wing Note 1
+        AutoParallelStepGroup group0 = new AutoParallelStepGroup();
+        group0.addStep(new IntakeNoteStep());
+        group0.addStep(new SwervePathFollowerStep("OneNoteWingAutoTop.1", swerve, color));//gets values to drive toward
+        addStep(group0);
+        addStep(new ShootNoteStep());
 
     }
 

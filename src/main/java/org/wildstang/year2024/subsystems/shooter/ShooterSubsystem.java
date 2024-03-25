@@ -1,6 +1,5 @@
 package org.wildstang.year2024.subsystems.shooter;
 
-import com.ctre.phoenix6.sim.ChassisReference;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
@@ -27,7 +26,7 @@ import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class  ShooterSubsystem implements Subsystem{
 
-    public enum shooterType {INIT_SPEAKER, INIT_AMP, OUTTAKE, WAIT, FLOOR_INTAKE, STOW, SHOOT, SHOOTER_OFF, SHOOTER_EXIT_DELAY_1, SHOOTER_EXIT_DELAY_2, OVERRIDE, IDLE, HANG, SOURCE_INTAKE, SOURCE_STOW_1, SOURCE_STOW_2, STOW_REVERSE, SHOOTER_OFF_2};
+    public enum shooterType {FLOOR_INTAKE, SOURCE_INTAKE, STOW, STOW_REVERSE, IDLE, INIT_SPEAKER, INIT_AMP, SHOOT, SHOOTER_EXIT_DELAY_1, SHOOTER_OFF, OUTTAKE, WAIT};
     private shooterType shooterState;
 
     public WsSpark angleMotor;
@@ -46,6 +45,7 @@ public class  ShooterSubsystem implements Subsystem{
     private DigitalInput intakeBeamBreak, shooterBeamBreak;
 
     public SwerveDrive swerve;
+    public LedSubsystem leds;
 
     private boolean sensorOverride, sourceMode;
     private double distance;
@@ -59,27 +59,12 @@ public class  ShooterSubsystem implements Subsystem{
     private double shooterOutput;
 
     private double goalPos, curPos, posErr;
+    private double pivotAdjustment;
     private double posOut;
     
     private double feedMotorOutput, intakeMotorOutput;
 
     private int iterCount;
-
-    /* Shoot while move variables */
-
-    double estimatedRobotPosX;
-    double estimatedRobotPosY;
-    double previousRobotPosX;
-    double previousRobotPosY;
-    
-
-    // public double[] speeds = {0.5, 0.6, 0.7, 0.8, 0.9, 1};
-
-    // public double[] angles = {1,1,1,1,1,1};
-
-    // public double[] distanceMarks = {1,1,1,1,1,1};
-
-    // public int[] indexes = new int[2];
 
     Timer timer;
     Timer shootMoveTimer;
@@ -123,22 +108,16 @@ public class  ShooterSubsystem implements Subsystem{
 
         /**** Abs Encoders ****/
         pivotEncoder = angleMotor.getController().getAbsoluteEncoder(Type.kDutyCycle);
-        pivotEncoder.setPositionConversionFactor(2 * Math.PI);
+        pivotEncoder.setPositionConversionFactor(2.0 * Math.PI);
 
         /**** Beam Break Sensors ****/
         intakeBeamBreak = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR_INTAKE);
-        intakeBeamBreak.addInputListener(this);
         shooterBeamBreak = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR_SHOOTER);
-        shooterBeamBreak.addInputListener(this);
 
         /**** Other ****/
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
+        leds = (LedSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.LEDS);
         xboxController = (XboxControllerOutput) Core.getOutputManager().getOutput(WsOutputs.XBOXCONTROLLER);
-        timer = new Timer();
-        shootMoveTimer = new Timer();
-        previousRobotPosX =  swerve.getPosX();
-        previousRobotPosY = swerve.getPosY();
-
 
         resetState();
     }
@@ -153,8 +132,11 @@ public class  ShooterSubsystem implements Subsystem{
         } else if (source == dpadUp && dpadUp.getValue()) {
             shooterState = shooterType.INIT_AMP;
             Log.warn("INIT_AMP");
-        } else if (source == rightBumper){
-            if (rightBumper.getValue()) {
+        } else if (source == rightBumper && rightBumper.getValue()){
+            if (leftBumper.getValue() || dpadUp.getValue()) {
+                shooterState = shooterType.SHOOT;
+                Log.warn("SHOOT");
+            } else {
                 if (sourceMode) {
                     shooterState = shooterType.SOURCE_INTAKE;
                     Log.warn("SOURCE_INTAKE");
@@ -162,7 +144,7 @@ public class  ShooterSubsystem implements Subsystem{
                     shooterState = shooterType.FLOOR_INTAKE;
                     Log.warn("FLOOR_INTAKE");
                 }
-            } 
+            }
         } else if (source == dpadDown){
             if(dpadDown.getValue()){
                 shooterState = shooterType.OUTTAKE;
@@ -171,115 +153,29 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterState = shooterType.WAIT;
                 Log.warn("WAIT");
             }
-        } else if (source == start && start.getValue()) {
-            shooterState = shooterType.HANG;
-            Log.warn("HANG");
         } else if (source == dpadLeft && dpadLeft.getValue()) {
-            goalPos = ArmConstants.SUBWOOFER_POS;
+            if (sensorOverride) pivotAdjustment += 0.05;
+            else goalPos = ArmConstants.SUBWOOFER_POS;
         } else if (source == dpadRight && dpadRight.getValue()) {
-            goalPos = ArmConstants.PODIUM_POS;
+            if (sensorOverride) pivotAdjustment -= 0.05;
+            else goalPos = ArmConstants.PODIUM_POS;
         }
-        
-        //  else {
-            // if (source == leftBumper){
-            //     if (leftBumper.getValue()) {
-            //         goalVel = ShooterConstants.SPEAKER_SPEED;
-            //         shooterEnable = true;
-            //     } else {
-            //         shooterEnable = false;
-            //         goalPos = ArmConstants.SOFT_STOP_LOW;
-            //         feedMotorOutput = 0.0;
-            //         intakeMotorOutput = 0.0;
-            //     }
-            // }
-            // if (source == dpadUp) {
-            //     if (dpadUp.getValue()) {
-            //         hood_deploy = true;
-            //         goalPos = ArmConstants.AMP_POS;
-            //         goalVel = ShooterConstants.AMP_SPEED;
-            //         shooterEnable = true;
-            //     } else {
-            //         hood_deploy = false;
-            //         goalPos = ArmConstants.SOFT_STOP_LOW;
-            //         shooterEnable = false;
-            //         feedMotorOutput = 0.0;
-            //         intakeMotorOutput = 0.0;
-            //     }
-            // } else if (source == rightBumper){
-            //     if (rightBumper.getValue()) {
-            //         if (sourceMode) {
-            //             shooterOutput = ShooterConstants.SOURCE_INTAKE_SPEED;
-            //             feedMotorOutput = FeedConstants.FEED_SOURCE_OUTPUT;
-            //             goalPos = ArmConstants.SOURCE_INTAKE_POS;
-            //             shooterEnable = true;
-            //         } else {
-            //             feedMotorOutput = FeedConstants.FEED_IN_OUTPUT;
-            //             intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
-            //             goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
-            //             goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
-            //         }
-            //     } else {
-            //         feedMotorOutput = 0.0;
-            //         intakeMotorOutput = 0.0;
-            //         shooterEnable = false;
-            //         if (sourceMode) goalPos = ArmConstants.SOFT_STOP_LOW;
-            //     }
-        //     } else if (source == dpadDown){
-        //         if(dpadDown.getValue()) {
-        //             goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
-        //             goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
-        //             feedMotorOutput = FeedConstants.FEED_OUT_OUTPUT;
-        //             intakeMotorOutput = FeedConstants.INTAKE_OUT_OUTPUT;
-        //             goalVel = ShooterConstants.OUTTAKE_SPEED;
-        //             shooterEnable = true;
-        //         } else {
-        //             feedMotorOutput = 0.0;
-        //             intakeMotorOutput = 0.0;
-        //             shooterEnable = false;
-        //         }
-        //     } else if (source == start && start.getValue()) {
-        //         goalPos = ArmConstants.SOFT_STOP_LOW;
-        //     } else if (source == dpadLeft && dpadLeft.getValue()) {
-        //         goalPos = ArmConstants.SUBWOOFER_POS;
-        //     } else if (source == dpadRight && dpadRight.getValue()) {
-        //         goalPos = ArmConstants.PODIUM_POS;
-        //     }
-        // }
     }
-
 
     @Override
     public void update() {
-        shootMoveTimer.start();
-
-        estimatedRobotPosX = (previousRobotPosX - swerve.getPosX()) / shootMoveTimer.get();
-        estimatedRobotPosY = (previousRobotPosY - swerve.getPosY()) / shootMoveTimer.get();
-        
-        previousRobotPosX = estimatedRobotPosX;
-        previousRobotPosY = estimatedRobotPosY;
-
-        shootMoveTimer.stop();
-        shootMoveTimer.reset();
-
-
-
         sensorOverride = swerve.sensorOverride;
-        // if (sensorOverride) {
-        //     shooterState = shooterType.OVERRIDE;
-        // }
+
         curVel = getShooterVelocity();
         curPos = getPivotPosition();
         hoodPos = hoodMotor.getPosition();
 
         switch (shooterState) {
             case INIT_SPEAKER:
-                // if (!sensorOverride){
-                //     distance = swerve.getDistanceFromSpeaker();
-                //     goalVel = getTargetSpeed(distance);
-                //     goalPos = getTargetAngle(distance);
-                // } else {
-                    goalVel = ShooterConstants.SPEAKER_SPEED;
-                // }
+                if (!sensorOverride){
+                    goalPos = getTargetAngle(swerve.getDistanceFromSpeaker());
+                }
+                goalVel = ShooterConstants.SPEAKER_SPEED;
                 shooterEnable = true;
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     shooterState = shooterType.SHOOT;
@@ -311,12 +207,6 @@ public class  ShooterSubsystem implements Subsystem{
                     iterCount = 0;
                     shooterState = shooterType.SHOOTER_OFF;
                     Log.warn("SHOOTER_OFF");
-                }
-                break;
-            case SHOOTER_EXIT_DELAY_2:
-                if(!shooterBeamBreak.getValue()){
-                    shooterState = shooterType.SHOOTER_OFF;
-                    Log.warn("SHOOTER_OFF");
                     timer.reset();
                     timer.start();
                 }
@@ -326,25 +216,18 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterEnable = false;
                 feedMotorOutput = 0.0;
                 goalPos = ArmConstants.SOFT_STOP_LOW;
-                LedSubsystem.ledState = LedColor.GREEN;
+                leds.ledState = LedColor.GREEN;
                 if (pivotIsAtTarget()){
                     shooterState = shooterType.WAIT;
                     Log.warn("WAIT");
                 }
-                break;
-            case SHOOTER_OFF_2:
-                hood_deploy = false;
-                shooterEnable = false;
-                feedMotorOutput = 0.0;
-                shooterState = shooterType.WAIT;
-                Log.warn("WAIT");
                 break;
             case FLOOR_INTAKE:
                 goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
                 goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
                 intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
                 if(intakeBeamBreak.getValue()){
-                    LedSubsystem.ledState = LedColor.FLASH_ORANGE;
+                    leds.ledState = LedColor.FLASH_ORANGE;
                     shooterState = shooterType.STOW;  // signifies that note is stowed
                     Log.warn("STOW");
                     timer.reset();
@@ -357,24 +240,12 @@ public class  ShooterSubsystem implements Subsystem{
                 feedMotorOutput = FeedConstants.FEED_SOURCE_OUTPUT;
                 shooterEnable = true;
                 if (intakeBeamBreak.getValue()) {
-                    LedSubsystem.ledState = LedColor.FLASH_ORANGE;
+                    leds.ledState = LedColor.FLASH_ORANGE;
                     goalPos = ArmConstants.SOFT_STOP_LOW;
                     shooterState = shooterType.STOW;
                     Log.warn("STOW");
                     timer.reset();
                     timer.start();
-                }
-                break;
-            case SOURCE_STOW_1:
-                if (shooterBeamBreak.getValue()){
-                    shooterState = shooterType.SOURCE_STOW_2;
-                    Log.warn("SOURCE_STOW_2");
-                }
-                break;
-            case SOURCE_STOW_2:
-                if (!shooterBeamBreak.getValue()){
-                    shooterState = shooterType.STOW;
-                    Log.warn("STOW");
                 }
                 break;
             case STOW:
@@ -398,9 +269,9 @@ public class  ShooterSubsystem implements Subsystem{
             case IDLE://start spooling up shooter motor after intaking
                 feedMotorOutput = 0.0;
                 intakeMotorOutput = 0.0;
-                goalVel = 150.0;
+                goalVel = ShooterConstants.AMP_SPEED;
                 shooterEnable = true;
-                LedSubsystem.ledState = LedColor.PULSE_BLUE;
+                leds.ledState = LedColor.PULSE_BLUE;
                 break;
             case OUTTAKE:
                 goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
@@ -419,17 +290,11 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterEnable = false;
                 if (timer.hasElapsed(1.5)){
                     if (sourceMode) {
-                        LedSubsystem.ledState = LedColor.YELLOW;
+                        leds.ledState = LedColor.YELLOW;
                     } else {
-                        LedSubsystem.ledState = LedColor.BLUE;
+                        leds.ledState = LedColor.BLUE;
                     }
                 }
-                break;
-            case HANG:
-                goalPos = ArmConstants.SOFT_STOP_LOW;
-                break;
-            case OVERRIDE:
-                LedSubsystem.ledState = LedColor.BLUE;
                 break;
         }
 
@@ -454,22 +319,19 @@ public class  ShooterSubsystem implements Subsystem{
         }
 
         // Hood control system
-        if (hood_deploy){  //  && hoodPos < HoodConstants.DEPLOY_POS  TODO: decide if we want to stall or brake the motor
+        if (hood_deploy){
             if (hoodIsAtTarget()) {
                 hoodOutput = 1.0;
             } else {
                 hoodOutput = HoodConstants.DEPLOY_OUTPUT;
             }
-        } else if (hoodPos > HoodConstants.RETRACT_POS){
-            hoodOutput = HoodConstants.RETRACT_OUTPUT;
         } else {
-            hoodOutput = 0.0;
+            if (hoodIsAtTarget()) {
+                hoodOutput = 0.0;
+            } else {
+                hoodOutput = HoodConstants.RETRACT_OUTPUT;
+            }
         }
-
-        // if (sensorOverride  && shooterEnable && pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()) {
-        //     feedMotorOutput = FeedConstants.FEED_OUTPUT;
-        //     intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
-        // }
 
         intakeMotor.setSpeed(intakeMotorOutput);
         feedMotor.setSpeed(feedMotorOutput);
@@ -478,7 +340,7 @@ public class  ShooterSubsystem implements Subsystem{
         shooterMotor1.setSpeed(shooterOutput);
         shooterMotor2.setSpeed(-shooterOutput);
 
-        if(timer.hasElapsed(1.5)){
+        if(timer.hasElapsed(1.0)){
             xboxController.setValue(0);
             timer.stop();
         } else {
@@ -520,10 +382,6 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("Angle to Speaker", getTargetAngle(distance));
 
     }
-
-    public void setGoalPos(double pos) {
-        goalPos = pos;
-    }
     
     @Override
     public void resetState() {
@@ -542,36 +400,27 @@ public class  ShooterSubsystem implements Subsystem{
         feedMotorOutput = 0.0;
         intakeMotorOutput = 0.0;
         shooterState = shooterType.WAIT;
+        pivotAdjustment = 0.0;
         timer.reset();
         timer.start();
     }
-
-    public double getPivotPosition(){
-        // if (sensorOverride){
-        //     return ((angleMotor.getPosition() * 2 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW) % (2 * Math.PI);
-        // } else {
-            return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW) % (2 * Math.PI);
-        // }
+    
+    @Override
+    public String getName() {
+        return "Shooter";
+    }
+    
+    @Override
+    public void selfTest() {
     }
 
-    public double getTargetSpeed(double distance){
-        // for(int i = 0; i < distanceMarks.length; i++){
-        //     if((distance >= distanceMarks[i]) && (distance >= distanceMarks[i+1])){
-        //         indexes[0] = i;
-        //         indexes[1] = i+1;
-        //     }
-        // }
-
-        // return (double)((speeds[indexes[0]]+((speeds[indexes[1]] - speeds[indexes[0]]) * 
-        //             ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])))));
-        return 500.0;
+    public double getPivotPosition(){
+        // return ((angleMotor.getPosition() * 2.0 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW + 2.0 * Math.PI) % (2.0 * Math.PI);
+        return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW + pivotAdjustment) % (2 * Math.PI);
     }
 
     public double getTargetAngle(double distance){
-        //  return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
-        //         * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
         return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235));
-        // return 35 * Math.PI / 180.0;
     }
 
     public void setShooterState(shooterType newState){
@@ -592,15 +441,7 @@ public class  ShooterSubsystem implements Subsystem{
 
     public Boolean shooterIsAtTarget(){
         // return curVel >= goalVel;
-        return Math.abs(curVel) >= goalVel * 0.9;
-    }
-    @Override
-    public String getName() {
-        return "Shooter";
-    }
-    
-    @Override
-    public void selfTest() {
+        return Math.abs(curVel - goalVel) <= ShooterConstants.VEL_DB;
     }
 
     public boolean isOff() {

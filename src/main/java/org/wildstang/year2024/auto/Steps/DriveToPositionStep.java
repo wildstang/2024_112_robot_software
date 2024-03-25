@@ -28,7 +28,7 @@ public class DriveToPositionStep extends AutoStep{
         if(xError < 0.1 && yError < 0.1){
             setFinished();
         }
-        driveTrain.setAutoValues(0.0, 0.0, 0.0, goalPose.getX(), goalPose.getY(), goalPose.getRotation().getRadians());
+        driveTrain.setAutoValues(0.0, 0.0, 0.0, xError, yError, goalPose.getRotation().getRadians());
 
     }
 

@@ -52,7 +52,7 @@ public class SwerveModule {
      * @return double for cancoder value (degrees)
     */
     public double getAngle() {
-        return (absEncoder.getPosition() + chassisOffset) % (2.0 * Math.PI);
+        return (((absEncoder.getPosition() + chassisOffset) % (2.0 * Math.PI)) + 2.0 * Math.PI) % (2.0 * Math.PI);
     }
 
     /** displays module information, needs the module name from super 
@@ -158,7 +158,7 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getModuleState(){
-        return new SwerveModuleState(driveMotor.getVelocity() * (2*Math.PI*((ModuleConstants.WHEEL_DIAMETER / 2)*0.0254)) / 60, Rotation2d.fromDegrees(360-getAngle()));
+        return new SwerveModuleState(driveMotor.getVelocity() * 2.0 * Math.PI * (ModuleConstants.WHEEL_DIAMETER / 2) / 60.0, Rotation2d.fromRadians(getAngle()));
     }
     public SwerveModulePosition odoPosition(){
         return new SwerveModulePosition(getPosition(), Rotation2d.fromRadians(getAngle()));

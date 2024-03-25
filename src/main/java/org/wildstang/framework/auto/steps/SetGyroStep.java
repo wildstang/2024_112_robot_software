@@ -24,9 +24,8 @@ public class SetGyroStep extends AutoStep {
 
     @Override
     public void initialize() {
-        m_drive.setToAuto();
         m_drive.setGyro(heading);
-        m_drive.setAutoHeading(heading);
+        m_drive.setToAuto();
     }
 
     @Override

@@ -65,36 +65,18 @@ public class WsSwerveHelper {
      */
     public double getRotControl(double i_target, double i_gyro) {
         rotErr = i_target - i_gyro;
-        if (rotErr > Math.PI) {
+        if (Math.abs(rotErr) > Math.PI) {
             rotPID = (rotErr - Math.PI * 2.0) * DriveConstants.ROT_P;  // if error is greater than pi, it is faster to spin cw
         }
         else {
             rotPID = rotErr * DriveConstants.ROT_P;  // otherwise spin ccw
         }
-        return Math.max(Math.min(rotPID, 1.0), -1.0);  // saturate rotation control to range [-1.0, 1.0]
+        return rotPID;  // saturate rotation control to range [-1.0, 1.0]
     }
 
-    /**determines the translational magnitude of the robot in autonomous
-     * 
-     * @param pathVel path data for velocity of the robot, inches
-     * @return double for magnitude of translational vector
-     */
-    public double getAutoPower(double pathVel, double pathAccel) {
-        if (pathVel == 0) return 0;
-        double guess = pathVel * DriveConstants.DRIVE_F_V + DriveConstants.DRIVE_F_K + pathAccel * DriveConstants.DRIVE_F_I;
-        return -(guess);
-    }
-
-    /**x,y inputs are cartesian, angle values are in bearing, returns 0 - 360 */
+    /**x,y inputs are cartesian, angle values are in radians, returns 0 - 2pi */
     public double getDirection(double x, double y) {
-        double measurement = (2.0 * Math.PI + Math.atan2(y,x)) % (2.0 * Math.PI);
-        // if (measurement < 0) {
-        //     measurement = 2.0 * Math.PI + measurement;
-        // }
-        // else if (measurement >= 360) {
-        //     measurement = measurement - 360;
-        // }
-        return measurement;
+        return (2.0 * Math.PI + Math.atan2(y,x)) % (2.0 * Math.PI);  // this math ensures we always return a positive value between 0 and 2pi
     }
     
     public double scaleDeadband(double input, double deadband){
