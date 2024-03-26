@@ -28,7 +28,7 @@ public final class DriveConstants {
     public static final double DRIVE_F_V = 0.1847;  //0.00536; updated from 111 testing, almost certainly wrong for 112
     /**PID values for drive F coefficient of kinetic friction */
     public static final double DRIVE_F_K = 0.016;
-    /**Feedforward value for drive rotation */
+/**Feedforward value for drive rotation */
     public static final double DRIVE_F_ROT = 0.06967;
     /**PID values for drive F coefficient of inertia */
     public static final double DRIVE_F_I = 0;//0.003;

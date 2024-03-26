@@ -1,5 +1,6 @@
 package org.wildstang.year2024.subsystems.shooter;
 
+import com.ctre.phoenix6.sim.ChassisReference;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
@@ -45,9 +46,10 @@ public class  ShooterSubsystem implements Subsystem{
     private DigitalInput intakeBeamBreak, shooterBeamBreak;
 
     public SwerveDrive swerve;
-    public LedSubsystem leds;
+public LedSubsystem leds;
 
     private boolean sensorOverride, sourceMode;
+    private double distance;
 
     private boolean hood_deploy;
     private double hoodPos;
@@ -58,7 +60,7 @@ public class  ShooterSubsystem implements Subsystem{
     private double shooterOutput;
 
     private double goalPos, curPos, posErr;
-    private double pivotAdjustment;
+private double pivotAdjustment;
     private double posOut;
     
     private double feedMotorOutput, intakeMotorOutput;
@@ -111,14 +113,16 @@ public class  ShooterSubsystem implements Subsystem{
 
         /**** Beam Break Sensors ****/
         intakeBeamBreak = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR_INTAKE);
+        intakeBeamBreak.addInputListener(this);
         shooterBeamBreak = (DigitalInput) Core.getInputManager().getInput(WsInputs.BEAMBREAK_SENSOR_SHOOTER);
+        shooterBeamBreak.addInputListener(this);
 
         /**** Other ****/
         swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
-        leds = (LedSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.LEDS);
+leds = (LedSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.LEDS);
         xboxController = (XboxControllerOutput) Core.getOutputManager().getOutput(WsOutputs.XBOXCONTROLLER);
         timer = new Timer();
-
+        
         resetState();
     }
 
@@ -144,7 +148,7 @@ public class  ShooterSubsystem implements Subsystem{
                     shooterState = shooterType.FLOOR_INTAKE;
                     Log.warn("FLOOR_INTAKE");
                 }
-            }
+            } 
         } else if (source == dpadDown){
             if(dpadDown.getValue()){
                 shooterState = shooterType.OUTTAKE;
@@ -153,7 +157,7 @@ public class  ShooterSubsystem implements Subsystem{
                 shooterState = shooterType.WAIT;
                 Log.warn("WAIT");
             }
-        } else if (source == dpadLeft && dpadLeft.getValue()) {
+                } else if (source == dpadLeft && dpadLeft.getValue()) {
             if (sensorOverride) pivotAdjustment += 0.05;
             else goalPos = ArmConstants.SUBWOOFER_POS;
         } else if (source == dpadRight && dpadRight.getValue()) {
@@ -164,21 +168,22 @@ public class  ShooterSubsystem implements Subsystem{
 
     @Override
     public void update() {
+    
         sensorOverride = swerve.sensorOverride;
-
+        
         curVel = getShooterVelocity();
         curPos = getPivotPosition();
         hoodPos = hoodMotor.getPosition();
-        
+
 
         switch (shooterState) {
             case INIT_SPEAKER:
                 if (!sensorOverride){
-                    goalPos = getTargetAngle(swerve.getDistanceFromSpeaker());
+                goalPos = getTargetAngle(swerve.getDistanceFromSpeaker());
                 }
-                goalVel = ShooterConstants.SPEAKER_SPEED;
-                shooterEnable = true;
-                SmartDashboard.putBoolean("shoot", pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget());
+                    goalVel = ShooterConstants.SPEAKER_SPEED;
+                                shooterEnable = true;
+SmartDashboard.putBoolean("shoot", pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget());
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     shooterState = shooterType.SHOOT;
                     Log.warn("SHOOT");
@@ -207,7 +212,7 @@ public class  ShooterSubsystem implements Subsystem{
                 iterCount += 1;
                 if(iterCount > 30 && !shooterBeamBreak.getValue()){
                     iterCount = 0;
-                    shooterState = shooterType.SHOOTER_OFF;
+                                        shooterState = shooterType.SHOOTER_OFF;
                     Log.warn("SHOOTER_OFF");
                     timer.reset();
                     timer.start();
@@ -224,7 +229,7 @@ public class  ShooterSubsystem implements Subsystem{
                     Log.warn("WAIT");
                 }
                 break;
-            case FLOOR_INTAKE:
+                        case FLOOR_INTAKE:
                 goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
                 goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
                 intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
@@ -250,7 +255,7 @@ public class  ShooterSubsystem implements Subsystem{
                     timer.start();
                 }
                 break;
-            case STOW:
+                        case STOW:
                 intakeMotorOutput = FeedConstants.INTAKE_STOW_OUTPUT;
                 feedMotorOutput = FeedConstants.FEED_IN_OUTPUT;
                 if(shooterBeamBreak.getValue()){
@@ -298,14 +303,14 @@ public class  ShooterSubsystem implements Subsystem{
                     }
                 }
                 break;
-        }
+                    }
 
         // Shooter control system
         goalVel = Math.min(goalVel, ShooterConstants.MAX_VEL);
         goalVel = Math.max(goalVel, -ShooterConstants.MAX_VEL);
         velErr = goalVel - curVel;
         shooterOutput = goalVel * ShooterConstants.kF + velErr * ShooterConstants.kP;
-        shooterOutput = Math.min(Math.max(shooterOutput,-1.0),1.0);
+shooterOutput = Math.min(Math.max(shooterOutput,-1.0),1.0);
         if (!shooterEnable) {
             shooterOutput = 0.0;
         }
@@ -328,10 +333,10 @@ public class  ShooterSubsystem implements Subsystem{
             } else {
                 hoodOutput = HoodConstants.DEPLOY_OUTPUT;
             }
-        } else {
-            if (hoodIsAtTarget()) {
-                hoodOutput = 0.0;
-            } else {
+                } else {
+if (hoodIsAtTarget()) {
+            hoodOutput = 0.0;
+} else {
                 hoodOutput = HoodConstants.RETRACT_OUTPUT;
             }
         }
@@ -358,7 +363,7 @@ public class  ShooterSubsystem implements Subsystem{
         // Feed values
         SmartDashboard.putNumber("Feed output", feedMotorOutput);
         SmartDashboard.putNumber("Intake output", intakeMotorOutput);
-        SmartDashboard.putBoolean("Pivot at target", pivotIsAtTarget());
+SmartDashboard.putBoolean("Pivot at target", pivotIsAtTarget());
 
         // Shooter values
         SmartDashboard.putNumber("Shooter goal", goalVel);
@@ -370,7 +375,7 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("Pivot goal", goalPos);
         SmartDashboard.putNumber("Pivot position", curPos);
         SmartDashboard.putNumber("Pivot Output", posOut);
-
+        
         // Beam Break Sensors
         SmartDashboard.putBoolean("Intake bb", intakeBeamBreak.getValue());
         SmartDashboard.putBoolean("Shooter bb", shooterBeamBreak.getValue());
@@ -386,7 +391,7 @@ public class  ShooterSubsystem implements Subsystem{
 
         SmartDashboard.putNumber("pivot internal encoder", angleMotor.getPosition());
 
-    }
+        }
     
     @Override
     public void resetState() {
@@ -405,11 +410,11 @@ public class  ShooterSubsystem implements Subsystem{
         feedMotorOutput = 0.0;
         intakeMotorOutput = 0.0;
         shooterState = shooterType.WAIT;
-        pivotAdjustment = 0.0;
+pivotAdjustment = 0.0;
         timer.reset();
         timer.start();
     }
-    
+
     @Override
     public String getName() {
         return "Shooter";
@@ -425,7 +430,10 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getTargetAngle(double distance){
+        //  return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
+        //         * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
         return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235));
+        // return 35 * Math.PI / 180.0;
     }
 
     public void setShooterState(shooterType newState){
