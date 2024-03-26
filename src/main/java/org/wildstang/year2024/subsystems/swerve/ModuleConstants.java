@@ -3,9 +3,9 @@ package org.wildstang.year2024.subsystems.swerve;
 public class ModuleConstants {
     
     /**drive motor gear ratio */
-    public static final double DRIVE_RATIO = (45.0*22.0)/(15.0*14.0);
+    public static final double DRIVE_RATIO = (45.0*20.0)/(15.0*15.0);
     /**diameter of drive wheel, in inches */
-    public static final double WHEEL_DIAMETER = 2.73;//3.0; updated from 111 testing
+    public static final double WHEEL_DIAMETER = 0.0762;//3.0; updated from 111 testing
     /**PID values for drive P */
     public static final double DRIVE_P = 0;//-0.02;//0.02
     /**PID values for drive I */
@@ -13,7 +13,7 @@ public class ModuleConstants {
     /**PID values for drive D */
     public static final double DRIVE_D = 0.1;
     /**PID values for angle P */
-    public static final double ANGLE_P = 0.01;
+    public static final double ANGLE_P = 0.57;
     /**PID values for angle I */
     public static final double ANGLE_I = 0.0;
     /**PID values for angle D */

@@ -8,7 +8,7 @@ public class SwerveSignal {
 
     /**contains motor speeds, robot relative angles in bearing-degrees 
      * @param i_speed double[] for the speed of each module, in [0,1] signal
-     * @param i_angle double[] for the angle of the module, in robot centric bearing degrees
+     * @param i_angle double[] for the angle of the module, in radians
     */
     public SwerveSignal(double[] i_speed, double[] i_angle) {
         this.speed = i_speed;
@@ -44,7 +44,7 @@ public class SwerveSignal {
     }
 
     /**returns speeds from the swerve signal
-     * @return double array of 4 speeds, % output
+     * @return double array of 4 speeds, percent output
      */
     public double[] getSpeeds() {
         return speed;
@@ -63,7 +63,7 @@ public class SwerveSignal {
         return maxSpeed;
     }
 
-    /**angle is robot centric, in bearing degrees 
+    /**angle is robot centric, in radians
      * @param i_module the module to get the angle from (1 through 4)
      * @return double for the angle to set that module to
     */
@@ -72,7 +72,7 @@ public class SwerveSignal {
     }
 
     /**returns angles from the swerve signal
-     * @return double array of 4 angles, bearing degrees
+     * @return double array of 4 angles, radians
      */
     public double[] getAngles() {
         return angle;

@@ -3,11 +3,10 @@ package org.wildstang.year2024.subsystems.swerve;
 public class WsSwerveHelper {
 
     private SwerveSignal swerveSignal;
-    private double rotMag;
     private double baseV;
     private double[] xCoords = new double[]{0.0, 0.0, 0.0, 0.0};
     private double[] yCoords = new double[]{0.0, 0.0, 0.0, 0.0};
-    private double rotDelta;
+    private double rotErr;
     private double rotPID;
 
     /** sets the robot in the immobile "cross" defensive position
@@ -27,23 +26,22 @@ public class WsSwerveHelper {
      * @return driveSignal for normal driving, normalized
      */
     public SwerveSignal setDrive(double i_tx, double i_ty, double i_rot, double i_gyro) {
-        //magnitude of rotation vector
-        rotMag = i_rot;
         //angle of front left rotation vector
         baseV = Math.atan(DriveConstants.ROBOT_LENGTH / DriveConstants.ROBOT_WIDTH);
 
         //find the translational vectors rotated to account for the gyro
-        double xTrans = i_tx * Math.cos(Math.toRadians(i_gyro)) - i_ty * Math.sin(Math.toRadians(i_gyro));
-        double yTrans = i_tx * Math.sin(Math.toRadians(i_gyro)) + i_ty * Math.cos(Math.toRadians(i_gyro));
+        double xTrans = i_tx * Math.cos(i_gyro) + i_ty * Math.sin(i_gyro);
+        double yTrans = - i_tx * Math.sin(i_gyro) + i_ty * Math.cos(i_gyro);
 
         //account for slight second order skew due to rotation and translation at the same time
-        xTrans += Math.cos(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
-        yTrans += -Math.sin(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
+        // xTrans += Math.cos(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
+        // yTrans += -Math.sin(Math.atan2(xTrans,yTrans)) * i_rot * DriveConstants.ROT_CORRECTION_FACTOR * Math.hypot(i_tx, i_ty);
 
         //cartesian vector addition of translation and rotation vectors
+        //FL->FR->RL->RR
         //note rotation vector angle advances in the cos -> sin -> -cos -> -sin fashion
-        xCoords = new double[]{xTrans + rotMag * Math.cos(baseV), xTrans + rotMag*Math.sin(baseV), xTrans - rotMag * Math.sin(baseV), xTrans - rotMag*Math.cos(baseV)}; 
-        yCoords = new double[]{yTrans + rotMag * Math.sin(baseV), yTrans - rotMag*Math.cos(baseV), yTrans + rotMag * Math.cos(baseV), yTrans - rotMag*Math.sin(baseV)};
+        xCoords = new double[]{xTrans - i_rot * Math.sin(baseV), xTrans + i_rot * Math.sin(baseV), xTrans - i_rot * Math.sin(baseV), xTrans + i_rot * Math.sin(baseV)}; 
+        yCoords = new double[]{yTrans + i_rot * Math.cos(baseV), yTrans + i_rot * Math.cos(baseV), yTrans - i_rot * Math.cos(baseV), yTrans - i_rot * Math.cos(baseV)};
 
         //create drivesignal, with magnitudes and directions of x and y
         swerveSignal = new SwerveSignal(new double[]{Math.hypot(xCoords[0], yCoords[0]), Math.hypot(xCoords[1], yCoords[1]), Math.hypot(xCoords[2], yCoords[2]), Math.hypot(xCoords[3], yCoords[3])}, 
@@ -59,59 +57,26 @@ public class WsSwerveHelper {
         // }
     }
 
-    /**sets the robot to move in autonomous
-     * 
-     * @param i_power magnitude of translational vector, in signal [0,1]
-     * @param i_heading direction of translational vector, in field centric bearing degrees
-     * @param i_rot the rotational joystick value, created by the heading controller
-     * @param i_gyro the gyro value, field centric, in bearing degrees
-     * @return SwerveSignal that is the command for the robot to move
-     */
-    public SwerveSignal setAuto(double i_power, double i_heading, double i_rot, double i_gyro, double xOffset, double yOffset) {
-        return setDrive(i_power * -Math.sin(Math.toRadians(i_heading))+ xOffset * DriveConstants.POS_P, i_power * -Math.cos(Math.toRadians(i_heading))+ yOffset * DriveConstants.POS_P, i_rot, i_gyro);
-    }
-
     /**automatically creates a rotational joystick value to rotate the robot towards a specific target
      * 
-     * @param i_target target direction for the robot to face, field centric, bearing degrees
-     * @param i_gyro the gyro value, field centric, in bearing degrees
+     * @param i_target target direction for the robot to face, field centric, radians
+     * @param i_gyro the gyro value, field centric, in radians
      * @return double that indicates what the rotational joystick value should be
      */
     public double getRotControl(double i_target, double i_gyro) {
-        rotDelta = i_target - i_gyro;
-        if (rotDelta > 180) {
-            rotPID = (rotDelta - 360) / 180;
-        }
-        else if (Math.abs(rotDelta) <= 180.0) {
-            rotPID = rotDelta / 180.0;
+        rotErr = i_target - i_gyro;
+        if (Math.abs(rotErr) > Math.PI) {
+            rotPID = (rotErr - Math.PI * 2.0) * DriveConstants.ROT_P;  // if error is greater than pi, it is faster to spin cw
         }
         else {
-            rotPID = (rotDelta + 360) / 180;
-        } 
-        return Math.signum(rotPID) * Math.min(Math.abs(rotPID*DriveConstants.ROT_P), 1.0);
+            rotPID = rotErr * DriveConstants.ROT_P;  // otherwise spin ccw
+        }
+        return rotPID;  // saturate rotation control to range [-1.0, 1.0]
     }
 
-    /**determines the translational magnitude of the robot in autonomous
-     * 
-     * @param pathVel path data for velocity of the robot, inches
-     * @return double for magnitude of translational vector
-     */
-    public double getAutoPower(double pathVel, double pathAccel) {
-        if (pathVel == 0) return 0;
-        double guess = pathVel * DriveConstants.DRIVE_F_V + DriveConstants.DRIVE_F_K + pathAccel * DriveConstants.DRIVE_F_I;
-        return -(guess);
-    }
-
-    /**x,y inputs are cartesian, angle values are in bearing, returns 0 - 360 */
+    /**x,y inputs are cartesian, angle values are in radians, returns 0 - 2pi */
     public double getDirection(double x, double y) {
-        double measurement = Math.toDegrees(Math.atan2(x,y));//returns angle in bearing form
-        if (measurement < 0) {
-            measurement = 360 + measurement;
-        }
-        else if (measurement >= 360) {
-            measurement = measurement - 360;
-        }
-        return measurement;
+        return (2.0 * Math.PI + Math.atan2(y,x)) % (2.0 * Math.PI);  // this math ensures we always return a positive value between 0 and 2pi
     }
     
     public double scaleDeadband(double input, double deadband){

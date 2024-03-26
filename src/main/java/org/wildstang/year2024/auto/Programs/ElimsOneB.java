@@ -6,7 +6,6 @@ import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
-import org.wildstang.year2024.auto.Steps.StartOdometryStep;
 import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
@@ -25,8 +24,7 @@ public class ElimsOneB extends AutoProgram{
         color = (DriverStation.getAlliance().orElse(null).equals(Alliance.Blue));
 
         // Init and Shoot Preload
-        addStep(new StartOdometryStep(swerve.returnPose().getX(), swerve.returnPose().getY(),225, color));
-        addStep(new SetGyroStep(-2.245537422197309, swerve, color));
+        addStep(new SetGyroStep(swerve.getPosTheta(), swerve, color));
         addStep(new ShootNoteStep());
         
         // Get and Shoot Center A

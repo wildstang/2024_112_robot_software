@@ -7,7 +7,6 @@ import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
-import org.wildstang.year2024.auto.Steps.StartOdometryStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
@@ -19,9 +18,8 @@ public class QualsAuto extends AutoProgram{
     @Override
     protected void defineSteps() {
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
-        color = (DriverStation.getAlliance().equals(Alliance.Blue));
+        color = (DriverStation.getAlliance().orElse(null).equals(Alliance.Blue));
         //Preload 
-        addStep(new StartOdometryStep(swerve.getPosX(), swerve.getPosY(), 0, color));
         addStep(new SetGyroStep(swerve.getPosTheta(), swerve, color));
         addStep(new ShootNoteStep());
 

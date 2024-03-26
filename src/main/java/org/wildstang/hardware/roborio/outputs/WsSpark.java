@@ -273,7 +273,7 @@ public class WsSpark extends WsMotorController {
         controller.setFeedbackDevice(absEncoder);
         controller.setPositionPIDWrappingEnabled(true);
         controller.setPositionPIDWrappingMinInput(0.0);
-        controller.setPositionPIDWrappingMaxInput(360.0);
+        controller.setPositionPIDWrappingMaxInput(2.0 * Math.PI);
         isUsingController = true;
         slotID = 0;
     }
@@ -295,7 +295,7 @@ public class WsSpark extends WsMotorController {
         controller.setFeedbackDevice(absEncoder);
         controller.setPositionPIDWrappingEnabled(isWrapped);
         controller.setPositionPIDWrappingMinInput(0.0);
-        controller.setPositionPIDWrappingMaxInput(360.0);
+        controller.setPositionPIDWrappingMaxInput(2.0 * Math.PI);
         isUsingController = true;
         slotID = 0;
     }

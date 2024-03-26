@@ -34,7 +34,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         Log.info("Initializing robot.");
-        shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
         core = new Core(RoboRIOInputFactory.class, RoboRIOOutputFactory.class);
         core.createInputs(WsInputs.values());
         core.createOutputs(WsOutputs.values());
@@ -48,6 +47,7 @@ public class Robot extends TimedRobot {
         logChooser.addOption(LogLevel.ERROR.toString(), LogLevel.ERROR);
         logChooser.addOption(LogLevel.NONE.toString(), LogLevel.NONE);
         SmartDashboard.putData("Log Level", logChooser);
+        shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
     }
 
     /**

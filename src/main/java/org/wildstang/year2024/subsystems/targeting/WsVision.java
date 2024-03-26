@@ -73,10 +73,8 @@ public class WsVision implements Subsystem {
         if(rearResult.hasTargets()){
             rearPose = rearPoseEstimator.update(rearResult).orElse(null);
         }
-        
-        frontPoseEstimator.update().orElse(null);
         if (rearPose != null){
-            Log.warn("rear pose");
+            // Log.warn("rear pose");
             double[] rpose = {rearPose.estimatedPose.getX(),rearPose.estimatedPose.getY(),rearPose.estimatedPose.getZ()};
             SmartDashboard.putNumberArray("rear pose", rpose);
         }

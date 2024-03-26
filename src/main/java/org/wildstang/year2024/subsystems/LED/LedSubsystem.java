@@ -14,12 +14,11 @@ public class LedSubsystem implements Subsystem{
 
     public enum TieDye {NAVYBLUE, LIGHTBLUE, GRAY};
     public TieDye tieDyeColor;
-    public static LedColor ledState;
+    public LedColor ledState;
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
     private int ledIndex = 0;
     private int ledIndexFirst = 0;
-    private int ledIndexLast = 0;
     
 
     private int port = 0;
@@ -60,14 +59,14 @@ public class LedSubsystem implements Subsystem{
                 }
                 break;
             case FLASH_ORANGE:
-                if(value == 255) {
+                if(value % 20 >= 10) {
                     for (int i = 0; i < length; i++) {
                         ledBuffer.setRGB(i, 255, 140, 0);
                     }
                     
-                } else if(value == 0) {
+                } else {
                     for (int i = 0; i < length; i++) {
-                        ledBuffer.setRGB(i, 255, 255, 255);
+                        ledBuffer.setRGB(i, 0, 0, 0);
                     }
                 }
                 break;
@@ -88,8 +87,8 @@ public class LedSubsystem implements Subsystem{
             case BLUE:
 
                 //bouncingLaser();
-                //blueTieDye();
-                fadingSnake();
+                blueTieDye();
+                // fadingSnake();
             break;
 
             case PULSE_BLUE:
