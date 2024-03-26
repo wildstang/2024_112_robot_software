@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class FieldConstants {
-    public static final Pose2d BLUE_SPEAKER = new Pose2d(0, 5.548, new Rotation2d());  // m
-    public static final Pose2d RED_SPEAKER = new Pose2d(16.541, 5.548, new Rotation2d());  // m
+    public static final Pose2d BLUE_SPEAKER = new Pose2d(-0.1, 5.548, new Rotation2d());  // m
+    public static final Pose2d RED_SPEAKER = new Pose2d(16.64, 5.548, new Rotation2d());  // m
     public static final double SPEAKER_Z = 2.10566;  // m
     public static final Pose2d BLUE_AMP = new Pose2d(1.842, 7.811, Rotation2d.fromRadians(3.0 * Math.PI / 2.0));  // m
     public static final Pose2d RED_AMP = new Pose2d(14.630, 8.045, Rotation2d.fromRadians(3.0 * Math.PI / 2.0));  // m

@@ -85,6 +85,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private Pose2d curPose, goalPose;
     public boolean sensorOverride;
     private boolean aimAtSpeaker;
+    private boolean intakeAim;
 
     private static final double DEG_TO_RAD = Math.PI / 180.0;
     private static final double RAD_TO_DEG = 180.0 / Math.PI;
@@ -166,7 +167,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         
         if (source == leftBumper && leftBumper.getValue()) aimAtSpeaker = true;
         else if (source == dpadUp && dpadUp.getValue()) driveState = driveType.AMP;
-        else if (source == rightBumper && rightBumper.getValue()) driveState = driveType.INTAKE;
+        else if (rightBumper.getValue()) driveState = driveType.INTAKE;
         else driveState = driveType.TELEOP;
         
         // reset gyro when facing away from alliance station
@@ -285,10 +286,14 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 if (aimAtSpeaker) {
                     rotTarget = getSpeakerRotation();
                     rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
-                } 
-                else rotOutput = wSpeed * DriveConstants.DRIVE_F_ROT + swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                } else rotOutput = wSpeed * DriveConstants.DRIVE_F_ROT + swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 xOutput = xSpeed * DriveConstants.DRIVE_F_K + pathXErr * DriveConstants.POS_P;
                 yOutput = ySpeed * DriveConstants.DRIVE_F_K + pathYErr * DriveConstants.POS_P;
+                if (intakeAim) {
+                    rotOutput = (1.65 - pixyAnalog.getValue()) * 0.42; //DriveConstants.ROT_P;
+                    xOutput = -Math.cos(getGyroAngle()) * 0.2;
+                    yOutput = -Math.sin(getGyroAngle()) * 0.2;
+                }
                 break;
             case AMP:
                 if (isBlueAlliance) {
@@ -303,9 +308,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 break;
             case INTAKE:
-                // if (pixyDio.getValue()) {
-                //     rotOutput = (1.65 - pixyAnalog.getValue()) * DriveConstants.ROT_P;
-                // }
+                if (noteInView()) {
+                    rotOutput = (1.65 - pixyAnalog.getValue()) * 0.42; //DriveConstants.ROT_P;
+                }
                 break;
         }
         rotOutput = Math.min(Math.max(rotOutput, -1.0), 1.0);
@@ -335,6 +340,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("robot vel mag", robotVelMag);
         SmartDashboard.putNumber("robot vel theta", robotVelTheta);
         SmartDashboard.putBoolean("drive at target", isAtTarget());
+        SmartDashboard.putBoolean("Pixy DIO", noteInView());
+        SmartDashboard.putNumber("Pixy Analog", pixyAnalog.getValue());
         // SmartDashboard.putNumber("target yaw", targetYaw);
 
 
@@ -369,6 +376,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             out = PhotonUtils.getDistanceToPose(curPose, FieldConstants.RED_SPEAKER);
         }
         if (Double.isNaN(out)) {
+            poseEstimator.resetPosition(odoAngle(), odoPosition(), new Pose2d(getPosX(),getPosY(),odoAngle()));
             Log.warn("NaN DistanceFromSpeaker");
             return 0.0;
         } else return out;
@@ -491,9 +499,20 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public Boolean isAtTarget(){
-        if (aimAtSpeaker) return (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI) < 0.09;
+        if (aimAtSpeaker) {
+            double err = (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI);
+            if (err > Math.PI) err = (2.0 * Math.PI) - err;
+            return err < 0.09;
+        }
         if (driveState == driveType.AMP) return goalPose.getTranslation().getDistance(curPose.getTranslation()) < 0.03 && (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI) < 0.09;
         return true;
         
+    }
+
+    public boolean noteInView(){
+        return pixyDio.getValue();
+    }
+    public void autoNoteAim(boolean enable){
+        intakeAim = enable;
     }
 }

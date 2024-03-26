@@ -49,7 +49,6 @@ public class  ShooterSubsystem implements Subsystem{
 public LedSubsystem leds;
 
     private boolean sensorOverride, sourceMode;
-    private double distance;
 
     private boolean hood_deploy;
     private double hoodPos;
@@ -425,15 +424,12 @@ pivotAdjustment = 0.0;
     }
 
     public double getPivotPosition(){
-        return ((angleMotor.getPosition() * 2.0 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW + 2.0 * Math.PI) % (2.0 * Math.PI);
+        return ((angleMotor.getPosition() * 2.0 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW + pivotAdjustment + 2.0 * Math.PI) % (2.0 * Math.PI);
         // return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW + pivotAdjustment) % (2 * Math.PI);
     }
 
     public double getTargetAngle(double distance){
-        //  return angles[indexes[0]] + (((angles[indexes[1]] - angles[indexes[0]])) 
-        //         * ((distance - distanceMarks[indexes[0]]) / (distanceMarks[indexes[1]] - distanceMarks[indexes[0]])));
-        return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235));
-        // return 35 * Math.PI / 180.0;
+        return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235))+0.1;
     }
 
     public void setShooterState(shooterType newState){
