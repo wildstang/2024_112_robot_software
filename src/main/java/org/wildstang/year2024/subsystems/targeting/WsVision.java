@@ -15,6 +15,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.wildstang.framework.io.inputs.Input;
 import org.wildstang.framework.logger.Log;
 
@@ -24,6 +25,8 @@ public class WsVision implements Subsystem {
     AprilTagFieldLayout aprilTagFieldLayout;
     PhotonPoseEstimator frontPoseEstimator,rearPoseEstimator;
     public EstimatedRobotPose frontPose, rearPose;
+    PhotonPipelineResult frontResult;
+    PhotonPipelineResult rearResult;
 
     @Override
     public void inputUpdate(Input source) {
@@ -57,13 +60,21 @@ public class WsVision implements Subsystem {
 
     @Override
     public void update() {
-        frontPose = frontPoseEstimator.update().orElse(null);
+        frontResult = frontCam.getLatestResult();
+        if (frontResult.hasTargets()) {
+            frontPose = frontPoseEstimator.update(frontResult).orElse(null);
+        }
         if (frontPose != null){
             // Log.warn("front pose");
             double[] fpose = {frontPose.estimatedPose.getX(),frontPose.estimatedPose.getY(),frontPose.estimatedPose.getZ()};
             SmartDashboard.putNumberArray("front pose", fpose);
         }
-        rearPose = frontPoseEstimator.update().orElse(null);
+        rearResult = rearCam.getLatestResult();
+        if(rearResult.hasTargets()){
+            rearPose = rearPoseEstimator.update(rearResult).orElse(null);
+        }
+        
+        frontPoseEstimator.update().orElse(null);
         if (rearPose != null){
             Log.warn("rear pose");
             double[] rpose = {rearPose.estimatedPose.getX(),rearPose.estimatedPose.getY(),rearPose.estimatedPose.getZ()};
