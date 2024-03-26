@@ -18,10 +18,10 @@ public static final double SOFT_STOP_LOW = 27.0 * Math.PI/180.0; // rad
     // public static final double VEL_P = 0.0;  // 0.005;
     // public static final double DELTA_T = 0.02;  //  update rate 50 Hz = 0.02 sec update period
 
-    public static final double POS_DB = 0.05;  // position deadband, rad  starting value (ARM_TORQUE/STALL_TORQUE)/kP
+    public static final double POS_DB = 0.10;  // position deadband, rad  starting value (ARM_TORQUE/STALL_TORQUE)/kP
     // public static final double VEL_DB = 0.1;  // output deadband, rad/s  starting value (ARM_TORQUE/STALL_TORQUE)/kV
 
-    public static final double kP = 0.8;
+    public static final double kP = 1.0;
     // public static final double kI = 0.01;
     // public static final double kD = 0.4;
     // public static final double kF = MASS * COM / (RATIO * STALL_TORQUE);

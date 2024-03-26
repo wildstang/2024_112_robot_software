@@ -178,7 +178,7 @@ public class  ShooterSubsystem implements Subsystem{
                 }
                 goalVel = ShooterConstants.SPEAKER_SPEED;
                 shooterEnable = true;
-                Log.warn("foo");
+                SmartDashboard.putBoolean("shoot", pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget());
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
                     shooterState = shooterType.SHOOT;
                     Log.warn("SHOOT");
@@ -358,6 +358,7 @@ public class  ShooterSubsystem implements Subsystem{
         // Feed values
         SmartDashboard.putNumber("Feed output", feedMotorOutput);
         SmartDashboard.putNumber("Intake output", intakeMotorOutput);
+        SmartDashboard.putBoolean("Pivot at target", pivotIsAtTarget());
 
         // Shooter values
         SmartDashboard.putNumber("Shooter goal", goalVel);
@@ -369,7 +370,6 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("Pivot goal", goalPos);
         SmartDashboard.putNumber("Pivot position", curPos);
         SmartDashboard.putNumber("Pivot Output", posOut);
-        SmartDashboard.putBoolean("Pivot at target", pivotIsAtTarget());
 
         // Beam Break Sensors
         SmartDashboard.putBoolean("Intake bb", intakeBeamBreak.getValue());

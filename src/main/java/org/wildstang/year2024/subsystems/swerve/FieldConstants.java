@@ -8,7 +8,7 @@ public class FieldConstants {
     public static final Pose2d RED_SPEAKER = new Pose2d(16.541, 5.548, new Rotation2d());  // m
     public static final double SPEAKER_Z = 2.10566;  // m
     public static final Pose2d BLUE_AMP = new Pose2d(1.842, 7.811, Rotation2d.fromRadians(3.0 * Math.PI / 2.0));  // m
-    public static final Pose2d RED_AMP = new Pose2d(14.701, 7.811, Rotation2d.fromRadians(3.0 * Math.PI / 2.0));  // m
+    public static final Pose2d RED_AMP = new Pose2d(14.630, 8.045, Rotation2d.fromRadians(3.0 * Math.PI / 2.0));  // m
 
     public static final double CORE_OF_STAGE_TO_CHAIN = 0.422;  // m
     public static final Pose2d Chain11 = new Pose2d(11.905 + (CORE_OF_STAGE_TO_CHAIN * 1.0 / 2.0), 3.713 - (CORE_OF_STAGE_TO_CHAIN * Math.sqrt(3.0) / 2.0), Rotation2d.fromDegrees(-Math.PI / 3.0));
