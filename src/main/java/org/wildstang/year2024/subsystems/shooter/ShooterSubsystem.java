@@ -224,11 +224,13 @@ SmartDashboard.putBoolean("shoot", pivotIsAtTarget() && shooterIsAtTarget() && h
                 goalPos = ArmConstants.SOFT_STOP_LOW;
                 leds.ledState = LedColor.GREEN;
                 if (pivotIsAtTarget()){
+                    timer.reset();
+                    timer.start();
                     shooterState = shooterType.WAIT;
                     Log.warn("WAIT");
                 }
                 break;
-                        case FLOOR_INTAKE:
+                case FLOOR_INTAKE:
                 goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
                 goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
                 intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
@@ -254,7 +256,7 @@ SmartDashboard.putBoolean("shoot", pivotIsAtTarget() && shooterIsAtTarget() && h
                     timer.start();
                 }
                 break;
-                        case STOW:
+                case STOW:
                 intakeMotorOutput = FeedConstants.INTAKE_STOW_OUTPUT;
                 feedMotorOutput = FeedConstants.FEED_IN_OUTPUT;
                 if(shooterBeamBreak.getValue()){
