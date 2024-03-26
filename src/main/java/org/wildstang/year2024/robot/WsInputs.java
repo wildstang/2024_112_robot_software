@@ -109,7 +109,7 @@ public enum WsInputs implements Inputs {
     // ********************************
     // Others ...
     // ********************************
-    PIXY_ANALOG ("Pixy Analog", new WsAnalogInputConfig(0)),
+    PIXY_ANALOG ("Pixy Analog", new WsAnalogInputConfig(2)),
             
     ; // end of enum
     

@@ -32,8 +32,9 @@ public class WingA_Amp extends AutoProgram{
 
         // Get and Shoot wing A
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
-        group0.addStep(new IntakeNoteDriveStep("WingA_Amp", color));
-        // group0.addStep(new SwervePathFollowerStep("WingA_Amp", swerve, color));
+        // group0.addStep(new IntakeNoteDriveStep("WingA_Amp", color));
+        group0.addStep(new IntakeNoteStep());
+        group0.addStep(new SwervePathFollowerStep("WingA_Amp", swerve, color));
         addStep(group0);
         addStep(new ShootNoteStep());
 

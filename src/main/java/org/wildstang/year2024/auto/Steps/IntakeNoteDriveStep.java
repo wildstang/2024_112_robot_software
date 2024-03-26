@@ -62,8 +62,8 @@ public class IntakeNoteDriveStep extends AutoStep{
             if (!isBlue) heading = (2.0 * Math.PI + (Math.PI - heading)) % (2.0 * Math.PI);
             drive.setAutoValues(0.0, 0.0, 0.0, 0.0, 0.0, heading);
             setFinished();
-        } else if (drive.noteInView()) {
-            drive.autoNoteAim(true);
+        // } else if (drive.noteInView()) {
+        //     drive.autoNoteAim(true);
         } else {
             localAutoState = pathtraj.sample(timer.get(), !isBlue);
             localAutoVel = ChassisSpeeds.discretize(localAutoState.getChassisSpeeds(), 0.02);

@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -336,6 +337,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("Speaker distance", getDistanceFromSpeaker());
         SmartDashboard.putNumber("rot target", rotTarget);
         SmartDashboard.putBoolean("Blue Alliance", isBlueAlliance);
+        SmartDashboard.putString("cur pose", curPose.toString());
         SmartDashboard.putNumber("goal pose distance", goalPose.getTranslation().getDistance(curPose.getTranslation()));
         SmartDashboard.putNumber("robot vel mag", robotVelMag);
         SmartDashboard.putNumber("robot vel theta", robotVelTheta);
@@ -376,7 +378,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             out = PhotonUtils.getDistanceToPose(curPose, FieldConstants.RED_SPEAKER);
         }
         if (Double.isNaN(out)) {
-            poseEstimator.resetPosition(odoAngle(), odoPosition(), new Pose2d(getPosX(),getPosY(),odoAngle()));
+            // poseEstimator.resetPosition(odoAngle(), odoPosition(), new Pose2d(getPosX(),getPosY(),odoAngle()));
             Log.warn("NaN DistanceFromSpeaker");
             return 0.0;
         } else return out;
