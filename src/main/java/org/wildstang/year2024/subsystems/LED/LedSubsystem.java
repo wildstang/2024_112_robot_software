@@ -118,14 +118,31 @@ public class LedSubsystem implements Subsystem{
         ledBuffer.setRGB(ledIndexFirst,0, 0, 150);
         
         if(clock.hasElapsed(0.02)){
-            if((ledIndexFirst >= 0) && (ledIndexFirst < length-5)){
+            if((ledIndexFirst >= 0) && (ledIndexFirst < length-2)){
                 ledIndexFirst++;
                 ledBuffer.setRGB(ledIndexFirst-1,0,0,0);
                 
-               
+                int brightness = 0;
+                for(int i = ledIndex; i >= 0; i--){
+                    brightness += 4;
+                    ledBuffer.setRGB(i, brightness, brightness, 220);
+                    
+                }
                 
 
+            }else{
+                ledIndexFirst--;
+                ledBuffer.setRGB(ledIndexFirst+1, 0,0,0);
+
+                int brightness = 0;
+                for(int i = ledIndex; i < length-1; i++){
+                    brightness += 4;
+                    ledBuffer.setRGB(i, brightness, brightness, 220);
+                    
+                }
             }
+           
+            
         clock.stop();
         clock.reset();
         }          
