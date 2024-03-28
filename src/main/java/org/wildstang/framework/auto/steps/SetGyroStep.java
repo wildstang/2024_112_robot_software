@@ -13,11 +13,6 @@ public class SetGyroStep extends AutoStep {
      * @param drive the swerveDrive subsystem
      */
     public SetGyroStep(double heading, SwerveDriveTemplate drive, boolean isBlueAlliance) {
-        // if (isBlueAlliance) {
-        //     this.heading = heading;
-        // } else {
-        //     this.heading = (heading + Math.PI) % (2.0 * Math.PI);
-        // }
         this.heading = heading;
         m_drive = drive;
     }
@@ -30,7 +25,7 @@ public class SetGyroStep extends AutoStep {
 
     @Override
     public void update() {
-        setFinished(true);
+        setFinished();
     }
 
     @Override

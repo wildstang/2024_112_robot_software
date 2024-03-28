@@ -24,7 +24,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -71,7 +70,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private SwerveSignal swerveSignal;
     private WsSwerveHelper swerveHelper = new WsSwerveHelper();
     private SwerveDrivePoseEstimator poseEstimator;
-    private Timer autoTimer = new Timer();
 
     ChassisSpeeds chassisSpeeds;
     SwerveDriveKinematics swerveKinematics;
@@ -179,6 +177,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 gyro.setYaw(Math.PI * RAD_TO_DEG);  // away from alliance station is pi rad on red alliance
                 rotTarget = Math.PI;
             }
+        } else if (source == start && start.getValue()) {
+            setGyro(getPosTheta());
         }
 
         // get x and y speeds
@@ -269,7 +269,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         for(int i = 0; i < modules.length; i++){
             moduleStates[i] = modules[i].getModuleState();
         }
-        chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerveKinematics.toChassisSpeeds(moduleStates), Rotation2d.fromDegrees(getGyroAngle()));
+        chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerveKinematics.toChassisSpeeds(moduleStates), Rotation2d.fromRadians(getGyroAngle()));
         
         robotVelTheta = Math.atan2(chassisSpeeds.vyMetersPerSecond, chassisSpeeds.vxMetersPerSecond);
         robotVelMag = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
@@ -277,7 +277,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         switch (driveState) {
             case TELEOP:
                 if (rotLocked) rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());  // if rotation tracking, replace rotational joystick value with controller generated one
-                else if (aimAtSpeaker) {
+                else if (aimAtSpeaker && !sensorOverride) {
                     rotTarget = getSpeakerRotation();
                     rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 } 
@@ -285,14 +285,15 @@ public class SwerveDrive extends SwerveDriveTemplate {
             case AUTO:
                 if (aimAtSpeaker) {
                     rotTarget = getSpeakerRotation();
-                    rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
-                } else rotOutput = wSpeed * DriveConstants.DRIVE_F_ROT + swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                    wSpeed = 0;
+                } 
+                rotOutput = wSpeed * DriveConstants.DRIVE_F_ROT + swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 xOutput = xSpeed * DriveConstants.DRIVE_F_K + pathXErr * DriveConstants.POS_P;
                 yOutput = ySpeed * DriveConstants.DRIVE_F_K + pathYErr * DriveConstants.POS_P;
                 if (intakeAim) {
                     rotOutput = (1.65 - pixyAnalog.getValue()) * 0.42; //DriveConstants.ROT_P;
-                    xOutput = -Math.cos(getGyroAngle()) * 0.2;
-                    yOutput = -Math.sin(getGyroAngle()) * 0.2;
+                    // xOutput = -Math.cos(getGyroAngle()) * 0.2;
+                    // yOutput = -Math.sin(getGyroAngle()) * 0.2;
                 }
                 break;
             case AMP:
@@ -308,7 +309,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 break;
             case INTAKE:
-                if (noteInView()) {
+                if (noteInView() && !sensorOverride) {
                     rotOutput = (1.65 - pixyAnalog.getValue()) * 0.42; //DriveConstants.ROT_P;
                 }
                 break;
@@ -422,10 +423,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
         pathYErr = 0;
         rotTarget = getGyroAngle();
         aimAtSpeaker = false;
+        intakeAim = false;
     }
 
-    public void setToSpeaker() {
-        aimAtSpeaker = true;
+    public void aimAtSpeaker(boolean enable) {
+        aimAtSpeaker = enable;
     }
 
     /**drives the robot at the current swerveSignal, and displays information for each swerve module */
@@ -458,6 +460,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
      */
     public void setGyro(double radians) {
         gyro.setYaw(radians * RAD_TO_DEG);
+        rotTarget = radians;
     }
 
     public double getGyroAngle() {
@@ -474,7 +477,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     public void setPose(Pose2d pos){
         this.poseEstimator.resetPosition(odoAngle(), odoPosition(), pos);
-        autoTimer.start();
     }
 
     public Pose2d returnPose(){
@@ -507,7 +509,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         if (driveState == driveType.AMP) return goalPose.getTranslation().getDistance(curPose.getTranslation()) < 0.03 && (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI) < 0.09;
         return true;
-        
     }
 
     public boolean noteInView(){

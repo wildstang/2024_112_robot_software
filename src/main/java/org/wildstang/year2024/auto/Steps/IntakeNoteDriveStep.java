@@ -6,7 +6,6 @@ import java.io.FileReader;
 
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.core.Core;
-import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem.shooterType;

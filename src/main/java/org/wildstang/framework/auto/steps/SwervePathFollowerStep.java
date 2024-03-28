@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import com.choreo.lib.*;
 
@@ -40,13 +41,13 @@ public class SwervePathFollowerStep extends AutoStep {
         this.pathtraj = getTraj(pathData);
         m_drive = drive;
         
-        this.isBlue = isBlue;
         timer = new Timer();
     }
 
     @Override
     public void initialize() {
         //start path
+        isBlue = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
         m_drive.setToAuto();
         timer.start();
     }
@@ -54,8 +55,9 @@ public class SwervePathFollowerStep extends AutoStep {
     @Override
     public void update() {
         if (timer.get() >= pathtraj.getTotalTime()) {
-            double heading = ((2.0 * Math.PI) + pathtraj.getFinalPose().getRotation().getRadians()) % (2.0 * Math.PI);
-            if (!isBlue) heading = (2.0 * Math.PI + (Math.PI - heading)) % (2.0 * Math.PI);
+            double heading = 0.0;
+            if (isBlue) heading = ((2.0 * Math.PI) + pathtraj.getFinalPose().getRotation().getRadians()) % (2.0 * Math.PI);
+            else heading = ((2.0 * Math.PI) + pathtraj.getFlippedFinalPose().getRotation().getRadians()) % (2.0 * Math.PI);
             m_drive.setAutoValues(0.0, 0.0, 0.0, 0.0, 0.0, heading);
             setFinished();
         } else {

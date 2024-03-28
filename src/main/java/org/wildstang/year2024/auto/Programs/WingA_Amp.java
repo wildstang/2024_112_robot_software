@@ -4,7 +4,6 @@ import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
 import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
-import org.wildstang.framework.auto.steps.control.AutoStepDelay;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.IntakeNoteDriveStep;
 import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
@@ -23,18 +22,17 @@ public class WingA_Amp extends AutoProgram{
     @Override
     protected void defineSteps(){
          SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
-         color = (DriverStation.getAlliance().orElse(null).equals(Alliance.Blue));
+         color = (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue));
 
          // Preload
         addStep(new SetGyroStep(swerve.getPosTheta(), swerve, color));
-        addStep(new AutoStepDelay(100));
         addStep(new ShootNoteStep());
 
         // Get and Shoot wing A
         AutoParallelStepGroup group0 = new AutoParallelStepGroup();
         // group0.addStep(new IntakeNoteDriveStep("WingA_Amp", color));
         group0.addStep(new IntakeNoteStep());
-        group0.addStep(new SwervePathFollowerStep("WingA_Amp", swerve, color));
+        group0.addStep(new SwervePathFollowerStep("WingA_Amp.1", swerve, color));
         addStep(group0);
         addStep(new ShootNoteStep());
 

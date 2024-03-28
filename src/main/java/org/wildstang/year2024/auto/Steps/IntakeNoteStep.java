@@ -18,9 +18,9 @@ public class IntakeNoteStep extends AutoStep{
 
     @Override
     public void update() {
-       if (shooter.isIdle()){
-        setFinished();
-       } 
+        if (shooter.isIdle()){
+            setFinished();
+        } 
     }
 
     @Override

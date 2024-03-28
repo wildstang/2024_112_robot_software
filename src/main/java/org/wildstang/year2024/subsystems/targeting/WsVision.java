@@ -17,7 +17,6 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.wildstang.framework.io.inputs.Input;
-import org.wildstang.framework.logger.Log;
 
 public class WsVision implements Subsystem {
 
@@ -65,18 +64,15 @@ public class WsVision implements Subsystem {
             frontPose = frontPoseEstimator.update(frontResult).orElse(null);
         }
         if (frontPose != null){
-            // Log.warn("front pose");
-            double[] fpose = {frontPose.estimatedPose.getX(),frontPose.estimatedPose.getY(),frontPose.estimatedPose.getZ()};
-            SmartDashboard.putNumberArray("front pose", fpose);
+            SmartDashboard.putString("front pose", frontPose.toString());
         }
+
         rearResult = rearCam.getLatestResult();
         if(rearResult.hasTargets()){
             rearPose = rearPoseEstimator.update(rearResult).orElse(null);
         }
         if (rearPose != null){
-            // Log.warn("rear pose");
-            double[] rpose = {rearPose.estimatedPose.getX(),rearPose.estimatedPose.getY(),rearPose.estimatedPose.getZ()};
-            SmartDashboard.putNumberArray("rear pose", rpose);
+            SmartDashboard.putString("rear pose", rearPose.toString());
         }
     }
 
