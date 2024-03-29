@@ -430,7 +430,7 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getSpeakerElevation(double distance){
-        return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235))+.05;
+        return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235))+.08;
     }
 
     public void setShooterState(shooterType newState){
