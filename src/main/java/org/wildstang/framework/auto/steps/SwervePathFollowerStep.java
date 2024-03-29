@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import com.google.gson.Gson;
 import org.wildstang.framework.auto.AutoStep;
+import org.wildstang.framework.logger.Log;
 import org.wildstang.framework.subsystems.swerve.SwerveDriveTemplate;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -50,6 +51,7 @@ public class SwervePathFollowerStep extends AutoStep {
         isBlue = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
         m_drive.setToAuto();
         timer.start();
+        Log.warn("Swerve Path Follower Step");
     }
 
     @Override
@@ -65,7 +67,8 @@ public class SwervePathFollowerStep extends AutoStep {
             localAutoVel = ChassisSpeeds.discretize(localAutoState.getChassisSpeeds(), 0.02);
             drivePose = m_drive.returnPose();
             //update values the robot is tracking to
-            m_drive.setAutoValues(localAutoVel.vxMetersPerSecond, localAutoVel.vyMetersPerSecond, localAutoVel.omegaRadiansPerSecond, localAutoState.x - drivePose.getX(), localAutoState.y - drivePose.getY(), localAutoState.heading);
+            
+            m_drive.setAutoValues(localAutoVel.vxMetersPerSecond, localAutoVel.vyMetersPerSecond, localAutoVel.omegaRadiansPerSecond, localAutoState.x - drivePose.getX(), localAutoState.y - drivePose.getY(), (((2.0 * Math.PI)+localAutoState.heading)%(2.0 * Math.PI)));
         }
     }
 

@@ -29,13 +29,13 @@ public final class DriveConstants {
     /**PID values for drive F coefficient of kinetic friction */
     public static final double DRIVE_F_K = 0.016;
 /**Feedforward value for drive rotation */
-    public static final double DRIVE_F_ROT = 0.06967;
+    public static final double DRIVE_F_ROT = 0.016;
     /**PID values for drive F coefficient of inertia */
     public static final double DRIVE_F_I = 0;//0.003;
     /**PID values for path tracking position error */
     public static final double POS_P = 1.5;
     /**PID values for path tracking rotation error */
-    public static final double ROT_P = 0.239;
+    public static final double ROT_P = 0.36;
     /**Swerve Module Names */
     public static final String[] POD_NAMES = new String[]{"FL", "FR", "BL", "BR"};
     /**Deadband for deciding if drive is at position target, meters */

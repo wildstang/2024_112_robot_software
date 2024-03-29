@@ -290,7 +290,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 rotOutput = wSpeed * DriveConstants.DRIVE_F_ROT + swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 xOutput = xSpeed * DriveConstants.DRIVE_F_K + pathXErr * DriveConstants.POS_P;
                 yOutput = ySpeed * DriveConstants.DRIVE_F_K + pathYErr * DriveConstants.POS_P;
-                if (intakeAim) {
+                if (intakeAim && noteInView()) {
                     rotOutput = (1.65 - pixyAnalog.getValue()) * 0.42; //DriveConstants.ROT_P;
                     // xOutput = -Math.cos(getGyroAngle()) * 0.2;
                     // yOutput = -Math.sin(getGyroAngle()) * 0.2;
@@ -303,10 +303,12 @@ public class SwerveDrive extends SwerveDriveTemplate {
                     goalPose = FieldConstants.RED_AMP;
                 }
 
-                xOutput = (goalPose.getX() - getPosX()) * 0.5;// DriveConstants.POS_P;
-                yOutput = (goalPose.getY() - getPosY()) * 0.5;//DriveConstants.POS_P;
-                rotTarget = goalPose.getRotation().getRadians();
-                rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                if (!sensorOverride) {
+                    xOutput = (goalPose.getX() - getPosX()) * DriveConstants.POS_P;
+                    yOutput = (goalPose.getY() - getPosY()) * DriveConstants.POS_P;
+                    rotTarget = goalPose.getRotation().getRadians();
+                    rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
+                }
                 break;
             case INTAKE:
                 if (noteInView() && !sensorOverride) {
@@ -333,7 +335,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putNumber("pose x", getPosX());
         SmartDashboard.putNumber("pose y", getPosY());
         SmartDashboard.putNumber("pose theta", getPosTheta());
-        SmartDashboard.putNumber("Speaker Azimuth", getAngleToSpeaker());
+        SmartDashboard.putNumber("Speaker Azimuth", getSpeakerAzimuth());
         SmartDashboard.putNumber("Speaker distance", getDistanceFromSpeaker());
         SmartDashboard.putNumber("rot target", rotTarget);
         SmartDashboard.putBoolean("Blue Alliance", isBlueAlliance);
@@ -359,7 +361,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     // Get x Pos and y Pos and calulate angle of turn needed to line up with speaker
-    public double getAngleToSpeaker() {
+    public double getSpeakerAzimuth() {
         double out = 0.0;
         if (isBlueAlliance) {
             out = Math.atan2(FieldConstants.BLUE_SPEAKER.getY()-getPosY(), FieldConstants.BLUE_SPEAKER.getX()-getPosX());
@@ -378,7 +380,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
             out = PhotonUtils.getDistanceToPose(curPose, FieldConstants.RED_SPEAKER);
         }
         if (Double.isNaN(out)) {
-            // poseEstimator.resetPosition(odoAngle(), odoPosition(), new Pose2d(getPosX(),getPosY(),odoAngle()));
+            poseEstimator.resetPosition(odoAngle(), odoPosition(), new Pose2d(getPosX(),getPosY(),odoAngle()));
             Log.warn("NaN DistanceFromSpeaker");
             return 0.0;
         } else return out;
@@ -386,7 +388,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     // get rotation output to aim at speaker, including velocity adjustments
     public double getSpeakerRotation() {
-        double goalAng = getAngleToSpeaker() - (Math.asin(-((robotVelMag)/(NOTE_VEL)) * Math.sin(getAngleToSpeaker()-robotVelTheta)));
+        double goalAng = getSpeakerAzimuth() - (Math.asin(-((robotVelMag)/(NOTE_VEL)) * Math.sin(getSpeakerAzimuth()-robotVelTheta)));
         goalAng = (2.0 * Math.PI + goalAng) % (2.0 * Math.PI);
         return goalAng;
     }
@@ -502,10 +504,11 @@ public class SwerveDrive extends SwerveDriveTemplate {
     }
 
     public Boolean isAtTarget(){
+        if (sensorOverride) return true;
         if (aimAtSpeaker) {
             double err = (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI);
             if (err > Math.PI) err = (2.0 * Math.PI) - err;
-            return err < 0.09;
+            return err < 0.06;
         }
         if (driveState == driveType.AMP) return goalPose.getTranslation().getDistance(curPose.getTranslation()) < 0.03 && (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI) < 0.09;
         return true;

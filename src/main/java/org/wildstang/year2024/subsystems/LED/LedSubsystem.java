@@ -26,7 +26,7 @@ public class LedSubsystem implements Subsystem{
 
     boolean goBackward = false;
 
-    private int value, adjust;
+    private int value, adjust, iter;
 
     Timer clock = new Timer();
     Timer clockTwo = new Timer();
@@ -43,6 +43,7 @@ public class LedSubsystem implements Subsystem{
         led.setData(ledBuffer);
         led.start();
         resetState();
+        iter = 0;
     }
 
     @Override
@@ -52,6 +53,7 @@ public class LedSubsystem implements Subsystem{
 
     @Override
     public void update() {
+        iter ++;
         switch(ledState){
             case SOLID_ORANGE:
                 for (int i = 0; i < length; i++) {
@@ -59,7 +61,7 @@ public class LedSubsystem implements Subsystem{
                 }
                 break;
             case FLASH_ORANGE:
-                if(value % 20 >= 10) {
+                if(iter % 16 >= 8) {
                     for (int i = 0; i < length; i++) {
                         ledBuffer.setRGB(i, 255, 140, 0);
                     }

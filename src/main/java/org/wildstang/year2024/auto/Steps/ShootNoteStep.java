@@ -2,6 +2,7 @@ package org.wildstang.year2024.auto.Steps;
 
 import org.wildstang.framework.auto.AutoStep;
 import org.wildstang.framework.core.Core;
+import org.wildstang.framework.logger.Log;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem;
 import org.wildstang.year2024.subsystems.shooter.ShooterSubsystem.shooterType;
@@ -20,6 +21,7 @@ public class ShootNoteStep extends AutoStep {
         drive = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         shooter.setShooterState(shooterType.INIT_SPEAKER);
         drive.aimAtSpeaker(true);
+        Log.warn("Shoot Step");
     }
 
     @Override

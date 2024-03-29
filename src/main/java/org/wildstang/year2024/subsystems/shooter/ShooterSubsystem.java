@@ -1,6 +1,7 @@
 package org.wildstang.year2024.subsystems.shooter;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -95,6 +96,9 @@ public class  ShooterSubsystem implements Subsystem{
         shooterMotor1.setCoast();
         shooterMotor2 = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER2);
         shooterMotor2.setCoast();
+        shooterMotor2.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+        shooterMotor2.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+        shooterMotor2.motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 
         angleMotor = (WsSpark) Core.getOutputManager().getOutput(WsOutputs.SHOOTER_ANGLE1);
         angleMotor.setBrake();
@@ -177,7 +181,7 @@ public class  ShooterSubsystem implements Subsystem{
         switch (shooterState) {
             case INIT_SPEAKER:
                 if (!sensorOverride){
-                    goalPos = getTargetAngle(swerve.getDistanceFromSpeaker());
+                    goalPos = getSpeakerElevation(swerve.getDistanceFromSpeaker());
                 }
                 goalVel = ShooterConstants.SPEAKER_SPEED;
                 shooterEnable = true;
@@ -227,8 +231,7 @@ public class  ShooterSubsystem implements Subsystem{
                 }
                 break;
             case FLOOR_INTAKE:
-                goalPos = Math.max(curPos, ArmConstants.MIN_INTAKE_POS);
-                goalPos = Math.min(curPos, ArmConstants.MAX_INTAKE_POS);
+                goalPos = Math.min(Math.max(curPos, ArmConstants.MIN_INTAKE_POS), ArmConstants.MAX_INTAKE_POS);
                 intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
                 if(intakeBeamBreak.getValue()){
                     leds.ledState = LedColor.FLASH_ORANGE;
@@ -384,7 +387,7 @@ public class  ShooterSubsystem implements Subsystem{
         SmartDashboard.putNumber("iterCount", iterCount);
 
         // Vision values
-        SmartDashboard.putNumber("Speaker Elevation", getTargetAngle(swerve.getDistanceFromSpeaker()));
+        SmartDashboard.putNumber("Speaker Elevation", getSpeakerElevation(swerve.getDistanceFromSpeaker()));
 
         SmartDashboard.putNumber("pivot internal encoder", angleMotor.getPosition());
 
@@ -426,8 +429,8 @@ public class  ShooterSubsystem implements Subsystem{
         // return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW + pivotAdjustment) % (2 * Math.PI);
     }
 
-    public double getTargetAngle(double distance){
-        return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235))+0.1;
+    public double getSpeakerElevation(double distance){
+        return Math.atan(FieldConstants.SPEAKER_Z/(distance+.235))+.05;
     }
 
     public void setShooterState(shooterType newState){

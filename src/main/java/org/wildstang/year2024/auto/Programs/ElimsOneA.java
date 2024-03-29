@@ -2,11 +2,11 @@ package org.wildstang.year2024.auto.Programs;
 
 import org.wildstang.framework.auto.AutoProgram;
 import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
-import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;
 import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
+import org.wildstang.year2024.auto.Steps.SetGyroCorrectStep;
 import org.wildstang.year2024.robot.WsSubsystems;
 import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
@@ -23,7 +23,7 @@ public class ElimsOneA extends AutoProgram{
         SwerveDrive swerve = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         color = (DriverStation.getAlliance().orElse(null).equals(Alliance.Blue));
 
-        addStep(new SetGyroStep(swerve.getPosTheta(), swerve, color));
+        addStep(new SetGyroCorrectStep(swerve));
         addStep(new ShootNoteStep());
         
         // Get and Shoot wing A
@@ -40,38 +40,28 @@ public class ElimsOneA extends AutoProgram{
         addStep(group1);
 
         // Shoot CenterA
-        addStep(new SwervePathFollowerStep("ElimsOneA.3", swerve, color));
         addStep(new ShootNoteStep());
 
         // Get Center B
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();
         group2.addStep(new IntakeNoteStep());
-        group2.addStep(new SwervePathFollowerStep("ElimsOneA.4", swerve, color));
+        group2.addStep(new SwervePathFollowerStep("ElimsOneA.3", swerve, color));
         addStep(group2);
-
-
-        // Shoot Center B
         addStep(new ShootNoteStep());
 
         // Get Center C and Shoot
         AutoParallelStepGroup group3 = new AutoParallelStepGroup();
         group3.addStep(new IntakeNoteStep());
-        group3.addStep(new SwervePathFollowerStep("ElimsOneA.5", swerve, color));
+        group3.addStep(new SwervePathFollowerStep("ElimsOneA.4", swerve, color));
         addStep(group3);
         addStep(new ShootNoteStep());
 
-        // Get Center E and Shoot
+        // Get Center D and Shoot
         AutoParallelStepGroup group4 = new AutoParallelStepGroup();
         group4.addStep(new IntakeNoteStep());
-        group4.addStep(new SwervePathFollowerStep("ElimsOneA.6", swerve, color));
+        group4.addStep(new SwervePathFollowerStep("ElimsOneA.5", swerve, color));
         addStep(group4);
         addStep(new ShootNoteStep());
-
-
-    
-
-
-
 
     }
 

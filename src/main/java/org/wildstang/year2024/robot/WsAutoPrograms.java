@@ -18,7 +18,7 @@ public enum WsAutoPrograms implements AutoPrograms {
     // enumerate programs
     //SAMPLE_PROGRAM("Sample", SampleAutoProgram.class),
     //TEST_PROGRAM("Test Program", Testprogram.class),
-    // ELIMS_ONE("ElimsOne", ElimsOneA.class),
+    ELIMS_ONE("ElimsOne", ElimsOneA.class),
     // ELIMS_TWO("Elims Two", ElimsTwo.class),
     // FULL_AUTO_BOTTOM("Full Auto Bottom", FullAutoBottom.class),
     // FULL_AUTO_TOP("Full Auto Top", FullAutoTop.class),

@@ -135,7 +135,7 @@ public class SwerveModule {
      * @return double drive encoder distance in meters
     */
     public double getPosition() {
-        return driveMotor.getPosition() * ModuleConstants.WHEEL_DIAMETER * Math.PI / ModuleConstants.DRIVE_RATIO;
+        return driveMotor.getPosition() * ModuleConstants.WHEEL_RADIUS * 2.0 * Math.PI / ModuleConstants.DRIVE_RATIO;
     }
 
     /**returns raw drive encoder value, rotations
@@ -158,7 +158,7 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getModuleState(){
-        return new SwerveModuleState(driveMotor.getVelocity() * 2.0 * Math.PI * (ModuleConstants.WHEEL_DIAMETER / 2) / 60.0, Rotation2d.fromRadians(getAngle()));
+        return new SwerveModuleState(driveMotor.getVelocity() * 2.0 * Math.PI * (ModuleConstants.WHEEL_RADIUS) / 60.0, Rotation2d.fromRadians(getAngle()));
     }
     public SwerveModulePosition odoPosition(){
         return new SwerveModulePosition(getPosition(), Rotation2d.fromRadians(getAngle()));

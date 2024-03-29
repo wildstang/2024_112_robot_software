@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkBase.ControlType;
 
 import org.wildstang.framework.logger.Log;
@@ -18,7 +19,7 @@ import org.wildstang.hardware.roborio.outputs.config.WsMotorControllers;
  */
 public class WsSpark extends WsMotorController {
 
-    CANSparkBase motor;
+    public CANSparkBase motor;
     CANSparkBase follower;
     SparkPIDController controller;
     boolean isUsingController;
@@ -103,7 +104,9 @@ public class WsSpark extends WsMotorController {
                 return;
         }
         follower.follow(motor, oppose);
-        Log.warn("bar");
+        follower.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+        follower.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+        follower.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
     }
 
     /**
