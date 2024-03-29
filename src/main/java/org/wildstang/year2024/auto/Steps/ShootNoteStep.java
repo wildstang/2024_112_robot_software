@@ -15,6 +15,7 @@ public class ShootNoteStep extends AutoStep {
     private SwerveDrive drive;
     private Timer timer;
     private double shootTime;
+    boolean hasShot;
 
     public ShootNoteStep(double forceShootTime){
         timer = new Timer();
@@ -23,6 +24,7 @@ public class ShootNoteStep extends AutoStep {
     public ShootNoteStep(){
         timer = new Timer();
         shootTime = 3.0;
+        hasShot = false;
     }
 
     @Override
@@ -39,13 +41,15 @@ public class ShootNoteStep extends AutoStep {
 
     @Override
     public void update() {
-        if (shooter.isOff()){
+        if (shooter.isOff() || timer.hasElapsed(shootTime+.25)){
             drive.aimAtSpeaker(false);
             timer.stop();
             setFinished();
         } else if (timer.hasElapsed(shootTime)){
-            shooter.setShooterState(shooterType.SHOOT);
-            timer.stop();
+            if(!hasShot) {
+                shooter.setShooterState(shooterType.SHOOT);
+                hasShot = true;
+            }
         }
         
     }

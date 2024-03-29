@@ -75,6 +75,7 @@ public abstract class AutoProgram {
             }
             else {
                 startStep(currentStep);
+                Log.warn(programSteps.get(currentStep).toString());
             }
         }
         if (programSteps.size() > currentStep && programStarted) {
