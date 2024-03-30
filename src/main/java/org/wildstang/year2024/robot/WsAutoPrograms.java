@@ -2,6 +2,7 @@ package org.wildstang.year2024.robot;
 
 import org.wildstang.framework.core.AutoPrograms;
 import org.wildstang.year2024.auto.Programs.ElimsOneA;
+import org.wildstang.year2024.auto.Programs.ElimsOneB;
 import org.wildstang.year2024.auto.Programs.ElimsTwo;
 import org.wildstang.year2024.auto.Programs.OneNoteWingAutoTop;
 import org.wildstang.year2024.auto.Programs.PreloadAuto;
@@ -26,6 +27,7 @@ public enum WsAutoPrograms implements AutoPrograms {
     // ONE_NOTE_WING_AUTO_TOP("One Note Wing Auto Top", OneNoteWingAutoTop.class),
     // QUALS_AUTO("Quals Auto", QualsAuto.class),
     // QUALS_PLUS("Quals Plus", QualsPlus.class),
+    ELIMS_B("ElimsOne 1b", ElimsOneB.class),
     PRELOAD_AUTO("Preload Auto", PreloadAuto.class),
     WINGA_AMP("WingA Amp", WingA_Amp.class),
     // TWO_NOTE_WING_AUTO_TOP("Two Note Wing Auto Top", TwoNoteWingAutoTop.class),
