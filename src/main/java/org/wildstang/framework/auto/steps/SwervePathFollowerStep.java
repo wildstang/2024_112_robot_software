@@ -57,6 +57,9 @@ public class SwervePathFollowerStep extends AutoStep {
     @Override
     public void update() {
         if (timer.get() >= pathtraj.getTotalTime()) {
+            localAutoState = pathtraj.sample(timer.get(), !isBlue);
+            drivePose = m_drive.returnPose();
+            Log.warn(Double.toString(localAutoState.x - drivePose.getX()) + Double.toString(localAutoState.y - drivePose.getY()));
             double heading = 0.0;
             if (isBlue) heading = ((2.0 * Math.PI) + pathtraj.getFinalPose().getRotation().getRadians()) % (2.0 * Math.PI);
             else heading = ((2.0 * Math.PI) + pathtraj.getFlippedFinalPose().getRotation().getRadians()) % (2.0 * Math.PI);

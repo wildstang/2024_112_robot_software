@@ -291,7 +291,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 xOutput = xSpeed * DriveConstants.DRIVE_F_K + pathXErr * DriveConstants.POS_P;
                 yOutput = ySpeed * DriveConstants.DRIVE_F_K + pathYErr * DriveConstants.POS_P;
                 if (intakeAim && noteInView()) {
-                    rotOutput = (1.65 - pixyAnalog.getValue()) * 0.42; //DriveConstants.ROT_P;
+                    rotOutput = (1.65 - pixyAnalog.getValue()) * 0.30; //DriveConstants.ROT_P;
                     // xOutput = -Math.cos(getGyroAngle()) * 0.2;
                     // yOutput = -Math.sin(getGyroAngle()) * 0.2;
                 }
@@ -312,7 +312,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 break;
             case INTAKE:
                 if (noteInView() && !sensorOverride) {
-                    rotOutput = (1.65 - pixyAnalog.getValue()) * 0.42; //DriveConstants.ROT_P;
+                    rotOutput = (1.65 - pixyAnalog.getValue()) * 0.30; //DriveConstants.ROT_P;
                 }
                 break;
         }
