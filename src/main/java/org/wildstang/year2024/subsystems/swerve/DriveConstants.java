@@ -25,7 +25,7 @@ public final class DriveConstants {
     /**second order correction for rotation plus driving */
     public static final double ROT_CORRECTION_FACTOR = -0.5;//0.2; update from 111 testing
     /**PID values for driveF coefficient of momentum */
-    public static final double DRIVE_F_V = 0.1847;  //0.00536; updated from 111 testing, almost certainly wrong for 112
+    public static final double DRIVE_F_V = 0.19;  //0.00536; updated from 111 testing, almost certainly wrong for 112
     /**PID values for drive F coefficient of kinetic friction */
     public static final double DRIVE_F_K = 0.016;
 /**Feedforward value for drive rotation */
