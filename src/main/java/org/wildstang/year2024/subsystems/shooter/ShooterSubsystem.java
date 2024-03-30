@@ -27,7 +27,7 @@ import org.wildstang.year2024.subsystems.swerve.SwerveDrive;
 
 public class  ShooterSubsystem implements Subsystem{
 
-    public enum shooterType {FLOOR_INTAKE, SOURCE_INTAKE, STOW, STOW_REVERSE, IDLE, INIT_SPEAKER, INIT_AMP, SHOOT, SHOOTER_EXIT_DELAY_1, SHOOTER_OFF, OUTTAKE, WAIT, AMP_FAKE};
+    public enum shooterType {FLOOR_INTAKE, SOURCE_INTAKE, STOW, STOW_REVERSE, IDLE, INIT_SPEAKER, INIT_AMP, SHOOT, SHOOTER_EXIT_DELAY_1, SHOOTER_OFF, OUTTAKE, WAIT, AMP_FAKE, AMP_FAKE_OFF};
     private shooterType shooterState;
 
     public WsSpark angleMotor;
@@ -132,7 +132,7 @@ public class  ShooterSubsystem implements Subsystem{
     public void inputUpdate(Input source) {
         if (source == rightStickButton) {
             if(rightStickButton.getValue()){
-                if (shooterState == shooterType.AMP_FAKE) shooterState = shooterType.WAIT;
+                if (shooterState == shooterType.AMP_FAKE) shooterState = shooterType.AMP_FAKE_OFF;
                 else shooterState = shooterType.AMP_FAKE;
             }
         } else if (source == leftBumper && leftBumper.getValue()){
@@ -186,10 +186,16 @@ public class  ShooterSubsystem implements Subsystem{
                 goalPos = ArmConstants.AMP_POS;
                 hood_deploy = true;
                 break;
+            case AMP_FAKE_OFF:
+                goalPos = ArmConstants.SOFT_STOP_LOW;
+                hood_deploy = false;
+                shooterState = shooterType.WAIT;
+                break;
             case INIT_SPEAKER:
                 if (!sensorOverride){
                     goalPos = getSpeakerElevation(swerve.getDistanceFromSpeaker()) - pivotAdjustment;
                 }
+                hood_deploy = false;
                 goalVel = ShooterConstants.SPEAKER_SPEED;
                 shooterEnable = true;
                 if(pivotIsAtTarget() && shooterIsAtTarget() && hoodIsAtTarget() && swerve.isAtTarget()){
