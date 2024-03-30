@@ -5145,6 +5145,15 @@
                     "translationConstrained": true,
                     "headingConstrained": true,
                     "controlIntervalCount": 40
+                },
+                {
+                    "x": 0.3168119788169861,
+                    "y": 5.402978897094727,
+                    "heading": 0,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
+                    "controlIntervalCount": 40
                 }
             ],
             "trajectory": [
@@ -7481,7 +7490,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": [],
             "eventMarkers": [],
-            "isTrajectoryStale": false
+            "isTrajectoryStale": true
         },
         "WingA_Amp": {
             "waypoints": [

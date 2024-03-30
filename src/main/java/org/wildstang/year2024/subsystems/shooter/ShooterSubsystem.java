@@ -163,10 +163,10 @@ public class  ShooterSubsystem implements Subsystem{
                 Log.warn("WAIT");
             }
         } else if (source == dpadLeft && dpadLeft.getValue()) {
-            if (sensorOverride) goalPos = ArmConstants.SUBWOOFER_POS;
+            if (sensorOverride) goalPos = ArmConstants.SUBWOOFER_POS - pivotAdjustment;
             else pivotAdjustment += 0.05;
         } else if (source == dpadRight && dpadRight.getValue()) {
-            if (sensorOverride) goalPos = ArmConstants.PODIUM_POS;
+            if (sensorOverride) goalPos = ArmConstants.PODIUM_POS - pivotAdjustment;
             else pivotAdjustment -= 0.05;
         }
     }
@@ -185,9 +185,10 @@ public class  ShooterSubsystem implements Subsystem{
             case AMP_FAKE:
                 goalPos = ArmConstants.AMP_POS;
                 hood_deploy = true;
+                break;
             case INIT_SPEAKER:
                 if (!sensorOverride){
-                    goalPos = getSpeakerElevation(swerve.getDistanceFromSpeaker());
+                    goalPos = getSpeakerElevation(swerve.getDistanceFromSpeaker()) - pivotAdjustment;
                 }
                 goalVel = ShooterConstants.SPEAKER_SPEED;
                 shooterEnable = true;
@@ -431,7 +432,7 @@ public class  ShooterSubsystem implements Subsystem{
     }
 
     public double getPivotPosition(){
-        return ((angleMotor.getPosition() * 2.0 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW + pivotAdjustment + 2.0 * Math.PI) % (2.0 * Math.PI);
+        return ((angleMotor.getPosition() * 2.0 * Math.PI / ArmConstants.RATIO) + ArmConstants.SOFT_STOP_LOW + 2.0 * Math.PI) % (2.0 * Math.PI);
         // return (pivotEncoder.getPosition() + ArmConstants.SOFT_STOP_LOW + pivotAdjustment) % (2 * Math.PI);
     }
 

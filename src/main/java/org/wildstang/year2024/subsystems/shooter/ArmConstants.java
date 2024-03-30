@@ -29,6 +29,6 @@ public final class ArmConstants {
     public static final double MIN_INTAKE_POS = 0.60;  // rad
     public static final double MAX_INTAKE_POS = 75.0 * Math.PI/180.0; // rad
     public static final double SOURCE_INTAKE_POS = SOFT_STOP_HIGH;  // rad
-    public static final double SUBWOOFER_POS = 57.0 * Math.PI / 180.0;
+    public static final double SUBWOOFER_POS = 60.0 * Math.PI / 180.0;
     public static final double PODIUM_POS = 35.0 * Math.PI / 180.0;
 }
