@@ -40,7 +40,7 @@ public class ElimsOneA extends AutoProgram{
         addStep(group1);
 
         // Shoot CenterA
-        addStep(new ShootNoteStep(1.0));
+        addStep(new ShootNoteStep(2.0));
 
         // Get Center B
         AutoParallelStepGroup group2 = new AutoParallelStepGroup();

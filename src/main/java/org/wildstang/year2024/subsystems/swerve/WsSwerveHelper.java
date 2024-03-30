@@ -65,8 +65,10 @@ public class WsSwerveHelper {
      */
     public double getRotControl(double i_target, double i_gyro) {
         rotErr = i_target - i_gyro;
-        if (Math.abs(rotErr) > Math.PI) {
+        if (rotErr > Math.PI) {
             rotPID = (rotErr - Math.PI * 2.0) * DriveConstants.ROT_P;  // if error is greater than pi, it is faster to spin cw
+        } else if (rotErr < -Math.PI) {
+            rotPID = (2.0 * Math.PI + rotErr) * DriveConstants.ROT_P;
         }
         else {
             rotPID = rotErr * DriveConstants.ROT_P;  // otherwise spin ccw

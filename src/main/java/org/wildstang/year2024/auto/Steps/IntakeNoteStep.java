@@ -17,8 +17,8 @@ public class IntakeNoteStep extends AutoStep{
         shooter = (ShooterSubsystem) Core.getSubsystemManager().getSubsystem(WsSubsystems.SHOOTER);
         swerve  = (SwerveDrive) Core.getSubsystemManager().getSubsystem(WsSubsystems.SWERVE_DRIVE);
         shooter.setShooterState(shooterType.FLOOR_INTAKE);
-        Log.warn("Intake Step");
         swerve.autoNoteAim(true);
+        Log.warn("Intake Step");
         
     }
 
