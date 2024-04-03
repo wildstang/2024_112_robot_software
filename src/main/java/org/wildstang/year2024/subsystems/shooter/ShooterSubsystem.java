@@ -214,7 +214,7 @@ public class  ShooterSubsystem implements Subsystem{
                 }
                 break;
             case SHOOT:
-                feedMotorOutput = FeedConstants.FEED_OUTPUT;
+                feedMotorOutput = FeedConstants.FEED_SHOOT_OUTPUT;
                 intakeMotorOutput = FeedConstants.INTAKE_IN_OUTPUT;
                 if(!intakeBeamBreak.getValue() && !shooterBeamBreak.getValue()){
                     shooterState = shooterType.SHOOTER_EXIT_DELAY_1;
