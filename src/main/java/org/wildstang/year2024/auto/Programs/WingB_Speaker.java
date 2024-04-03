@@ -40,6 +40,6 @@ public class WingB_Speaker extends AutoProgram{
     }
 
     public String toString(){
-        return "WingB From Speaker Program";
+        return "WingB Speaker";
     }
 }

@@ -346,9 +346,6 @@ public class SwerveDrive extends SwerveDriveTemplate {
         SmartDashboard.putBoolean("drive at target", isAtTarget());
         SmartDashboard.putBoolean("Pixy DIO", noteInView());
         SmartDashboard.putNumber("Pixy Analog", pixyAnalog.getValue());
-        // SmartDashboard.putNumber("target yaw", targetYaw);
-
-
     }
     
     @Override

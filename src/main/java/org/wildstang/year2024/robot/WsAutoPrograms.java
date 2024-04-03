@@ -8,7 +8,12 @@ import org.wildstang.year2024.auto.Programs.OneNoteWingAutoTop;
 import org.wildstang.year2024.auto.Programs.PreloadAuto;
 import org.wildstang.year2024.auto.Programs.QualsAuto;
 import org.wildstang.year2024.auto.Programs.QualsPlus;
+import org.wildstang.year2024.auto.Programs.WingABC_Amp;
+import org.wildstang.year2024.auto.Programs.WingAB_Amp;
 import org.wildstang.year2024.auto.Programs.WingA_Amp;
+import org.wildstang.year2024.auto.Programs.WingBAC_Speaker;
+import org.wildstang.year2024.auto.Programs.WingBA_Speaker;
+import org.wildstang.year2024.auto.Programs.WingB_Speaker;
 
 /**
  * All active AutoPrograms are enumerated here.
@@ -17,21 +22,19 @@ import org.wildstang.year2024.auto.Programs.WingA_Amp;
 public enum WsAutoPrograms implements AutoPrograms {
 
     // enumerate programs
-    //SAMPLE_PROGRAM("Sample", SampleAutoProgram.class),
-    //TEST_PROGRAM("Test Program", Testprogram.class),
-    ELIMS_ONE("ElimsOne", ElimsOneA.class),
-    // ELIMS_TWO("Elims Two", ElimsTwo.class),
-    // FULL_AUTO_BOTTOM("Full Auto Bottom", FullAutoBottom.class),
-    // FULL_AUTO_TOP("Full Auto Top", FullAutoTop.class),
-    // FULL_WING_AUTO_TOP("Full Wing Auto Top", FullWingAutoTop.class),
-    // ONE_NOTE_WING_AUTO_TOP("One Note Wing Auto Top", OneNoteWingAutoTop.class),
-    // QUALS_AUTO("Quals Auto", QualsAuto.class),
-    // QUALS_PLUS("Quals Plus", QualsPlus.class),
-    ELIMS_B("ElimsOne 1b", ElimsOneB.class),
+    ELIMS_1A("ElimsOneA", ElimsOneA.class),
+    ELIMS_1B("ElimsOne 1b", ElimsOneB.class),
+    ELIMS_2("ElimsTwo", ElimsTwo.class),
+    ONE_NOTE_WING_AUTO_TOP("One Note Wing Auto Top", OneNoteWingAutoTop.class),
     PRELOAD_AUTO("Preload Auto", PreloadAuto.class),
+    QUALS_AUTO("Quals Auto", QualsAuto.class),
+    QUALS_PLUS("Quals Plus", QualsPlus.class),
     WINGA_AMP("WingA Amp", WingA_Amp.class),
-    // TWO_NOTE_WING_AUTO_TOP("Two Note Wing Auto Top", TwoNoteWingAutoTop.class),
-    // ROCKET_AUTO_TOP("Rocket Auto Top", RocketAutoTop.class),
+    WINGAB_AMP("WingAB Amp", WingAB_Amp.class),
+    WINGABC_AMP("WingABC Amp", WingABC_Amp.class),
+    WINGB_SPEAKER("WingB Speaker", WingB_Speaker.class),
+    WINGBA_SPEAKER("WingBA Speaker", WingBA_Speaker.class),
+    WINGBAC_SPEAKER("WingBAC Speaker", WingBAC_Speaker.class),
 
     ;
 

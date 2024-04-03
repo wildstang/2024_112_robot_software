@@ -1,11 +1,8 @@
 package org.wildstang.year2024.auto.Programs;
 
 import org.wildstang.framework.auto.AutoProgram;
-import org.wildstang.framework.auto.steps.AutoParallelStepGroup;
-import org.wildstang.framework.auto.steps.SetGyroStep;
 import org.wildstang.framework.auto.steps.SwervePathFollowerStep;
 import org.wildstang.framework.core.Core;
-import org.wildstang.year2024.auto.Steps.IntakeNoteDriveStep;
 import org.wildstang.year2024.auto.Steps.IntakeNoteStep;
 import org.wildstang.year2024.auto.Steps.SetGyroCorrectStep;
 import org.wildstang.year2024.auto.Steps.ShootNoteStep;

@@ -50,6 +50,6 @@ public class WingABC_Amp extends AutoProgram{
     }
 
     public String toString(){
-        return "WingABC From Amp Program";
+        return "WingABC Amp";
     }
 }
