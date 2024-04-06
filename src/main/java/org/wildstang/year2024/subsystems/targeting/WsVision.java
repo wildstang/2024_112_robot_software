@@ -38,14 +38,14 @@ public class WsVision implements Subsystem {
 
         //Forward Camera
         frontCam = new PhotonCamera("FrontCam");
-        Transform3d robotToFrontCam = new Transform3d(new Translation3d(0.2823972, -0.2571242, 0.6094984), new Rotation3d(0,-0.6108,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        Transform3d robotToFrontCam = new Transform3d(new Translation3d(0.2823972, -0.2571242, 0.6094984), new Rotation3d(0,-0.489,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
         // Construct PhotonPoseEstimator
         frontPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, frontCam, robotToFrontCam);
 
         //Forward Camera
         rearCam = new PhotonCamera("RearCam");
-        Transform3d robotToRearCam = new Transform3d(new Translation3d(0.2827528, 0.256921, 0.6094984), new Rotation3d(0,0.5326,-3.1416)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        Transform3d robotToRearCam = new Transform3d(new Translation3d(0.2827528, 0.256921, 0.6094984), new Rotation3d(0,-0.524,3.142)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
         // Construct PhotonPoseEstimator
         rearPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rearCam, robotToRearCam);
@@ -64,7 +64,7 @@ public class WsVision implements Subsystem {
             frontPose = frontPoseEstimator.update(frontResult).orElse(null);
         }
         if (frontPose != null){
-            SmartDashboard.putString("front pose", frontPose.toString());
+            SmartDashboard.putString("front pose", frontPose.estimatedPose.toPose2d().toString());
         }
 
         rearResult = rearCam.getLatestResult();
@@ -72,7 +72,7 @@ public class WsVision implements Subsystem {
             rearPose = rearPoseEstimator.update(rearResult).orElse(null);
         }
         if (rearPose != null){
-            SmartDashboard.putString("rear pose", rearPose.toString());
+            SmartDashboard.putString("rear pose", rearPose.estimatedPose.toPose2d().toString());
         }
     }
 

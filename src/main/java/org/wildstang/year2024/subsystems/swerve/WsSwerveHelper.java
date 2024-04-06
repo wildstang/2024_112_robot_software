@@ -7,6 +7,7 @@ public class WsSwerveHelper {
     private double[] xCoords = new double[]{0.0, 0.0, 0.0, 0.0};
     private double[] yCoords = new double[]{0.0, 0.0, 0.0, 0.0};
     private double rotErr;
+    private static double prevRotErr = 0;
     private double rotPID;
 
     /** sets the robot in the immobile "cross" defensive position
@@ -66,13 +67,12 @@ public class WsSwerveHelper {
     public double getRotControl(double i_target, double i_gyro) {
         rotErr = i_target - i_gyro;
         if (rotErr > Math.PI) {
-            rotPID = (rotErr - Math.PI * 2.0) * DriveConstants.ROT_P;  // if error is greater than pi, it is faster to spin cw
+            rotErr = (rotErr - 2.0 * Math.PI);  // if error is greater than pi, it is faster to spin cw
         } else if (rotErr < -Math.PI) {
-            rotPID = (2.0 * Math.PI + rotErr) * DriveConstants.ROT_P;
+            rotErr = (rotErr + 2.0 * Math.PI);
         }
-        else {
-            rotPID = rotErr * DriveConstants.ROT_P;  // otherwise spin ccw
-        }
+        rotPID = rotErr * DriveConstants.ROT_P + (rotErr - prevRotErr) * DriveConstants.ROT_D;  // otherwise spin ccw
+        prevRotErr = rotErr;
         return rotPID;  // saturate rotation control to range [-1.0, 1.0]
     }
 

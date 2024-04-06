@@ -291,9 +291,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 xOutput = xSpeed * DriveConstants.DRIVE_F_K + pathXErr * DriveConstants.POS_P;
                 yOutput = ySpeed * DriveConstants.DRIVE_F_K + pathYErr * DriveConstants.POS_P;
                 if (intakeAim && noteInView()) {
-                    rotOutput = (1.65 - pixyAnalog.getValue()) * 0.30; //DriveConstants.ROT_P;
-                    // xOutput = -Math.cos(getGyroAngle()) * 0.2;
-                    // yOutput = -Math.sin(getGyroAngle()) * 0.2;
+                    // rotOutput = (1.65 - pixyAnalog.getValue()) * 0.30; //DriveConstants.ROT_P;
+                    rotTarget = ((1.65 - pixyAnalog.getValue())/1.65 * 0.524 + getGyroAngle() + 2.0 * Math.PI) % (2.0 * Math.PI); //DriveConstants.ROT_P;
+                    rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 }
                 break;
             case AMP:
@@ -312,7 +312,9 @@ public class SwerveDrive extends SwerveDriveTemplate {
                 break;
             case INTAKE:
                 if (noteInView() && !sensorOverride) {
-                    rotOutput = (1.65 - pixyAnalog.getValue()) * 0.30; //DriveConstants.ROT_P;
+                    // rotOutput = (1.65 - pixyAnalog.getValue()) * 0.30; //DriveConstants.ROT_P;
+                    rotTarget = ((1.65 - pixyAnalog.getValue())/1.65 * 0.524 + getGyroAngle() + 2.0 * Math.PI) % (2.0 * Math.PI); //DriveConstants.ROT_P;
+                    rotOutput = swerveHelper.getRotControl(rotTarget, getGyroAngle());
                 }
                 break;
         }
@@ -505,7 +507,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         if (aimAtSpeaker) {
             double err = (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI);
             if (err > Math.PI) err = (2.0 * Math.PI) - err;
-            return err < 0.06;
+            return err < 0.03;
         }
         if (driveState == driveType.AMP) return goalPose.getTranslation().getDistance(curPose.getTranslation()) < 0.03 && (2.0 * Math.PI + Math.abs(rotTarget - getGyroAngle())) % (2.0 * Math.PI) < 0.09;
         return true;

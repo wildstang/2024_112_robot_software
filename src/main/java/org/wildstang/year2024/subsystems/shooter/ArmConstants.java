@@ -21,11 +21,11 @@ public final class ArmConstants {
     public static final double POS_DB = 0.03;  // position deadband, rad  starting value (ARM_TORQUE/STALL_TORQUE)/kP
     // public static final double VEL_DB = 0.1;  // output deadband, rad/s  starting value (ARM_TORQUE/STALL_TORQUE)/kV
 
-    public static final double kP = 2.0;
+    public static final double kP = 2.5;
     // public static final double kI = 0.01;
     // public static final double kD = 0.4;
     // public static final double kF = MASS * COM / (RATIO * STALL_TORQUE);
-    public static final double AMP_POS = 1.875;  // 1.868 rad
+    public static final double AMP_POS = 1.865;  // 1.868 rad
     public static final double MIN_INTAKE_POS = 0.60;  // rad
     public static final double MAX_INTAKE_POS = 75.0 * Math.PI/180.0; // rad
     public static final double SOURCE_INTAKE_POS = SOFT_STOP_HIGH;  // rad
