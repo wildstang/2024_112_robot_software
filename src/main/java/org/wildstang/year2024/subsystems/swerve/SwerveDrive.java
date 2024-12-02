@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -65,11 +66,13 @@ public class SwerveDrive extends SwerveDriveTemplate {
     private double pathYErr;
     private double curX, curY, curTheta;
 
-    private final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
+    public final Pigeon2 gyro = new Pigeon2(CANConstants.GYRO);
     public SwerveModule[] modules;
     private SwerveSignal swerveSignal;
     private WsSwerveHelper swerveHelper = new WsSwerveHelper();
     private SwerveDrivePoseEstimator poseEstimator;
+    public SwerveDriveOdometry odometry; 
+    private KalmanFilterJenny kf;
 
     ChassisSpeeds chassisSpeeds;
     SwerveDriveKinematics swerveKinematics;
@@ -157,7 +160,10 @@ public class SwerveDrive extends SwerveDriveTemplate {
         //create default swerveSignal
         swerveSignal = new SwerveSignal(new double[]{0.0, 0.0, 0.0, 0.0}, new double[]{0.0, 0.0, 0.0, 0.0});
         poseEstimator = new SwerveDrivePoseEstimator(swerveKinematics, odoAngle(), odoPosition(), new Pose2d());
+        odometry = new SwerveDriveOdometry(swerveKinematics, odoAngle(), odoPosition(), new Pose2d());
+        kf = new KalmanFilterJenny();
     }
+    
 
     @Override
     public void inputUpdate(Input source) {
@@ -260,6 +266,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
 
     @Override
     public void update() {
+        odometry.update(odoAngle(), odoPosition());
         isBlueAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
         
         poseEstimator.update(odoAngle(), odoPosition());
@@ -271,6 +278,8 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerveKinematics.toChassisSpeeds(moduleStates), Rotation2d.fromRadians(getGyroAngle()));
         
+        kf.kfPeriodic();
+
         robotVelTheta = Math.atan2(chassisSpeeds.vyMetersPerSecond, chassisSpeeds.vxMetersPerSecond);
         robotVelMag = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
 
