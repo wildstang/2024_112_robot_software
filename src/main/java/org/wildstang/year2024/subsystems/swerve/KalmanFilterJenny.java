@@ -71,7 +71,7 @@ public class KalmanFilterJenny {
 
 
     private SwerveDrive swerve;
-    private SwerveDriveOdometry odometry;
+    public SwerveDriveOdometry odometry;
     private com.ctre.phoenix.sensors.Pigeon2 gyro;
     private ChassisSpeeds robotSpeeds;
 

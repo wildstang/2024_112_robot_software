@@ -278,6 +278,7 @@ public class SwerveDrive extends SwerveDriveTemplate {
         }
         chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerveKinematics.toChassisSpeeds(moduleStates), Rotation2d.fromRadians(getGyroAngle()));
         
+        kf.odometry = odometry;
         kf.kfPeriodic();
 
         robotVelTheta = Math.atan2(chassisSpeeds.vyMetersPerSecond, chassisSpeeds.vxMetersPerSecond);
